@@ -1,0 +1,21 @@
+{
+    "name": "CmndProc",
+    "version": "4.0.0",
+    "description": "Command processor library for Arduino TC4 applications",
+    "keywords": "TC4",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/greencardigan/TC4-shield/tree/master/applications/libraries/trunk/libraries/cmndproc"
+    },
+    "authors":
+    [
+      {
+        "name": "Jim Gallt"
+      }
+    ],
+    "license": "BSD",
+    "homepage": "https://github.com/greencardigan/TC4-shield/",
+    "frameworks": "*",
+    "platforms": "*"
+  }
