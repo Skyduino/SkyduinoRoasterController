@@ -1,18 +1,50 @@
 #include <Arduino.h>
 #define LED PA3
 
+#include "roaster.h"
+#include "logging.h"
+#include "tick-timer.h"
+
+
+/*
+ * Until this is replaced by an Class, this structure
+ * contains the entire state, status, config, reported
+ * and commanded roaster status
+ */
+t_State state = {
+  // t_StateCommanded
+  {0, 0, 0, 0, 0},
+  // t_StateReported
+  {0, 0},
+  // t_Config
+  {
+    // chanMapping
+    {TEMPERATURE_CHANNEL_ROASTER+1, TEMPERATURE_CHANNEL_THERMOCOUPLE+1},
+    'F',
+  },
+  // t_Status
+  {
+    TimerMS(TC4_COMM_TIMEOUT_MS),      // tc4ComTimeOut
+    1       // tcStatus
+  }
+};
+
+
+static bool is_led_on = false;
+static TimerMS timer_led_toggle = TimerMS(300);
+
+
 void setup() {
   pinMode(LED, OUTPUT);
-  SystemClock_Config();
+  Serial.begin(115200);
+  Serial.setTimeout(100);
 }
 
 void loop() {
-  while (true) {
-    digitalWrite(LED, HIGH);
-    delay(300);
-
-    digitalWrite(LED, LOW);
-    delay(300);
-
+  // LED Heartbeat
+  if (timer_led_toggle.hasTicked()) {
+    is_led_on = !is_led_on;
+    is_led_on ? digitalWrite(LED, HIGH) : digitalWrite(LED, LOW);
+    timer_led_toggle.reset();
   }
 }
