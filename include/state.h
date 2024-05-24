@@ -17,7 +17,7 @@ typedef struct {
 
 typedef struct {
     uint8_t chanMapping[TEMPERATURE_CHANNELS_MAX];
-    char CorF;
+    char unit;
 } t_Config;
 
 typedef struct {
