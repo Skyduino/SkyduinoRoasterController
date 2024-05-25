@@ -1,3 +1,6 @@
+#include <stdlib.h>
+
+#include "logging.h"
 #include "handler_ot.h"
 #include "state.h"
 
@@ -16,6 +19,26 @@ cmndOT::cmndOT(const char* cmdName, uint8_t* otValue) : CmndBase ( cmdName) {
 bool cmndOT::doCommand(CmndParser *pars)
 {
     if( strcmp( keyword, pars->cmndName() ) == 0 ) {
+        int32_t newValue = strtol(pars->paramStr(1), NULL, 10);
+        if (newValue < 0 || newValue > 255) {
+            WARN(F("Value '"));
+            WARN(newValue);
+            WARNLN(F("' is out of uint8_t range, ignoring it"));
+            return true;
+        }
+
+        char buf[128];
+        uint8_t len;
+
+        len = sprintf(buf, "Executing %s command: old value: %u, new value: %d",
+                      pars->cmndName(),
+                      *this->otValue,
+                      (int) newValue
+                     );
+        buf[len+1] = '\0';
+        Serial.println(buf);
+
+        *this->otValue = (uint8_t) newValue & 0xff;
         return true;
     }
 
