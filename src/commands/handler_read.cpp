@@ -11,7 +11,7 @@ extern t_State state;
 
 // ----------------------------
 cmndRead::cmndRead() :
-    CmndBase ( CMD_READ ) {
+    Command( CMD_READ ) {
 }
 
 bool cmndRead::doCommand(CmndParser *pars)

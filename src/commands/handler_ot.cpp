@@ -12,7 +12,7 @@ cmndOT1::cmndOT1(uint8_t* otValue) : cmndOT(CMD_OT1, otValue) {
 }
 
 // ----------------------------
-cmndOT::cmndOT(const char* cmdName, uint8_t* otValue) : CmndBase ( cmdName) {
+cmndOT::cmndOT(const char* cmdName, uint8_t* otValue) : Command ( cmdName) {
    this->otValue = otValue; 
 }
 

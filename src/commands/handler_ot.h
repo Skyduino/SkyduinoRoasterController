@@ -1,9 +1,9 @@
 #ifndef __CMD_OT_H
 #define __CMD_OT_H
 
-#include <cmndproc.h>
+#include "base.h"
 
-class cmndOT : public CmndBase {
+class cmndOT : public Command {
     public:
         cmndOT(const char* cmdName, uint8_t* otValue);
         virtual bool doCommand( CmndParser* pars);

@@ -11,7 +11,7 @@ extern t_State state;
 
 // ----------------------------
 cmndChan::cmndChan() :
-    CmndBase ( CMD_CHAN ) {
+    Command( CMD_CHAN ) {
 }
 
 bool cmndChan::doCommand(CmndParser *pars)

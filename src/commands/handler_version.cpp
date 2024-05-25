@@ -12,7 +12,7 @@ extern t_State state;
 
 // ----------------------------
 cmndVersion::cmndVersion() :
-    CmndBase ( CMD_VERSION ) {
+    Command ( CMD_VERSION ) {
 }
 
 bool cmndVersion::doCommand(CmndParser *pars)
