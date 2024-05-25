@@ -16,11 +16,11 @@ t_State state = {
   // t_StateCommanded
   {0, 0, 0, 0, 0},
   // t_StateReported
-  {0, 0},
+  {0, 0, 0, 0},
   // t_Config
   {
     // chanMapping
-    {TEMPERATURE_CHANNEL_ROASTER+1, TEMPERATURE_CHANNEL_THERMOCOUPLE+1},
+    {TEMPERATURE_CHANNEL_ROASTER+1, TEMPERATURE_CHANNEL_THERMOCOUPLE+1, 0, 0},
     'F',
   },
   // t_Status
