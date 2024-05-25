@@ -3,6 +3,8 @@
 
 #include "state.h"
 
+#define VERSION "Skyduino version " SKYDUINO_VERSION " " SKYDUINO_COMMIT
+
 // TC4 protocol communication timeout in milliseconds
 #define TC4_COMM_TIMEOUT_MS                 10000UL
 // physical channel for thermocouple temperature

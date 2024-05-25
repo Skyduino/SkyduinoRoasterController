@@ -41,6 +41,7 @@ void setup() {
   Serial.setTimeout(100);
 
   setupCommandHandlers();
+  Serial.println(F(VERSION));
 }
 
 void loop() {
