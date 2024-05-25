@@ -10,8 +10,6 @@
  */
 extern t_State state;
 
-cmndVersion cmnd_handler_version;
-
 // ----------------------------
 cmndVersion::cmndVersion() :
     CmndBase ( CMD_VERSION ) {

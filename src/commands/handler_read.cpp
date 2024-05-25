@@ -9,8 +9,6 @@
  */
 extern t_State state;
 
-cmndRead cmnd_handler_read;
-
 // ----------------------------
 cmndRead::cmndRead() :
     CmndBase ( CMD_READ ) {

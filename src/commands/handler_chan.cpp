@@ -9,8 +9,6 @@
  */
 extern t_State state;
 
-cmndChan cmnd_handler_chan;
-
 // ----------------------------
 cmndChan::cmndChan() :
     CmndBase ( CMD_CHAN ) {

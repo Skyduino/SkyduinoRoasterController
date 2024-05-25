@@ -8,9 +8,9 @@
 // command line parameter delimiters
 #define DELIM "; ,="
 
-extern cmndRead cmnd_handler_read;
-extern cmndChan cmnd_handler_chan;
-extern cmndVersion cmnd_handler_version;
+cmndRead cmnd_handler_read;
+cmndChan cmnd_handler_chan;
+cmndVersion cmnd_handler_version;
 
 static CmndInterp ci( DELIM ); // command interpreter object
 
