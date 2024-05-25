@@ -16,3 +16,7 @@ void setupCommandHandlers(void) {
     ci.addCommand(&cmnd_handler_chan);
     ci.addCommand(&cmnd_handler_read);
 }
+
+void commandsLoopTick(void) {
+    ci.checkSerial();
+}

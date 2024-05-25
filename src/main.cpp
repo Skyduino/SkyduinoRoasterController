@@ -4,6 +4,7 @@
 #include "roaster.h"
 #include "logging.h"
 #include "tick-timer.h"
+#include "commands.h"
 
 
 /*
@@ -38,6 +39,8 @@ void setup() {
   pinMode(LED, OUTPUT);
   Serial.begin(115200);
   Serial.setTimeout(100);
+
+  setupCommandHandlers();
 }
 
 void loop() {
@@ -47,4 +50,7 @@ void loop() {
     is_led_on ? digitalWrite(LED, HIGH) : digitalWrite(LED, LOW);
     timer_led_toggle.reset();
   }
+
+  // Check Serial Communication
+  commandsLoopTick();
 }
