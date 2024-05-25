@@ -15,13 +15,10 @@
  */
 extern t_State state;
 
-uint8_t ot;
-
 cmndRead cmnd_handler_read;
 cmndChan cmnd_handler_chan;
 cmndVersion cmnd_handler_version;
-//cmndOT1 cmndOT1 = cmndOT1(&(state.commanded.heat));
-cmndOT1 cmndOT1(&ot);
+cmndOT1 cmndOT1(&(state.commanded.heat));
 
 static CmndInterp ci( DELIM ); // command interpreter object
 
