@@ -7,6 +7,7 @@
 #include "commands/handler_chan.h"
 #include "commands/handler_version.h"
 #include "commands/handler_ot.h"
+#include "commands/handler_skywalker.h"
 
 // command line parameter delimiters
 #define DELIM "; ,="
@@ -22,6 +23,8 @@ cmndVersion cmnd_handler_version;
 cmndOT1     cmnd_handler_ot1 = cmndOT1(&(state.commanded.heat));
 cmndOT2     cmnd_handler_ot2 = cmndOT2(&(state.commanded.vent));
 cmndLED     cmnd_handler_led = cmndLED();
+cmndCool    cmnd_handler_cool= cmndCool(&(state.commanded.cool));
+cmndDrum    cmnd_handler_drum= cmndDrum(&(state.commanded.drum));
 
 static CmndInterp ci( DELIM ); // command interpreter object
 
@@ -32,6 +35,8 @@ void setupCommandHandlers(void) {
         &cmnd_handler_version,
         &cmnd_handler_ot1,
         &cmnd_handler_ot2,
+        &cmnd_handler_cool,
+        &cmnd_handler_drum,
         &cmnd_handler_led
     };
 
