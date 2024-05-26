@@ -23,11 +23,7 @@
 #define PIN_NTC     PC5
 #define PIN_COOL    PC8
 
-#define SPI_BTCS    PA4
-#define SCK         PA5
-#define SPI_SO      PA6
-#define I2C_SCL     PB6
-#define I2C_SDA     PB7
+#define SPI_BTCS                PA4
 
 // PWM frequencies Hz
 #define PWM_FREQ_COOL       60

@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#define LED PA3
 
 #include "roaster.h"
 #include "logging.h"
