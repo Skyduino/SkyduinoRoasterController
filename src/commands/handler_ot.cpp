@@ -6,13 +6,13 @@
 #define CMD_LED "LED"
 
 
-cmndOT1::cmndOT1(uint8_t* otValue):
-    cmndPWM(CMD_OT1, otValue, PIN_HEAT, PWM_FREQ_HEAT) {
+cmndOT1::cmndOT1(uint8_t* dutyCycle):
+    cmndPWM(CMD_OT1, dutyCycle, PIN_HEAT, PWM_FREQ_HEAT) {
 }
 
 
-cmndOT2::cmndOT2(uint8_t* otValue):
-    cmndPWM(CMD_OT2, otValue, PIN_HEAT, PWM_FREQ_EXHAUST) {
+cmndOT2::cmndOT2(uint8_t* dutyCycle):
+    cmndPWM(CMD_OT2, dutyCycle, PIN_EXHAUST, PWM_FREQ_EXHAUST) {
 }
 
 
