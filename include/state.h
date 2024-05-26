@@ -13,11 +13,12 @@ typedef struct {
 
 typedef struct {
     double chanTemp[TEMPERATURE_CHANNELS_MAX]; // Physical temp channels
+    double ambient;  // Ambient temperature
 } t_StateReported;
 
 typedef struct {
     uint8_t chanMapping[TEMPERATURE_CHANNELS_MAX];
-    char unit;
+    bool isMetric;
 } t_Config;
 
 typedef struct {

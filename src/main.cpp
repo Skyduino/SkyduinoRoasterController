@@ -16,17 +16,17 @@ t_State state = {
   // t_StateCommanded
   {0, 0, 0, 0, 0},
   // t_StateReported
-  {0, 0, 0, 0},
+  {0, 0, 0, 0, 0},
   // t_Config
   {
     // chanMapping
     {TEMPERATURE_CHANNEL_ROASTER+1, TEMPERATURE_CHANNEL_THERMOCOUPLE+1, 0, 0},
-    'F',
+    false,  // isMetric
   },
   // t_Status
   {
     TimerMS(TC4_COMM_TIMEOUT_MS),      // tc4ComTimeOut
-    1       // tcStatus
+    1                                  // tcStatus
   }
 };
 
