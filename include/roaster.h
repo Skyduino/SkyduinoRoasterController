@@ -29,4 +29,11 @@
 #define I2C_SCL     PB6
 #define I2C_SDA     PB7
 
+// PWM frequencies Hz
+#define PWM_FREQ_COOL       60
+#define PWM_FREQ_DRUM       60
+#define PWM_FREQ_EXHAUST    60
+#define PWM_FREQ_HEAT       1
+#define PWM_FREQ_LED        120
+
 #endif  // __ROASTER_H

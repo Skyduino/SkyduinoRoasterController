@@ -20,6 +20,8 @@ cmndRead    cmnd_handler_read;
 cmndChan    cmnd_handler_chan;
 cmndVersion cmnd_handler_version;
 cmndOT1     cmnd_handler_ot1 = cmndOT1(&(state.commanded.heat));
+cmndOT2     cmnd_handler_ot2 = cmndOT2(&(state.commanded.vent));
+cmndLED     cmnd_handler_led = cmndLED();
 
 static CmndInterp ci( DELIM ); // command interpreter object
 
@@ -28,7 +30,9 @@ void setupCommandHandlers(void) {
         &cmnd_handler_chan,
         &cmnd_handler_read,
         &cmnd_handler_version,
-        &cmnd_handler_ot1
+        &cmnd_handler_ot1,
+        &cmnd_handler_ot2,
+        &cmnd_handler_led
     };
 
     uint8_t count = sizeof(commands) / sizeof(commands[0]);
