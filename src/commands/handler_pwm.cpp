@@ -19,7 +19,7 @@ bool cmndPWM::doCommand(CmndParser *pars)
 {
     if( strcmp( keyword, pars->cmndName() ) == 0 ) {
         int32_t newValue = strtol(pars->paramStr(1), NULL, 10);
-        if (newValue < 0 || newValue > 255) {
+        if (newValue < 0 || newValue > 100) {
             WARN(F("Value '"));
             WARN(newValue);
             WARNLN(F("' is out of uint8_t range, ignoring it"));
