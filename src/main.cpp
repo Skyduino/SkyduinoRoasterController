@@ -31,12 +31,7 @@ t_State state = {
 };
 
 
-static bool is_led_on = false;
-static TimerMS timer_led_toggle = TimerMS(300);
-
-
 void setup() {
-  pinMode(LED, OUTPUT);
   Serial.begin(115200);
   Serial.setTimeout(100);
 
@@ -45,13 +40,6 @@ void setup() {
 }
 
 void loop() {
-  // LED Heartbeat
-  if (timer_led_toggle.hasTicked()) {
-    is_led_on = !is_led_on;
-    is_led_on ? digitalWrite(LED, HIGH) : digitalWrite(LED, LOW);
-    timer_led_toggle.reset();
-  }
-
   // Check Serial Communication
   commandsLoopTick();
 }

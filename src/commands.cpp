@@ -38,8 +38,6 @@ void setupCommandHandlers(void) {
         if (success) {
             DEBUG(F("Successfuly initialized: "));
             DEBUGLN(handler->getName());
-            Serial.print(F("Successfuly initialized: "));
-            Serial.println(handler->getName());
             ci.addCommand(handler);
         }
     }

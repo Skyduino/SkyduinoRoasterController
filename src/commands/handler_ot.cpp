@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include "roaster.h"
 #include "logging.h"
 #include "handler_ot.h"
 #include "state.h"
@@ -8,12 +9,13 @@
 #define CMD_OT2 "OT2"
 
 
-cmndOT1::cmndOT1(uint8_t* otValue) : cmndOT(CMD_OT1, otValue) {
-}
-
 // ----------------------------
-cmndOT::cmndOT(const char* cmdName, uint8_t* otValue) : Command ( cmdName) {
-   this->otValue = otValue; 
+cmndOT::cmndOT(const char* cmdName, uint8_t* otValue, uint8_t pin, uint32_t freq):
+    Command ( cmdName ), pin( pin )
+{
+    this->otValue   = otValue;
+    this->freq      = freq;
+    this->timer     = NULL;
 }
 
 bool cmndOT::doCommand(CmndParser *pars)
@@ -39,8 +41,53 @@ bool cmndOT::doCommand(CmndParser *pars)
         Serial.println(buf);
 
         *this->otValue = (uint8_t) newValue & 0xff;
+        this->setPWM(newValue);
         return true;
     }
 
    return false;
+}
+
+void cmndOT::setupPin() {
+    pinMode(pin, OUTPUT);
+    digitalWrite(pin, LOW);
+}
+
+
+void cmndOT::off() {
+    this->setPWM(0);
+}
+
+
+void cmndOT::setPWM(uint32_t duty) {
+    if (NULL == timer) {
+        // was not initialized yet
+        this->setupPin();
+    } else {
+        // set pwm to 0
+        timer->setPWM(this->channel, this->pin, this->freq, duty);
+    }
+}
+
+
+bool cmndOT::begin() {
+    this->setupPin();
+
+    TIM_TypeDef *Instance = (TIM_TypeDef *)pinmap_peripheral(
+        digitalPinToPinName(pin),
+        PinMap_PWM
+    );
+    channel = STM_PIN_CHANNEL(
+        pinmap_function(digitalPinToPinName(pin),
+        PinMap_PWM)
+    );
+
+    timer = new HardwareTimer(Instance);
+    this->setPWM(0);
+
+    return true;
+}
+
+
+cmndOT1::cmndOT1(uint8_t* otValue) : cmndOT(CMD_OT1, otValue, PIN_LED, 1) {
 }
