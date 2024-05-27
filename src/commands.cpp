@@ -5,6 +5,7 @@
 #include "commands.h"
 #include "commands/handler_chan.h"
 #include "commands/handler_dfu.h"
+#include "commands/handler_filt.h"
 #include "commands/handler_ot.h"
 #include "commands/handler_read.h"
 #include "commands/handler_skywalker.h"
@@ -23,6 +24,7 @@ cmndChan    cmnd_handler_chan;
 cmndCool    cmnd_handler_cool= cmndCool(&(state.commanded.cool));
 cmndDrum    cmnd_handler_drum= cmndDrum(&(state.commanded.drum));
 cmndDFU     cmnd_handler_dfu;
+cmndFilt    cmnd_handler_filt= cmndFilt(&state);
 cmndLED     cmnd_handler_led = cmndLED();
 cmndOT1     cmnd_handler_ot1 = cmndOT1(&(state.commanded.heat));
 cmndOT2     cmnd_handler_ot2 = cmndOT2(&(state.commanded.vent));
@@ -38,6 +40,7 @@ void setupCommandHandlers(void) {
         &cmnd_handler_version,
         &cmnd_handler_dfu,
         &cmnd_handler_unit,
+        &cmnd_handler_filt,
         &cmnd_handler_chan,
         &cmnd_handler_cool,
         &cmnd_handler_drum,
