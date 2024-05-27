@@ -3,11 +3,12 @@
 #include "logging.h"
 #include "state.h"
 #include "commands.h"
-#include "commands/handler_read.h"
 #include "commands/handler_chan.h"
-#include "commands/handler_version.h"
+#include "commands/handler_dfu.h"
 #include "commands/handler_ot.h"
+#include "commands/handler_read.h"
 #include "commands/handler_skywalker.h"
+#include "commands/handler_version.h"
 
 // command line parameter delimiters
 #define DELIM "; ,="
@@ -25,6 +26,7 @@ cmndOT2     cmnd_handler_ot2 = cmndOT2(&(state.commanded.vent));
 cmndLED     cmnd_handler_led = cmndLED();
 cmndCool    cmnd_handler_cool= cmndCool(&(state.commanded.cool));
 cmndDrum    cmnd_handler_drum= cmndDrum(&(state.commanded.drum));
+cmndDFU     cmnd_handler_dfu;
 
 static CmndInterp ci( DELIM ); // command interpreter object
 
@@ -37,6 +39,7 @@ void setupCommandHandlers(void) {
         &cmnd_handler_ot2,
         &cmnd_handler_cool,
         &cmnd_handler_drum,
+        &cmnd_handler_dfu,
         &cmnd_handler_led
     };
 
