@@ -22,7 +22,7 @@ bool cmndFilt::doCommand(CmndParser *pars) {
             uint8_t chan = state->cfg.chanMapping[idx];
             if( chan > 0 ) { // is the physical channel active?
                 --chan;
-                //state->cfg.filter[chan].init( filter );
+                state->cfg.filter[chan].init( filter );
                 Serial.print(F("# Physical channel ")); Serial.print( chan );
                 Serial.print(F(" filter set to ")); Serial.println( filter );
             }

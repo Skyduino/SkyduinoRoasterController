@@ -55,6 +55,7 @@ void TCHandler::readTemperature() {
         return;
         this->tcError();
     } else {
+        temp = state->cfg.filter[TEMPERATURE_CHANNEL_THERMOCOUPLE].doFilter(temp);
         TEMPERATURE_TC(state->reported) = temp;
     }
 }

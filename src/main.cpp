@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <filterRC.h>
 
 #include "roaster.h"
 #include "logging.h"
@@ -20,6 +21,8 @@ t_State state = {
   {
     // chanMapping
     {TEMPERATURE_CHANNEL_ROASTER+1, TEMPERATURE_CHANNEL_THERMOCOUPLE+1, 0, 0},
+    // Filters
+    {filterRC(), filterRC(), filterRC(), filterRC()},
     false,  // isMetric
   },
   // t_Status
