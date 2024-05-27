@@ -22,7 +22,7 @@ t_State state = {
     // chanMapping
     {TEMPERATURE_CHANNEL_ROASTER+1, TEMPERATURE_CHANNEL_THERMOCOUPLE+1, 0, 0},
     // Filters
-    {filterRC(), filterRC(), filterRC(), filterRC()},
+    {filterRC<double>(), filterRC<double>(), filterRC<double>(), filterRC<double>()},
     false,  // isMetric
   },
   // t_Status

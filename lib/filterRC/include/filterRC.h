@@ -48,15 +48,42 @@
 
 // -------------------------------------------------------------------
 // class for digital filtering of raw signals
-class filterRC {
+template<typename T> class filterRC {
     public:
         filterRC();
         void init( uint8_t percent );
-        double doFilter( double newValue );
+        T doFilter( T newValue );
     protected:
-        double  filterLevel; // filtering filterLevel, 0 to 100%
-        double  lastValue; // most recent value of function
-        bool   isFirst; // special handling of isFirst call
+        uint8_t filterLevel; // filtering filterLevel, 0 to 100%
+        T       lastValue; // most recent value of function
+        bool    isFirst; // special handling of isFirst call
+};
+
+// --------------------------------------------------- dFilterRC
+template<typename T> filterRC<T>::filterRC() {
+    filterLevel = 0;
+    lastValue = 0;
+    isFirst = true;
+};
+
+// ----------------------------------------------------
+template<typename T> void filterRC<T>::init( uint8_t percent ) {
+    filterLevel = percent;
+    isFirst = true;
+};
+
+// ------------------------------------
+template<typename T> T filterRC<T>::doFilter ( T newValue ) {
+    if( isFirst ) {
+        lastValue = newValue;
+        isFirst = false;
+        return lastValue;
+    }
+    T weightedNew = (100 - filterLevel) * newValue;
+    T filtered = filterLevel * lastValue;
+    filtered += weightedNew;
+    filtered *= (double)0.01;
+    return lastValue = filtered;
 };
 
 #endif  // __FILTER_RC_H

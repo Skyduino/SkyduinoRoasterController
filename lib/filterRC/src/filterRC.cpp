@@ -41,29 +41,3 @@
 //  (thanks and acknowledgement to Arnaud Kodeck for his code contributions).
 
 #include "filterRC.h"
-
-// --------------------------------------------------- dFilterRC
-filterRC::filterRC() {
-    filterLevel = 0;
-    lastValue = 0;
-    isFirst = true;
-};
-
-// ----------------------------------------------------
-void filterRC::init( uint8_t percent ) {
-    filterLevel = percent;
-    isFirst = true;
-};
-
-// ------------------------------------
-double filterRC::doFilter ( double newValue ) {
-    if( isFirst ) {
-        lastValue = newValue;
-        isFirst = false;
-        return lastValue;
-    }
-    double weightedNew = (double)(100.0 - filterLevel) * (double)newValue * 0.01;
-    double filtered = (double)filterLevel * (double)lastValue * 0.01;
-    filtered += weightedNew;
-    return lastValue = filtered;
-};

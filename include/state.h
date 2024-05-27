@@ -20,7 +20,7 @@ typedef struct {
 
 typedef struct {
     uint8_t chanMapping[TEMPERATURE_CHANNELS_MAX];
-    filterRC filter[TEMPERATURE_CHANNELS_MAX];
+    filterRC<double> filter[TEMPERATURE_CHANNELS_MAX];
     bool isMetric;
 } t_Config;
 
