@@ -15,14 +15,35 @@ cmndDFU::cmndDFU() :
     Command( CMD_DFU ) {
 }
 
-bool cmndDFU::doCommand(CmndParser *pars)
-{
-    if( strcmp( keyword, pars->cmndName() ) == 0 ) {
-        enterDFU();
-        return true;
+bool cmndDFU::doCommand(CmndParser *pars) {
+    if( 0 != strcmp( keyword, pars->cmndName() ) ) {
+        return false;
+    }
+    if ( 1 == (pars->nTokens()) ) {
+        processChallenge(0);
+    } else {
+        int32_t response = strtol(pars->paramStr(1), NULL, 10);
+        processChallenge(response);
     }
 
-   return false;
+    return true;
+}
+
+void cmndDFU::processChallenge(int response) {
+    if ( response == 0 || challenge == 0) {
+        // challenge bootloader trigger command
+        challenge = micros() & 0x0FFF;
+        Serial.print(F("DFU challenge: "));
+        Serial.println(challenge);
+        timer.reset();
+    } else {
+        if ( (!timer.hasTicked()) && response == challenge) {
+            // got challenge respone before the timeout
+            enterDFU();
+        } else {
+            challenge = 0;
+        }
+    }
 }
 
 void cmndDFU::enterDFU() {
