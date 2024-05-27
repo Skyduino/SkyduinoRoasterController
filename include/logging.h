@@ -8,6 +8,10 @@
 #define DEBUG(...)
 #define DEBUGLN(...)
 #endif
+
+#define ERROR(...) Serial.print(__VA_ARGS__)
+#define ERRORLN(...) Serial.println(__VA_ARGS__)
+
 #ifdef __WARN__
 #define WARN(...) Serial.print(__VA_ARGS__)
 #define WARNLN(...) Serial.println(__VA_ARGS__)

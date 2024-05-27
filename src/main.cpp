@@ -2,8 +2,8 @@
 
 #include "roaster.h"
 #include "logging.h"
-#include "tick-timer.h"
 #include "commands.h"
+#include "tc-handler.h"
 
 
 /*
@@ -29,16 +29,22 @@ t_State state = {
   }
 };
 
+static TCHandler tcHandler(&state);
 
 void setup() {
   Serial.begin(115200);
   Serial.setTimeout(100);
 
   setupCommandHandlers();
+  tcHandler.begin();
+
   Serial.println(F(VERSION));
 }
 
 void loop() {
   // Check Serial Communication
   commandsLoopTick();
+
+  // update thermocouple & ambient temp
+  tcHandler.loopTick();
 }
