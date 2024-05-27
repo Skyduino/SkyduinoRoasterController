@@ -25,7 +25,7 @@ bool cmndRead::doCommand(CmndParser *pars)
 }
 
 void cmndRead::handleRead(void) {
-  Serial.print(F("0.0"));
+  Serial.print(state.reported.ambient);
   uint8_t mapping = 0;
   for (uint8_t i = 0; i < TEMPERATURE_CHANNELS_MAX; i++) {
     mapping = state.cfg.chanMapping[i];
