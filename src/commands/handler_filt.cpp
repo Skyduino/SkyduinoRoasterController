@@ -8,6 +8,7 @@ cmndFilt::cmndFilt(t_State *state):
     Command( CMD_FILT ), state( state ) {
 }
 
+// FILT,ppp,ppp,ppp,ppp where ppp = percent filtering on logical channels 1 to 4
 bool cmndFilt::doCommand(CmndParser *pars) {
     if( 0 != strcmp( keyword, pars->cmndName() ) ) {
         return false;
@@ -27,5 +28,6 @@ bool cmndFilt::doCommand(CmndParser *pars) {
             }
         }
     }
+
     return true;
 }
