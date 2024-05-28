@@ -52,6 +52,7 @@ void TCHandler::readTemperature() {
     double temp = state->cfg.isMetric ? tc1.readCelsius() : tc1.readFahrenheit();
  
     if (isnan(temp)) {
+        return;
         this->tcError();
     } else {
         TEMPERATURE_TC(state->reported) = temp;
@@ -61,8 +62,8 @@ void TCHandler::readTemperature() {
 void TCHandler::tcError() {
     uint8_t e = tc1.readError();
 
-    ERROR(F("TC Fault: "));
-    if (e & MAX31855_FAULT_OPEN) ERRORLN(F("FAULT: Thermocouple is open - no connections."));
-    if (e & MAX31855_FAULT_SHORT_GND) ERRORLN(F("FAULT: Thermocouple is short-circuited to GND."));
-    if (e & MAX31855_FAULT_SHORT_VCC) ERRORLN(F("FAULT: Thermocouple is short-circuited to VCC."));
+    WARN(F("TC Fault: "));
+    if (e & MAX31855_FAULT_OPEN) WARNLN(F("FAULT: Thermocouple is open - no connections."));
+    if (e & MAX31855_FAULT_SHORT_GND) WARNLN(F("FAULT: Thermocouple is short-circuited to GND."));
+    if (e & MAX31855_FAULT_SHORT_VCC) WARNLN(F("FAULT: Thermocouple is short-circuited to VCC."));
 }
