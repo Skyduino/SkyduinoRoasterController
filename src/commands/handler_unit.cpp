@@ -10,11 +10,8 @@ cmndUnit::cmndUnit(t_State *state):
     Command( CMD_UNIT ), state( state ) {
 }
 
-bool cmndUnit::doCommand(CmndParser *pars)
+void cmndUnit::_doCommand(CmndParser *pars)
 {
-    if( 0 != strcmp( keyword, pars->cmndName() ) ) {
-        return false;
-    }
     char u = toupper(pars->paramStr(1)[0]);
     if ('C' == u) {
         Serial.println(F("# Changed units to C"));
@@ -23,6 +20,4 @@ bool cmndUnit::doCommand(CmndParser *pars)
         state->cfg.isMetric = false;
         Serial.println(F("# Changed units to F"));
     }
-
-    return true;
 }

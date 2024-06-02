@@ -7,7 +7,9 @@
 class cmndUnit : public Command {
     public:
         cmndUnit(t_State *state);
-        virtual bool doCommand( CmndParser *pars);
+    
+    protected:
+        void _doCommand( CmndParser *pars);
 
     private:
         t_State *state;

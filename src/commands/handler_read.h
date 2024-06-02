@@ -6,9 +6,8 @@
 class cmndRead : public Command {
     public:
         cmndRead();
-        virtual bool doCommand( CmndParser* pars);
-    private:
-        void handleRead(void);
+    protected:
+        void _doCommand( CmndParser *pars);
 };
 
 #endif // __CMD_READ_H

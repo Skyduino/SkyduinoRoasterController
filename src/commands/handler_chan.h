@@ -6,7 +6,8 @@
 class cmndChan : public Command {
     public:
         cmndChan();
-        virtual bool doCommand( CmndParser* pars);
+    protected:
+        void _doCommand( CmndParser* pars);
 };
 
 #endif // __CMD_CHAN_H

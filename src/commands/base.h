@@ -6,8 +6,10 @@
 class Command : public CmndBase {
     public:
         Command(const char* cmdName);
-        //virtual bool doCommand( CmndParser* pars);
+        bool doCommand( CmndParser* pars);
         virtual bool begin(void);
+    protected:
+        virtual void _doCommand( CmndParser *pars) =0;
 };
 
 #endif // __CMD_BASE_H

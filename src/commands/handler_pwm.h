@@ -6,9 +6,10 @@
 class cmndPWM : public Command {
     public:
         cmndPWM(const char* cmdName, uint8_t* otValue, uint8_t pin, uint32_t freq);
-        virtual bool doCommand( CmndParser* pars);
         bool begin();
         void virtual off();
+    protected:
+        void _doCommand( CmndParser* pars);
     private:
         uint8_t*        otValue;
         uint8_t         pin;

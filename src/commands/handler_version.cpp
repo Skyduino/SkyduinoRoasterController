@@ -15,12 +15,6 @@ cmndVersion::cmndVersion() :
     Command ( CMD_VERSION ) {
 }
 
-bool cmndVersion::doCommand(CmndParser *pars)
-{
-    if( strcmp( keyword, pars->cmndName() ) == 0 ) {
-        Serial.println(F(VERSION));
-        return true;
-    }
-
-   return false;
+void cmndVersion::_doCommand(CmndParser *pars) {
+    Serial.println(F(VERSION));
 }

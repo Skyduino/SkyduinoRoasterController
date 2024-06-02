@@ -16,7 +16,8 @@
 class cmndDFU : public Command {
     public:
         cmndDFU();
-        virtual bool doCommand( CmndParser* pars);
+    protected:
+        void _doCommand( CmndParser* pars);
 
     private:
         TimerMS timer = TimerMS(CMD_DFU_TIMEOUT_MS);

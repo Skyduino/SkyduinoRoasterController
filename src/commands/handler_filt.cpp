@@ -9,11 +9,7 @@ cmndFilt::cmndFilt(t_State *state):
 }
 
 // FILT,ppp,ppp,ppp,ppp where ppp = percent filtering on logical channels 1 to 4
-bool cmndFilt::doCommand(CmndParser *pars) {
-    if( 0 != strcmp( keyword, pars->cmndName() ) ) {
-        return false;
-    }
-
+void cmndFilt::_doCommand(CmndParser *pars) {
     for (uint8_t idx=0; idx < TEMPERATURE_CHANNELS_MAX; ++idx) {
         uint8_t len = strlen(pars->paramStr(idx));
         if( len > 0 ) {  // is there a parameter?
@@ -28,6 +24,4 @@ bool cmndFilt::doCommand(CmndParser *pars) {
             }
         }
     }
-
-    return true;
 }

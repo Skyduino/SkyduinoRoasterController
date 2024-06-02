@@ -15,18 +15,13 @@ cmndDFU::cmndDFU() :
     Command( CMD_DFU ) {
 }
 
-bool cmndDFU::doCommand(CmndParser *pars) {
-    if( 0 != strcmp( keyword, pars->cmndName() ) ) {
-        return false;
-    }
+void cmndDFU::_doCommand(CmndParser *pars) {
     if ( 1 == (pars->nTokens()) ) {
         processChallenge(0);
     } else {
         int32_t response = strtol(pars->paramStr(1), NULL, 10);
         processChallenge(response);
     }
-
-    return true;
 }
 
 void cmndDFU::processChallenge(int response) {
