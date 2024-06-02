@@ -29,11 +29,12 @@ typedef struct {
     uint8_t tcStatus;
 } t_Status;
 
-typedef struct {
-    t_StateCommanded    commanded;
-    t_StateReported     reported;
-    t_Config            cfg;
-    t_Status            status;
-} t_State;
+class State {
+    Public:
+        t_StateCommanded    commanded;
+        t_StateReported     reported;
+        t_Config            cfg;
+        t_Status            status;
+};
 
 #endif  // _SW_STATE_H
