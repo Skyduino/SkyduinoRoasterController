@@ -32,6 +32,4 @@ void cmndRead::_doCommand(CmndParser *pars) {
   Serial.print(state.commanded.vent);
   Serial.print(',');
   Serial.println(F("0"));
-
-  state.status.tc4ComTimeOut.reset();
 }

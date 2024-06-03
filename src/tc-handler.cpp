@@ -9,7 +9,7 @@
 #include "state.h"
 #include "tc-handler.h"
 
-TCHandler::TCHandler(t_State *state)
+TCHandler::TCHandler(State *state)
 {
     this->state = state;
 }

@@ -3,7 +3,7 @@
 
 #include <filterRC.h>
 
-#include "roaster.h"
+#include <roaster.h>
 #include "tick-timer.h"
 
 class StateCommanded {
@@ -25,24 +25,14 @@ class Reported {
 
 class Config {
     public:
-        uint8_t chanMapping[TEMPERATURE_CHANNELS_MAX] = {
-            TEMPERATURE_CHANNEL_ROASTER+1,
-            TEMPERATURE_CHANNEL_THERMOCOUPLE+1,
-            0,
-            0
-        };
-        filterRC<double> filter[TEMPERATURE_CHANNELS_MAX] = {
-            filterRC<double>(),
-            filterRC<double>(),
-            filterRC<double>(),
-            filterRC<double>()
-        };
-        bool isMetric = false;
+        uint8_t chanMapping[TEMPERATURE_CHANNELS_MAX];
+        filterRC<double> filter[TEMPERATURE_CHANNELS_MAX];
+        bool isMetric;
+        Config();
 };
 
 class Status {
     public:
-        TimerMS tc4ComTimeOut;
         uint8_t tcStatus;
         Status();
 };

@@ -1,3 +1,4 @@
+#include "roaster.h"
 #include "state.h"
 
 StateCommanded::StateCommanded() {
@@ -8,6 +9,15 @@ StateCommanded::StateCommanded() {
     drum    = 0;
 }
 
+Config::Config() {
+    chanMapping[0] = TEMPERATURE_CHANNEL_ROASTER+1;
+    chanMapping[1] = TEMPERATURE_CHANNEL_THERMOCOUPLE+1;
+    chanMapping[2] = 0;
+    chanMapping[3] = 0;
+
+    isMetric = false;
+}
+
 Reported::Reported() {
     for (uint8_t i = 0; i < TEMPERATURE_CHANNELS_MAX; i++) {
         chanTemp[i] = 0;
@@ -16,7 +26,6 @@ Reported::Reported() {
 }
 
 Status::Status() {
-    timer = TimerMS(TC4_COMM_TIMEOUT_MS);      // tc4ComTimeOut
     tcStatus = 1;
 }
 
