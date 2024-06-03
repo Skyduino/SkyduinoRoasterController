@@ -4,12 +4,6 @@
 
 #define CMD_VERSION "VERSION"
 
-
-/*
- * Global state
- */
-extern t_State state;
-
 // ----------------------------
 cmndVersion::cmndVersion() :
     Command ( CMD_VERSION ) {

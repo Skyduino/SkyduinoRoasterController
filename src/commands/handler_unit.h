@@ -6,13 +6,13 @@
 
 class cmndUnit : public Command {
     public:
-        cmndUnit(t_State *state);
+        cmndUnit(State *state);
     
     protected:
         void _doCommand( CmndParser *pars);
 
     private:
-        t_State *state;
+        State *state;
 };
 
 #endif // __CMD_UNIT_H

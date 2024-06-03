@@ -9,7 +9,7 @@
 
 class TCHandler {
     public:
-        TCHandler(t_State* state);
+        TCHandler(State* state);
         bool begin();
         bool loopTick();
 
@@ -17,7 +17,7 @@ class TCHandler {
         Adafruit_MAX31855   tc1 = Adafruit_MAX31855(SPI_BTCS);
         TimerMS             tcTimer = TimerMS(THERMOCOUPLE_UPDATE_INTERVAL_MS);
         TimerMS             ambTimer = TimerMS(THERMOCOUPLE_UPDATE_INTERVAL_MS << 3);
-        t_State             *state;
+        State               *state;
 
         void readAmbient();
         void readTemperature();

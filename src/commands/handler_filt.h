@@ -6,13 +6,13 @@
 
 class cmndFilt : public Command {
     public:
-        cmndFilt(t_State *state);
+        cmndFilt(State *state);
     
     protected:
         void _doCommand( CmndParser* pars);
 
     private:
-        t_State *state;
+        State *state;
 };
 
 #endif // __CMD_FILT_H

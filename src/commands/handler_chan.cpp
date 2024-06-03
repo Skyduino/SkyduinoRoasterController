@@ -7,7 +7,7 @@
 /*
  * Global state
  */
-extern t_State state;
+extern State state;
 
 // ----------------------------
 cmndChan::cmndChan() :

@@ -6,7 +6,7 @@
 
 
 // ----------------------------
-cmndUnit::cmndUnit(t_State *state):
+cmndUnit::cmndUnit(State *state):
     Command( CMD_UNIT ), state( state ) {
 }
 

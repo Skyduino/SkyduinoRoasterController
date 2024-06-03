@@ -4,7 +4,7 @@
 #define CMD_FILT "FILT"
 
 // ----------------------------
-cmndFilt::cmndFilt(t_State *state):
+cmndFilt::cmndFilt(State *state):
     Command( CMD_FILT ), state( state ) {
 }
 

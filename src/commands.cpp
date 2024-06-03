@@ -18,7 +18,7 @@
 /*
  * Global state
  */
-extern t_State state;
+extern State state;
 
 cmndChan    cmnd_handler_chan;
 cmndCool    cmnd_handler_cool= cmndCool(&(state.commanded.cool));
