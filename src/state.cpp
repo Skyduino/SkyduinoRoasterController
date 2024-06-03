@@ -9,6 +9,7 @@ StateCommanded::StateCommanded() {
     drum    = 0;
 }
 
+
 Config::Config() {
     chanMapping[0] = TEMPERATURE_CHANNEL_ROASTER+1;
     chanMapping[1] = TEMPERATURE_CHANNEL_THERMOCOUPLE+1;
@@ -29,3 +30,21 @@ Status::Status() {
     tcStatus = 1;
 }
 
+bool State::begin() {
+    bool isSuccess = true;
+
+    isSuccess &= commanded.begin();
+    isSuccess &= reported.begin();
+
+    return isSuccess;
+}
+
+bool State::loopTick() {
+    bool isSuccess = true;
+
+    isSuccess &= commanded.loopTick();
+    isSuccess &= reported.loopTick();
+
+    return true;
+    return isSuccess;
+}

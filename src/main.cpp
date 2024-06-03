@@ -18,11 +18,16 @@ static TCHandler tcHandler(&state);
 void setup() {
   Serial.begin(115200);
   Serial.setTimeout(100);
-
-  setupCommandHandlers();
-  tcHandler.begin();
-
   Serial.println(F(VERSION));
+
+  while ( !(state.begin()) ) {
+    Serial.println(F("Failed to initialize"));
+    delay(100);
+  };
+
+  tcHandler.begin();
+  setupCommandHandlers();
+
 }
 
 void loop() {
@@ -31,4 +36,6 @@ void loop() {
 
   // update thermocouple & ambient temp
   tcHandler.loopTick();
+
+  state.loopTick();
 }

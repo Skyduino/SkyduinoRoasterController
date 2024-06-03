@@ -13,14 +13,20 @@ class StateCommanded {
         uint8_t cool;
         uint8_t filter;
         uint8_t drum;
+
         StateCommanded();
+        bool begin();
+        bool loopTick();
 };
 
 class Reported {
     public:
         double chanTemp[TEMPERATURE_CHANNELS_MAX]; // Physical temp channels
         double ambient;  // Ambient temperature
+
         Reported();
+        bool begin();
+        bool loopTick();
 };
 
 class Config {
@@ -43,6 +49,9 @@ class State {
         Reported        reported;
         Config          cfg;
         Status          status;
+
+        bool    begin();
+        bool    loopTick();
 };
 
 #endif  // _SW_STATE_H
