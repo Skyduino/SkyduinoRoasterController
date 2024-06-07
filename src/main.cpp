@@ -13,7 +13,6 @@
  * and commanded roaster status
  */
 State state;
-static TCHandler tcHandler(&state);
 
 void setup() {
   Serial.begin(115200);
@@ -25,7 +24,6 @@ void setup() {
     delay(100);
   };
 
-  tcHandler.begin();
   setupCommandHandlers();
 
 }
@@ -33,9 +31,6 @@ void setup() {
 void loop() {
   // Check Serial Communication
   commandsLoopTick();
-
-  // update thermocouple & ambient temp
-  tcHandler.loopTick();
 
   state.loopTick();
 }

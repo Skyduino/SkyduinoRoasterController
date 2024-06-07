@@ -4,6 +4,7 @@
 #include <filterRC.h>
 
 #include <roaster.h>
+#include "tc-handler.h"
 #include "tick-timer.h"
 
 class StateCommanded {
@@ -27,6 +28,10 @@ class Reported {
         Reported();
         bool begin();
         bool loopTick();
+    
+    protected:
+        TCHandler tcHandler = TCHandler(this);
+
 };
 
 class Config {
