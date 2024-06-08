@@ -26,6 +26,17 @@ bool Reported::loopTick() {
     return true;
 }
 
+double Reported::getAmbient() {
+    return this->ambient;
+}
+
+double Reported::getChanTemp(uint8_t chan) {
+    return this->chanTemp[chan];
+}
+
+/*
+ * Protected and private implementations
+ */
 void Reported::readAmbient() {
     double temp = tc1->readInternal();
  

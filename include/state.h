@@ -30,18 +30,19 @@ class Config {
 
 class Reported {
     public:
-        double chanTemp[TEMPERATURE_CHANNELS_MAX]; // Physical temp channels
-        double ambient;  // Ambient temperature
-
         Reported(Config *config);
         bool begin();
         bool loopTick();
+        double getAmbient();
+        double getChanTemp(uint8_t chan);
     
     private:
         Adafruit_MAX31855   *tc1;
         TimerMS             *tcTimer;
         TimerMS             *ambTimer;
         Config              *config;
+        double              chanTemp[TEMPERATURE_CHANNELS_MAX]; // Physical temp channels
+        double              ambient;  // Ambient temperature
 
         void readAmbient();
         void readTemperature();

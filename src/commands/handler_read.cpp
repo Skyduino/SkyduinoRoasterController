@@ -16,14 +16,14 @@ cmndRead::cmndRead() :
 
 
 void cmndRead::_doCommand(CmndParser *pars) {
-  Serial.print(state.reported.ambient);
+  Serial.print(state.reported.getAmbient());
   uint8_t mapping = 0;
   for (uint8_t i = 0; i < TEMPERATURE_CHANNELS_MAX; i++) {
     mapping = state.cfg.chanMapping[i];
     if ((mapping >= 1)
         && (mapping <= TEMPERATURE_CHANNELS_MAX)) {
         Serial.print(F(","));
-        Serial.print(state.reported.chanTemp[mapping - 1]);
+        Serial.print(state.reported.getChanTemp(mapping - 1));
     }
   }
   Serial.print(F(","));
