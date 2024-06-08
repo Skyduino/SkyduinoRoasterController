@@ -19,7 +19,9 @@ Config::Config() {
     isMetric = false;
 }
 
-Reported::Reported() {
+Reported::Reported(Config *config) {
+    this->config = config;
+
     for (uint8_t i = 0; i < TEMPERATURE_CHANNELS_MAX; i++) {
         chanTemp[i] = 0;
     }

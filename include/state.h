@@ -25,13 +25,19 @@ class Reported {
         double chanTemp[TEMPERATURE_CHANNELS_MAX]; // Physical temp channels
         double ambient;  // Ambient temperature
 
-        Reported();
+        Reported(Config *config);
         bool begin();
         bool loopTick();
     
-    protected:
-        TCHandler tcHandler = TCHandler(this);
+    private:
+        Adafruit_MAX31855   tc1 = Adafruit_MAX31855(SPI_BTCS);
+        TimerMS             tcTimer = TimerMS(THERMOCOUPLE_UPDATE_INTERVAL_MS);
+        TimerMS             ambTimer = TimerMS(THERMOCOUPLE_UPDATE_INTERVAL_MS << 3);
+        Config              *config;
 
+        void readAmbient();
+        void readTemperature();
+        void tcError();
 };
 
 class Config {

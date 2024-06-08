@@ -12,8 +12,8 @@
 // physical channel for temperature reported by roaster
 #define TEMPERATURE_CHANNEL_ROASTER         1
 
-#define TEMPERATURE_ROASTER(x) x.chanTemp[TEMPERATURE_CHANNEL_ROASTER]
-#define TEMPERATURE_TC(x)      x.chanTemp[TEMPERATURE_CHANNEL_THERMOCOUPLE]
+#define TEMPERATURE_ROASTER(x) x[TEMPERATURE_CHANNEL_ROASTER]
+#define TEMPERATURE_TC(x)      x[TEMPERATURE_CHANNEL_THERMOCOUPLE]
 
 // PIN Definitions
 #define PIN_LED     PA3
