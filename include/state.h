@@ -1,10 +1,10 @@
 #ifndef _SW_STATE_H
 #define _SW_STATE_H
 
+#include <Adafruit_MAX31855.h>
 #include <filterRC.h>
 
 #include <roaster.h>
-#include "tc-handler.h"
 #include "tick-timer.h"
 
 class StateCommanded {
@@ -20,6 +20,14 @@ class StateCommanded {
         bool loopTick();
 };
 
+class Config {
+    public:
+        uint8_t chanMapping[TEMPERATURE_CHANNELS_MAX];
+        filterRC<double> filter[TEMPERATURE_CHANNELS_MAX];
+        bool isMetric;
+        Config();
+};
+
 class Reported {
     public:
         double chanTemp[TEMPERATURE_CHANNELS_MAX]; // Physical temp channels
@@ -30,22 +38,14 @@ class Reported {
         bool loopTick();
     
     private:
-        Adafruit_MAX31855   tc1 = Adafruit_MAX31855(SPI_BTCS);
-        TimerMS             tcTimer = TimerMS(THERMOCOUPLE_UPDATE_INTERVAL_MS);
-        TimerMS             ambTimer = TimerMS(THERMOCOUPLE_UPDATE_INTERVAL_MS << 3);
+        Adafruit_MAX31855   *tc1;
+        TimerMS             *tcTimer;
+        TimerMS             *ambTimer;
         Config              *config;
 
         void readAmbient();
         void readTemperature();
         void tcError();
-};
-
-class Config {
-    public:
-        uint8_t chanMapping[TEMPERATURE_CHANNELS_MAX];
-        filterRC<double> filter[TEMPERATURE_CHANNELS_MAX];
-        bool isMetric;
-        Config();
 };
 
 class Status {
@@ -57,7 +57,7 @@ class Status {
 class State {
     public:
         StateCommanded  commanded;
-        Reported        reported;
+        Reported        reported = Reported(&cfg);
         Config          cfg;
         Status          status;
 

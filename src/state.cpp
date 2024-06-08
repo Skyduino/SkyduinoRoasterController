@@ -26,6 +26,11 @@ Reported::Reported(Config *config) {
         chanTemp[i] = 0;
     }
     ambient = 0;
+
+    tc1 = new Adafruit_MAX31855(SPI_BTCS);
+    tcTimer = new TimerMS(THERMOCOUPLE_UPDATE_INTERVAL_MS);
+    ambTimer = new TimerMS(THERMOCOUPLE_UPDATE_INTERVAL_MS << 3);
+
 }
 
 Status::Status() {

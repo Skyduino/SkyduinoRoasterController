@@ -1,9 +1,11 @@
+#include <SPI.h>
+
 #include "logging.h"
 #include "state.h"
 
 bool Reported::begin() {
     bool isSuccess = true;
-    isSuccess &= tc1.begin();
+    isSuccess &= tc1->begin();
     if ( !isSuccess ) {
         ERRORLN(F("Couldn't not initialize MAX3185"));
     }
@@ -11,21 +13,21 @@ bool Reported::begin() {
 }
 
 bool Reported::loopTick() {
-    if (tcTimer.hasTicked()) {
+    if (tcTimer->hasTicked()) {
         readTemperature();
-        tcTimer.reset();
+        tcTimer->reset();
     }
 
-    if (ambTimer.hasTicked()) {
+    if (ambTimer->hasTicked()) {
         readAmbient();
-        ambTimer.reset();
+        ambTimer->reset();
     }
 
     return true;
 }
 
 void Reported::readAmbient() {
-    double temp = tc1.readInternal();
+    double temp = tc1->readInternal();
  
     if (isnan(temp)) {
         this->tcError();
@@ -40,19 +42,19 @@ void Reported::readAmbient() {
 }
 
 void Reported::readTemperature() {
-    double temp = config->isMetric ? tc1.readCelsius() : tc1.readFahrenheit();
+    double temp = config->isMetric ? tc1->readCelsius() : tc1->readFahrenheit();
  
     if (isnan(temp)) {
         return;
         this->tcError();
     } else {
         temp = config->filter[TEMPERATURE_CHANNEL_THERMOCOUPLE].doFilter(temp);
-        TEMPERATURE_TC(chanMapping) = temp;
+        TEMPERATURE_TC(chanTemp) = temp;
     }
 }
 
 void Reported::tcError() {
-    uint8_t e = tc1.readError();
+    uint8_t e = tc1->readError();
 
     WARN(F("TC Fault: "));
     if (e & MAX31855_FAULT_OPEN) WARNLN(F("FAULT: Thermocouple is open - no connections."));

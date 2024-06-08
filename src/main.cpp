@@ -4,7 +4,6 @@
 #include "roaster.h"
 #include "logging.h"
 #include "commands.h"
-#include "tc-handler.h"
 
 
 /*
