@@ -5,20 +5,8 @@
 #include <filterRC.h>
 
 #include <roaster.h>
+#include "state_commanded.h"
 #include "tick-timer.h"
-
-class StateCommanded {
-    public:
-        uint8_t heat;
-        uint8_t vent;
-        uint8_t cool;
-        uint8_t filter;
-        uint8_t drum;
-
-        StateCommanded();
-        bool begin();
-        bool loopTick();
-};
 
 class Config {
     public:
