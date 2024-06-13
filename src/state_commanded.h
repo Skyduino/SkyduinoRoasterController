@@ -44,11 +44,11 @@ class ControlPWM: public ControlOnOff {
 
 class StateCommanded {
     public:
-        uint8_t heat;
-        uint8_t vent;
-        uint8_t cool;
-        uint8_t filter;
-        uint8_t drum;
+        ControlPWM heat     = ControlPWM(PIN_HEAT, PWM_FREQ_HEAT);
+        ControlPWM vent     = ControlPWM(PIN_EXHAUST, PWM_FREQ_EXHAUST);
+        ControlPWM drum     = ControlPWM(PIN_DRUM, PWM_FREQ_DRUM);
+        ControlOnOff cool   = ControlOnOff(PIN_COOL);
+        ControlBasic filter;
 
         StateCommanded();
         bool begin();

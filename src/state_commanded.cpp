@@ -2,7 +2,14 @@
 #include "state_commanded.h"
 
 bool StateCommanded::begin() {
-    return true;
+    bool isSuccess = true;
+
+    isSuccess &= this->heat.begin();
+    isSuccess &= this->vent.begin();
+    isSuccess &= this->drum.begin();
+    isSuccess &= this->cool.begin();
+    isSuccess &= this->filter.begin();
+    return isSuccess;
 }
 
 
