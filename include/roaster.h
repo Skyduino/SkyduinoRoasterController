@@ -1,8 +1,6 @@
 #ifndef __ROASTER_H
 #define __ROASTER_H
 
-#include "state.h"
-
 #define VERSION "Skyduino version " SKYDUINO_VERSION " " SKYDUINO_COMMIT
 
 // TC4 protocol communication timeout in milliseconds

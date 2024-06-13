@@ -2,6 +2,7 @@
 #include <filterRC.h>
 
 #include "roaster.h"
+#include "state.h"
 #include "logging.h"
 #include "commands.h"
 

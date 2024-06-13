@@ -2,6 +2,7 @@
 #define _SW_STATE_CMD_PH
 
 #include <HardwareTimer.h>
+#include "roaster.h"
 
 class ControlBasic {
     public:
