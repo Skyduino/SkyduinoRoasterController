@@ -1,28 +1,30 @@
 #ifndef _SW_STATE_CMD_PH
 #define _SW_STATE_CMD_PH
 
+#include <HardwareTimer.h>
 
 class ControlBasic {
     public:
-        ControlBasic(uint8_t pin);
         bool virtual begin() {return true;};
         void virtual off();
         void virtual on();
         uint8_t virtual get();
         void virtual set(uint8_t value);
+
     private:
         uint8_t         value;
-        const uint8_t   pin;
-
         void virtual _setAction(uint8_t value) {};
 };
 
 class ControlOnOff: public ControlBasic {
     public:
+        ControlOnOff(uint8_t pin): pin(pin) {};
         bool begin();
 
+    protected:
+        const uint8_t   pin;
+
     private:
-        void setupPin();
         void _setAction(uint8_t value);
 };
 
@@ -30,12 +32,12 @@ class ControlPWM: public ControlOnOff {
     public:
         ControlPWM(uint8_t pin, uint32_t freq);
         bool begin();
-        void set(uint8_t value);
+
     private:
         HardwareTimer*  timer;
         uint32_t        channel;
         uint32_t        freq;
-        void virtual    setPWM(uint32_t duty);
+        void _setAction(uint8_t value);
 };
 
 
