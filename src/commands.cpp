@@ -20,23 +20,21 @@
  */
 extern State state;
 
-cmndChan    cmnd_handler_chan;
-cmndCool    cmnd_handler_cool= cmndCool(&(state.commanded.cool));
-cmndDrum    cmnd_handler_drum= cmndDrum(&(state.commanded.drum));
+cmndChan    cmnd_handler_chan = cmndChan(&state);
+cmndCool    cmnd_handler_cool = cmndCool(&state);
+cmndDrum    cmnd_handler_drum = cmndDrum(&state);
 cmndDFU     cmnd_handler_dfu;
-cmndFilt    cmnd_handler_filt= cmndFilt(&state);
-cmndLED     cmnd_handler_led = cmndLED();
-cmndOT1     cmnd_handler_ot1 = cmndOT1(&(state.commanded.heat));
-cmndOT2     cmnd_handler_ot2 = cmndOT2(&(state.commanded.vent));
-cmndRead    cmnd_handler_read;
-cmndUnit    cmnd_handler_unit= cmndUnit(&state);
+cmndFilt    cmnd_handler_filt = cmndFilt( &state );
+cmndOT1     cmnd_handler_ot1  = cmndOT1( &state );
+cmndOT2     cmnd_handler_ot2  = cmndOT2( &state );
+cmndRead    cmnd_handler_read = cmndRead( &state );
+cmndUnit    cmnd_handler_unit = cmndUnit( &state );
 cmndVersion cmnd_handler_version;
 
 static CmndInterp ci( DELIM ); // command interpreter object
 
 void setupCommandHandlers(void) {
     Command* commands[] = {
-        &cmnd_handler_led,
         &cmnd_handler_version,
         &cmnd_handler_dfu,
         &cmnd_handler_unit,

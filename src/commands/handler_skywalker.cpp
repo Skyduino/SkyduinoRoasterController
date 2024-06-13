@@ -5,11 +5,25 @@
 #define CMD_DRUM    "DRUM"
 
 
-cmndCool::cmndCool(uint8_t* dutyCycle):
-    cmndPWM(CMD_COOL, dutyCycle, PIN_COOL, PWM_FREQ_COOL) {
+cmndCool::cmndCool(State *state):
+    ControlCommand(CMD_COOL, state) {
 }
 
 
-cmndDrum::cmndDrum(uint8_t* dutyCycle):
-    cmndPWM(CMD_DRUM, dutyCycle, PIN_DRUM, PWM_FREQ_DRUM) {
+cmndCool::_handleValue(int32_t value) {
+    if ( value ) {
+        state->commanded.cool.on();
+    } else {;
+        state->commanded.cool.off();
+    }
+}
+
+
+cmndDrum::cmndDrum(State *state):
+    ControlCommand(CMD_DRUM, state) {
+}
+
+
+cmndDrum::_handleValue(int32_t value) {
+    state->commanded.drum.set(value);
 }

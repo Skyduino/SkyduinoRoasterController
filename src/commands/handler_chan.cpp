@@ -3,15 +3,9 @@
 
 #define CMD_CHAN "CHAN"
 
-
-/*
- * Global state
- */
-extern State state;
-
 // ----------------------------
-cmndChan::cmndChan() :
-    Command( CMD_CHAN ) {
+cmndChan::cmndChan(State *state) :
+    Command( CMD_CHAN, state ) {
 }
 
 void cmndChan::_doCommand(CmndParser *pars)
@@ -25,9 +19,9 @@ void cmndChan::_doCommand(CmndParser *pars)
             str[1] = '\0'; // force it to be char[2]
             n = atoi( str );
             if( n <= TEMPERATURE_CHANNELS_MAX ) {
-                state.cfg.chanMapping[i] = n;
+                state->cfg.chanMapping[i] = n;
             } else {
-                state.cfg.chanMapping[i] = 0;
+                state->cfg.chanMapping[i] = 0;
             }
       }
       Serial.print(F("# Active channels set to "));

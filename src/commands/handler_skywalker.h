@@ -1,16 +1,22 @@
 #ifndef __CMD_SKYWALKER_H
 #define __CMD_SKYWALKER_H
 
-#include "handler_pwm.h"
+#include "base.h"
 
-class cmndCool : public cmndPWM {
+class cmndCool : public ControlCommand {
     public:
-        cmndCool(uint8_t* dutyCycle);
+        cmndCool(State *state);
+
+    protected:
+        void _handleValue(int32_t value);
 };
 
-class cmndDrum : public cmndPWM {
+class cmndDrum : public ControlCommand {
     public:
-        cmndDrum(uint8_t* dutyCycle);
+        cmndDrum(State *state);
+
+    protected:
+        void _handleValue(int32_t value);
 };
 
 #endif // __CMD_SKYWALKER_H

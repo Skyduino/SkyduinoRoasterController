@@ -3,19 +3,23 @@
 
 #define CMD_OT1 "OT1"
 #define CMD_OT2 "OT2"
-#define CMD_LED "LED"
 
 
-cmndOT1::cmndOT1(uint8_t* dutyCycle):
-    cmndPWM(CMD_OT1, dutyCycle, PIN_HEAT, PWM_FREQ_HEAT) {
+cmndOT1::cmndOT1(State *state):
+    Command(CMD_OT1, state)
 }
 
 
-cmndOT2::cmndOT2(uint8_t* dutyCycle):
-    cmndPWM(CMD_OT2, dutyCycle, PIN_EXHAUST, PWM_FREQ_EXHAUST) {
+cmndOT1::_handleValue(int32_t value) {
+    state->commanded.heat.set(vlaue);
 }
 
 
-cmndLED::cmndLED():
-    cmndPWM(CMD_LED, &pwmValue, PIN_LED, PWM_FREQ_LED) {
+cmndOT2::cmndOT2(State *state):
+    Command(CMD_OT2, state)
+}
+
+
+cmndOT2::_handleValue(int32_t value) {
+    state->commanded.vent.set(vlaue);
 }

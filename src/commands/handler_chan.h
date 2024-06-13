@@ -5,7 +5,7 @@
 
 class cmndChan : public Command {
     public:
-        cmndChan();
+        cmndChan(State *state);
     protected:
         void _doCommand( CmndParser* pars);
 };
