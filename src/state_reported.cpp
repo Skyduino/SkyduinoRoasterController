@@ -59,7 +59,7 @@ void Reported::readTemperature() {
         return;
         this->tcError();
     } else {
-        temp = config->filter[TEMPERATURE_CHANNEL_THERMOCOUPLE].doFilter(temp);
+        temp = filter[TEMPERATURE_CHANNEL_THERMOCOUPLE].doFilter(temp);
         TEMPERATURE_TC(chanTemp) = temp;
     }
 }
@@ -71,4 +71,19 @@ void Reported::tcError() {
     if (e & MAX31855_FAULT_OPEN) WARNLN(F("FAULT: Thermocouple is open - no connections."));
     if (e & MAX31855_FAULT_SHORT_GND) WARNLN(F("FAULT: Thermocouple is short-circuited to GND."));
     if (e & MAX31855_FAULT_SHORT_VCC) WARNLN(F("FAULT: Thermocouple is short-circuited to VCC."));
+}
+
+
+uint8_t Reported::setChanFilter(uint8_t idx, uint8_t percent) {
+    // convert from logical to phiscial channel
+    uint8_t chan = config->getChanMapping(idx);
+
+    if( chan > 0 ) { // is the physical channel active?
+        --chan;
+        this->filter[chan].init( percent );
+        Serial.print(F("# Physical channel ")); Serial.print( chan );
+        Serial.print(F(" filter set to ")); Serial.println( percent );
+    }
+
+    return chan;
 }

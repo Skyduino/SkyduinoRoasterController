@@ -14,14 +14,7 @@ void cmndFilt::_doCommand(CmndParser *pars) {
         uint8_t len = strlen(pars->paramStr(idx));
         if( len > 0 ) {  // is there a parameter?
             int filter = atoi( pars->paramStr(idx+1) );
-            // convert from logical to physical channel
-            uint8_t chan = state->cfg.getChanMapping(idx);
-            if( chan > 0 ) { // is the physical channel active?
-                --chan;
-                state->cfg.filter[chan].init( filter );
-                Serial.print(F("# Physical channel ")); Serial.print( chan );
-                Serial.print(F(" filter set to ")); Serial.println( filter );
-            }
+            state->reported.setChanFilter(idx, filter);
         }
     }
 }

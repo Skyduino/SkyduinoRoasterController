@@ -10,7 +10,6 @@
 
 class Config {
     public:
-        filterRC<double> filter[TEMPERATURE_CHANNELS_MAX];
         bool isMetric;
         Config();
 
@@ -28,12 +27,14 @@ class Reported {
         bool loopTick();
         double getAmbient();
         double getChanTemp(uint8_t chan);
+        uint8_t setChanFilter(uint8_t idx, uint8_t percent);
     
     private:
         Adafruit_MAX31855   *tc1;
         TimerMS             *tcTimer;
         TimerMS             *ambTimer;
         Config              *config;
+        filterRC<double>    filter[TEMPERATURE_CHANNELS_MAX];
         double              chanTemp[TEMPERATURE_CHANNELS_MAX]; // Physical temp channels
         double              ambient;  // Ambient temperature
 
