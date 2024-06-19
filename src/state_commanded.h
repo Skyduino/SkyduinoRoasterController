@@ -6,6 +6,7 @@
 
 class ControlBasic {
     public:
+        ControlBasic();
         bool virtual begin() {return true;};
         void virtual off();
         void virtual on();
@@ -50,7 +51,6 @@ class StateCommanded {
         ControlOnOff cool   = ControlOnOff(PIN_COOL);
         ControlBasic filter;
 
-        StateCommanded();
         bool begin();
         bool loopTick();
 };

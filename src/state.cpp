@@ -1,14 +1,6 @@
 #include "roaster.h"
 #include "state.h"
 
-StateCommanded::StateCommanded() {
-    heat    = 0;
-    vent    = 0;
-    cool    = 0;
-    filter  = 0;
-    drum    = 0;
-}
-
 
 Config::Config() {
     chanMapping[0] = TEMPERATURE_CHANNEL_ROASTER+1;

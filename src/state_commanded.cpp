@@ -1,6 +1,12 @@
 #include "state.h"
 #include "state_commanded.h"
 
+
+ControlBasic::ControlBasic() {
+    value = 0;
+}
+
+
 bool StateCommanded::begin() {
     bool isSuccess = true;
 
