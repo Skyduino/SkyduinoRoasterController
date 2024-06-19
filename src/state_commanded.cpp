@@ -24,6 +24,20 @@ bool StateCommanded::loopTick() {
 }
 
 
+/**
+ * Output to serial heat & air values.
+ * part of output in response to READ command
+*/
+void StateCommanded::printState() {
+    Serial.print(F(","));
+    Serial.print(heat.get());
+    Serial.print(',');
+    Serial.print(vent.get());
+    Serial.print(',');
+    Serial.println(F("0"));
+}
+
+
 void ControlBasic::on() {
     this->set(100);
 }

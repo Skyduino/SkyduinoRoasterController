@@ -25,9 +25,8 @@ class Reported {
         Reported(Config *config);
         bool begin();
         bool loopTick();
-        double getAmbient();
-        double getChanTemp(uint8_t chan);
         uint8_t setChanFilter(uint8_t idx, uint8_t percent);
+        void printState();
     
     private:
         Adafruit_MAX31855   *tc1;
@@ -58,6 +57,8 @@ class State {
 
         bool    begin();
         bool    loopTick();
+        void    printState();
+
 };
 
 #endif  // _SW_STATE_H

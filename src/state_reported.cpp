@@ -26,13 +26,39 @@ bool Reported::loopTick() {
     return true;
 }
 
-double Reported::getAmbient() {
-    return this->ambient;
+
+/**
+ * Outputs to serial comma separated values for ambient and channel temps
+ * part of the response to READ command
+*/
+void Reported::printState() {
+    Serial.print( this->ambient );
+    uint8_t mapping = 0;
+    for (uint8_t i = 0; i < TEMPERATURE_CHANNELS_MAX; i++) {
+        mapping = config->getChanMapping(i);
+        if ((mapping >= 1)
+            && (mapping <= TEMPERATURE_CHANNELS_MAX)) {
+            Serial.print(F(","));
+            Serial.print( this->chanTemp[mapping - 1] );
+        }
+    }
 }
 
-double Reported::getChanTemp(uint8_t chan) {
-    return this->chanTemp[chan];
+
+uint8_t Reported::setChanFilter(uint8_t idx, uint8_t percent) {
+    // convert from logical to phiscial channel
+    uint8_t chan = config->getChanMapping(idx);
+
+    if( chan > 0 ) { // is the physical channel active?
+        --chan;
+        this->filter[chan].init( percent );
+        Serial.print(F("# Physical channel ")); Serial.print( chan );
+        Serial.print(F(" filter set to ")); Serial.println( percent );
+    }
+
+    return chan;
 }
+
 
 /*
  * Protected and private implementations
@@ -71,19 +97,4 @@ void Reported::tcError() {
     if (e & MAX31855_FAULT_OPEN) WARNLN(F("FAULT: Thermocouple is open - no connections."));
     if (e & MAX31855_FAULT_SHORT_GND) WARNLN(F("FAULT: Thermocouple is short-circuited to GND."));
     if (e & MAX31855_FAULT_SHORT_VCC) WARNLN(F("FAULT: Thermocouple is short-circuited to VCC."));
-}
-
-
-uint8_t Reported::setChanFilter(uint8_t idx, uint8_t percent) {
-    // convert from logical to phiscial channel
-    uint8_t chan = config->getChanMapping(idx);
-
-    if( chan > 0 ) { // is the physical channel active?
-        --chan;
-        this->filter[chan].init( percent );
-        Serial.print(F("# Physical channel ")); Serial.print( chan );
-        Serial.print(F(" filter set to ")); Serial.println( percent );
-    }
-
-    return chan;
 }
