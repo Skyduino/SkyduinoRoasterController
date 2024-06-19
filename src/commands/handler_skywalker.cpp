@@ -10,7 +10,7 @@ cmndCool::cmndCool(State *state):
 }
 
 
-cmndCool::_handleValue(int32_t value) {
+void cmndCool::_handleValue(int32_t value) {
     if ( value ) {
         state->commanded.cool.on();
     } else {;
@@ -24,6 +24,6 @@ cmndDrum::cmndDrum(State *state):
 }
 
 
-cmndDrum::_handleValue(int32_t value) {
+void cmndDrum::_handleValue(int32_t value) {
     state->commanded.drum.set(value);
 }

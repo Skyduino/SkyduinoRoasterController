@@ -6,20 +6,20 @@
 
 
 cmndOT1::cmndOT1(State *state):
-    Command(CMD_OT1, state)
+    ControlCommand(CMD_OT1, state) {
 }
 
 
-cmndOT1::_handleValue(int32_t value) {
-    state->commanded.heat.set(vlaue);
+void cmndOT1::_handleValue(int32_t value) {
+    state->commanded.heat.set(value);
 }
 
 
 cmndOT2::cmndOT2(State *state):
-    Command(CMD_OT2, state)
+    ControlCommand(CMD_OT2, state) {
 }
 
 
-cmndOT2::_handleValue(int32_t value) {
-    state->commanded.vent.set(vlaue);
+void cmndOT2::_handleValue(int32_t value) {
+    state->commanded.vent.set(value);
 }

@@ -20,9 +20,9 @@
  */
 extern State state;
 
-cmndChan    cmnd_handler_chan = cmndChan(&state);
-cmndCool    cmnd_handler_cool = cmndCool(&state);
-cmndDrum    cmnd_handler_drum = cmndDrum(&state);
+cmndChan    cmnd_handler_chan = cmndChan( &state );
+cmndCool    cmnd_handler_cool = cmndCool( &state );
+cmndDrum    cmnd_handler_drum = cmndDrum( &state );
 cmndDFU     cmnd_handler_dfu;
 cmndFilt    cmnd_handler_filt = cmndFilt( &state );
 cmndOT1     cmnd_handler_ot1  = cmndOT1( &state );

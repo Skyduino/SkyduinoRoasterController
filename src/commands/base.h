@@ -19,6 +19,8 @@ class Command : public CmndBase {
 
 
 class ControlCommand: public Command {
+    public:
+        ControlCommand(const char *cmdName, State *state);
     protected:
         void _doCommand( CmndParser* pars);
         void virtual _handleValue(int32_t value) =0;

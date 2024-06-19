@@ -8,7 +8,7 @@ class cmndOT1 : public ControlCommand {
         cmndOT1(State *state);
 
     protected:
-        void handleValue(int32_t value);
+        void _handleValue(int32_t value);
 };
 
 class cmndOT2 : public ControlCommand {

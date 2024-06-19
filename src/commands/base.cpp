@@ -24,7 +24,13 @@ bool Command::doCommand(CmndParser *pars) {
 }
 
 
-void ControlCommand::_doCommand(CmndParser *pars) {
+ControlCommand::ControlCommand(const char *cmdName, State *state):
+    Command(cmdName, state) {
+}
+
+
+void ControlCommand::_doCommand(CmndParser *pars)
+{
     int32_t newValue = strtol(pars->paramStr(1), NULL, 10);
     if (newValue < this->min || newValue > this->max) {
         WARN(F("Value '"));
