@@ -10,10 +10,15 @@
 
 class Config {
     public:
-        uint8_t chanMapping[TEMPERATURE_CHANNELS_MAX];
         filterRC<double> filter[TEMPERATURE_CHANNELS_MAX];
         bool isMetric;
         Config();
+
+        uint8_t getChanMapping(uint8_t idx);
+        void setChanMapping(uint8_t idx, uint8_t mapping);
+
+    protected:
+        uint8_t chanMapping[TEMPERATURE_CHANNELS_MAX];
 };
 
 class Reported {

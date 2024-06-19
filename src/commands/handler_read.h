@@ -5,7 +5,7 @@
 
 class cmndRead : public Command {
     public:
-        cmndRead();
+        cmndRead(State *state);
     protected:
         void _doCommand( CmndParser *pars);
 };

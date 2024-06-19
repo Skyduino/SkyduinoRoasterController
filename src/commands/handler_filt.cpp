@@ -15,7 +15,7 @@ void cmndFilt::_doCommand(CmndParser *pars) {
         if( len > 0 ) {  // is there a parameter?
             int filter = atoi( pars->paramStr(idx+1) );
             // convert from logical to physical channel
-            uint8_t chan = state->cfg.chanMapping[idx];
+            uint8_t chan = state->cfg.getChanMapping(idx);
             if( chan > 0 ) { // is the physical channel active?
                 --chan;
                 state->cfg.filter[chan].init( filter );
