@@ -19,9 +19,9 @@ void cmndChan::_doCommand(CmndParser *pars)
             str[1] = '\0'; // force it to be char[2]
             n = atoi( str );
             if( n <= TEMPERATURE_CHANNELS_MAX ) {
-                state->cfg.setChanMapping(i, n);
+                state->reported.setChanMapping(i, n);
             } else {
-                state->cfg.setChanMapping(i, 0);
+                state->reported.setChanMapping(i, 0);
             }
       }
       Serial.print(F("# Active channels set to "));

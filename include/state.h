@@ -13,11 +13,7 @@ class Config {
         bool isMetric;
         Config();
 
-        uint8_t getChanMapping(uint8_t idx);
-        void setChanMapping(uint8_t idx, uint8_t mapping);
-
     protected:
-        uint8_t chanMapping[TEMPERATURE_CHANNELS_MAX];
 };
 
 class Reported {
@@ -27,6 +23,8 @@ class Reported {
         bool loopTick();
         uint8_t setChanFilter(uint8_t idx, uint8_t percent);
         void printState();
+        uint8_t getChanMapping(uint8_t idx);
+        void setChanMapping(uint8_t idx, uint8_t mapping);
     
     private:
         Adafruit_MAX31855   *tc1;
@@ -34,6 +32,7 @@ class Reported {
         TimerMS             *ambTimer;
         Config              *config;
         filterRC<double>    filter[TEMPERATURE_CHANNELS_MAX];
+        uint8_t             _chanMapping[TEMPERATURE_CHANNELS_MAX];
         double              chanTemp[TEMPERATURE_CHANNELS_MAX]; // Physical temp channels
         double              ambient;  // Ambient temperature
 
