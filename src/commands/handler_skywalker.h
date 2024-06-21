@@ -19,4 +19,12 @@ class cmndDrum : public ControlCommand {
         void _handleValue(int32_t value);
 };
 
+class cmndOff: public Command {
+    public:
+        cmndOff(State *state);
+    
+    protected:
+        void _doCommand( CmndParser* pars);
+};
+
 #endif // __CMD_SKYWALKER_H

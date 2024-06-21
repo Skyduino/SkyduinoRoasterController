@@ -25,6 +25,7 @@ cmndCool    cmnd_handler_cool = cmndCool( &state );
 cmndDrum    cmnd_handler_drum = cmndDrum( &state );
 cmndDFU     cmnd_handler_dfu;
 cmndFilt    cmnd_handler_filt = cmndFilt( &state );
+cmndOff     cmnd_handler_off  = cmndOff( &state );
 cmndOT1     cmnd_handler_ot1  = cmndOT1( &state );
 cmndOT2     cmnd_handler_ot2  = cmndOT2( &state );
 cmndRead    cmnd_handler_read = cmndRead( &state );
@@ -40,6 +41,7 @@ void setupCommandHandlers(void) {
         &cmnd_handler_unit,
         &cmnd_handler_filt,
         &cmnd_handler_chan,
+        &cmnd_handler_off,
         &cmnd_handler_cool,
         &cmnd_handler_drum,
         &cmnd_handler_ot1,
