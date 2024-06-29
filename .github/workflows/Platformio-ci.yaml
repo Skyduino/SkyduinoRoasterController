@@ -1,0 +1,71 @@
+name: PlatformIO CI
+
+on: [push]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Skyduino firmware
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio/.cache
+          key: ${{ runner.os }}-${{ hashfiles('platformio.ini') }}-pio
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
+
+      - name: Install Platformio Libraries
+        run: pio pkg install
+
+      - id: setTextVars
+        name: Set Environment varitables
+        run: |
+          COMMIT_DATE=$(git show --no-patch --format=%cs)
+          echo "COMMIT_DATE=${COMMIT_DATE}" >> "$GITHUB_ENV"
+          #
+          COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-10)
+          echo "COMMIT_HASH=${COMMIT_HASH}" >> "$GITHUB_ENV"
+          # ?TAG
+          echo "GIT_TAG=$(git tag --points-at HEAD)" >> "$GITHUB_ENV"
+      
+      - name: Replace Version ID
+        id: update_build_versions
+        run: |
+          sed -i -E \
+              's/^(\s+\-D\sSKYDUINO_VERSION).+$/\1='\''"${{ env.GIT_TAG }}"'\''/' \
+              platformio.ini
+          # Update commit hash and date
+          sed -i -E \
+              's/^(\s+\-D\sSKYDUINO_COMMIT).+$/\1='\''"${{ env.COMMIT_DATE }} ${{ env.COMMIT_HASH }}"'\''/' \
+              platformio.ini
+
+      - name: Build PlatformIO Project
+        run: pio run
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Firmware
+          path: |
+            .pio/build/skyduino-dfu/firmware.bin
+            .pio/build/skyduino-dfu/firmware.elf
+
+  UploadAssets:
+    name: Upload Assets
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    needs:
+      - build
+    uses: ./.github/workflows/upload-release-assets.yaml
