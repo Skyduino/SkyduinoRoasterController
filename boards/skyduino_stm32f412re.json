@@ -6,7 +6,7 @@
     "f_cpu": "100000000L",
     "mcu": "stm32f412ret6",
     "product_line": "STM32F412Rx",
-    "variant": "SKYDUINO_STM32F411RE",
+    "variant": "SKYDUINO_STM32F412RE",
     "variants_dir": "variants"
   },
   "debug": {
