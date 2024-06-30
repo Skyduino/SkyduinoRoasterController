@@ -10,7 +10,7 @@
  *
  *******************************************************************************
  */
-#if defined(ARDUINO_GENERIC_F411RCTX) || defined(ARDUINO_GENERIC_F411RETX)
+#if defined(ARDUINO_SKYDUINO_STM32F412RE)
 #include "pins_arduino.h"
 
 // Digital PinName array
@@ -138,4 +138,4 @@ WEAK void SystemClock_Config(void) {
 }
 #endif
 
-#endif /* ARDUINO_GENERIC_* */
+#endif /* ARDUINO_SKYDUINO_STM32F412RE */

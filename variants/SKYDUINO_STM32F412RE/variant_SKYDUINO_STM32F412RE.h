@@ -74,10 +74,16 @@
 #define PA3_ALT1                (PA3  | ALT1)
 #define PA3_ALT2                (PA3  | ALT2)
 #define PA4_ALT1                (PA4  | ALT1)
+#define PA5_ALT1                (PA5  | ALT1)
+#define PA6_ALT1                (PA6  | ALT1)
 #define PA7_ALT1                (PA7  | ALT1)
+#define PA7_ALT2                (PA7  | ALT2)
+#define PA7_ALT3                (PA7  | ALT3)
 #define PA15_ALT1               (PA15 | ALT1)
 #define PB0_ALT1                (PB0  | ALT1)
+#define PB0_ALT2                (PB0  | ALT2)
 #define PB1_ALT1                (PB1  | ALT1)
+#define PB1_ALT2                (PB1  | ALT2)
 #define PB3_ALT1                (PB3  | ALT1)
 #define PB4_ALT1                (PB4  | ALT1)
 #define PB5_ALT1                (PB5  | ALT1)
@@ -85,6 +91,14 @@
 #define PB9_ALT1                (PB9  | ALT1)
 #define PB12_ALT1               (PB12 | ALT1)
 #define PB13_ALT1               (PB13 | ALT1)
+#define PB14_ALT1               (PB14 | ALT1)
+#define PB14_ALT2               (PB14 | ALT2)
+#define PB15_ALT1               (PB15 | ALT1)
+#define PB15_ALT2               (PB15 | ALT2)
+#define PC6_ALT1                (PC6  | ALT1)
+#define PC7_ALT1                (PC7  | ALT1)
+#define PC8_ALT1                (PC8  | ALT1)
+#define PC9_ALT1                (PC9  | ALT1)
 
 #define NUM_DIGITAL_PINS        50
 #define NUM_ANALOG_INPUTS       16
@@ -141,16 +155,16 @@
 
 // UART Definitions
 #ifndef SERIAL_UART_INSTANCE
-  #define SERIAL_UART_INSTANCE  1
+  #define SERIAL_UART_INSTANCE  2
 #endif
 
 // Default pin used for generic 'Serial' instance
 // Mandatory for Firmata
 #ifndef PIN_SERIAL_RX
-  #define PIN_SERIAL_RX         PA10
+  #define PIN_SERIAL_RX         PA2
 #endif
 #ifndef PIN_SERIAL_TX
-  #define PIN_SERIAL_TX         PA1
+  #define PIN_SERIAL_TX         PA3
 #endif
 
 #ifndef HSE_VALUE
@@ -158,6 +172,9 @@
 #endif
 
 // Extra HAL modules
+#if !defined(HAL_QSPI_MODULE_DISABLED)
+  #define HAL_QSPI_MODULE_ENABLED
+#endif
 #if !defined(HAL_SD_MODULE_DISABLED)
   #define HAL_SD_MODULE_ENABLED
 #endif
