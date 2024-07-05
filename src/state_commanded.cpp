@@ -127,10 +127,11 @@ void ControlPWM::_setAction(uint8_t value) {
 
 
 bool ControlHeat::begin() {
-    pinMode(PIN_HEAT_RELAY, OUTPUT);
-    digitalWrite(PIN_HEAT_RELAY, LOW);
+    bool isSuccess = true;
+    isSuccess &= this->heatRelay.begin();
+    isSuccess &= ControlPWM::begin();
 
-    return ControlPWM::begin();
+    return isSuccess;
 }
 
 
@@ -141,11 +142,11 @@ bool ControlHeat::loopTick() {
             ControlPWM::_setAction(this->oldValue);
         } else {
             // transitioning to OFF, turn off the relay
-            digitalWrite(PIN_HEAT_RELAY, LOW);
+            this->heatRelay.off();
         }
     }
 
-    return true;
+    return this->heatRelay.loopTick();
 }
 
 
@@ -164,7 +165,7 @@ void ControlHeat::_setAction(uint8_t newValue) {
         if ( newIsOn ) {
             // The state is transitioning to ON
             // turn on the Relay and loopTick will set the new PWM value
-            digitalWrite(PIN_HEAT_RELAY, HIGH);
+            this->heatRelay.on();
         }
     }
 }

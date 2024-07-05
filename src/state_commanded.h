@@ -57,6 +57,7 @@ class ControlHeat: public ControlPWM {
     private:
         bool isTransitioning = false;
         uint8_t oldValue = 0;
+        ControlOnOff heatRelay = ControlOnOff(PIN_HEAT_RELAY);
 };
 
 
