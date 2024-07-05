@@ -1,0 +1,10 @@
+# this udev file should be used with udev 188 and newer
+ACTION!="add|change", GOTO="acl_end"
+
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", SYMLINK+="ttyUSB.artisan" ENV{ID_MM_DEVICE_IGNORE}="1"
+
+# or use this rule if you want to symlink only specific boards, then update the
+# serial number to match yours and comment the rule above it
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", ATTRS{serial}=="205830985831", SYMLINK+="ttyUSB.artisan" ENV{ID_MM_DEVICE_IGNORE}="1"
+
+LABEL="acl_end"
