@@ -14,14 +14,15 @@
 #define TEMPERATURE_TC(x)      x[TEMPERATURE_CHANNEL_THERMOCOUPLE]
 
 // PIN Definitions
-#define PIN_LED     PA3
-#define PIN_EXHAUST PA8
-#define PIN_DRUM    PA15
-#define PIN_HEAT    PB9
-#define PIN_NTC     PC5
-#define PIN_COOL    PC8
+#define PIN_LED         PA3
+#define PIN_EXHAUST     PA8
+#define PIN_DRUM        PA15
+#define PIN_HEAT_RELAY  PB8
+#define PIN_HEAT        PB9
+#define PIN_NTC         PC5
+#define PIN_COOL        PC8
 
-#define SPI_BTCS            PA4
+#define SPI_BTCS        PA4
 
 // PWM frequencies Hz
 #define PWM_FREQ_COOL       60

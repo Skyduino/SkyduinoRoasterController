@@ -7,6 +7,11 @@ ControlBasic::ControlBasic() {
 }
 
 
+bool ControlBasic::loopTick() {
+    return true;
+}
+
+
 bool StateCommanded::begin() {
     bool isSuccess = true;
 
@@ -20,7 +25,14 @@ bool StateCommanded::begin() {
 
 
 bool StateCommanded::loopTick() {
-    return true;
+    bool isSuccess = true;
+    isSuccess &= this->heat.loopTick();
+    isSuccess &= this->vent.loopTick();
+    isSuccess &= this->drum.loopTick();
+    isSuccess &= this->cool.loopTick();
+    isSuccess &= this->filter.loopTick();
+
+    return isSuccess;
 }
 
 
@@ -111,4 +123,22 @@ void ControlPWM::_setAction(uint8_t value) {
         // set pwm to 0
         timer->setPWM(this->channel, this->pin, this->freq, value);
     }
+}
+
+
+bool ControlHeat::begin() {
+    pinMode(PIN_HEAT_RELAY, OUTPUT);
+    digitalWrite(PIN_HEAT_RELAY, LOW);
+
+    return ControlPWM::begin();
+}
+
+
+bool ControlHeat::loopTick() {
+    return true;
+}
+
+
+void ControlHeat::_setAction(uint8_t value) {
+    ControlPWM::_setAction(value);
 }
