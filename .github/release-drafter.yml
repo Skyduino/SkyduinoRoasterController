@@ -19,7 +19,9 @@ categories:
       - 'bugfix'
       - 'bug'
   - title: '🧰 Maintenance'
-    label: 'chore'
+    labels:
+      - 'chore'
+      - 'documentation'
 
 exclude-labels:
   - 'skip-changelog'
