@@ -50,9 +50,13 @@ class ControlHeat: public ControlPWM {
         ControlHeat(): ControlPWM(PIN_HEAT, PWM_FREQ_HEAT) {};
         bool begin();
         bool loopTick();
-    
+
     protected:
         void _setAction(uint8_t value);
+
+    private:
+        bool isTransitioning = false;
+        uint8_t oldValue = 0;
 };
 
 

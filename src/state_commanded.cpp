@@ -135,10 +135,36 @@ bool ControlHeat::begin() {
 
 
 bool ControlHeat::loopTick() {
+    if ( isTransitioning ) {
+        if ( get() > 0 ) {
+            // transitioning to ON, set the PWM
+            ControlPWM::_setAction(this->oldValue);
+        } else {
+            // transitioning to OFF, turn off the relay
+            digitalWrite(PIN_HEAT_RELAY, LOW);
+        }
+    }
+
     return true;
 }
 
 
-void ControlHeat::_setAction(uint8_t value) {
-    ControlPWM::_setAction(value);
+void ControlHeat::_setAction(uint8_t newValue) {
+    // is the state transitioning from Off->On or On->Off
+    bool oldIsOn = (this->oldValue > 0);
+    bool newIsOn = (newValue > 0);
+
+    this->isTransitioning = oldIsOn ^ newIsOn;
+    this->oldValue = newValue;
+
+    if ( !isTransitioning ) {
+        ControlPWM::_setAction(newValue);
+    } else {
+        ControlPWM::_setAction(0);
+        if ( newIsOn ) {
+            // The state is transitioning to ON
+            // turn on the Relay and loopTick will set the new PWM value
+            digitalWrite(PIN_HEAT_RELAY, HIGH);
+        }
+    }
 }
