@@ -41,6 +41,18 @@ On Windows:
 
 There is also [online dfu-util](https://devanlai.github.io/webdfu/dfu-util/) Which works only on Chrome, but this was not tested yet. Can anyone test and let me know?
 
+## Firmware Update
+When a new release becomes available, either follow [DFU Mode](#dfu-mode) or you can try switching to DFU mode with a serial command,
+either manually, or by running an expect script, e.g. `Scripts/skyduino_dfu.sh /dev/ttyUSB0 115200`
+If you cannot run the script, the other option is to switch manually, by connecting with a serial
+terminal to the port, and issuing two commands in quick succession. The first command is just `DFU`
+which starts DFU mode switching negotiation. In response, the roaster will reply with a number,
+e.g. `42641`. For the second command, enter `DFU;` followed by number from the previous command
+in our example, the full command is going to be `DFU;42641` There's a ttimer 5 second running in
+the background, from the time the 1st dfu commad was executed and the 2nd dfu command was submitted,
+if the second command arrives too late, then you have to start from the beginning, by sending an empty `DFU` command.
+
+
 
 # Artisan settings
 The artisan settings are backward compatible (at least for the moment) with the original Josh's
