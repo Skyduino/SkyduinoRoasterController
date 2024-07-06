@@ -12,9 +12,12 @@ class ControlBasic {
         void virtual on();
         uint8_t virtual get();
         void virtual set(uint8_t value);
+        bool virtual loopTick();
 
     private:
         uint8_t         value;
+    
+    protected:
         void virtual _setAction(uint8_t value) {};
 };
 
@@ -25,8 +28,6 @@ class ControlOnOff: public ControlBasic {
 
     protected:
         const uint8_t   pin;
-
-    private:
         void _setAction(uint8_t value);
 };
 
@@ -39,13 +40,30 @@ class ControlPWM: public ControlOnOff {
         HardwareTimer*  timer;
         uint32_t        channel;
         uint32_t        freq;
+    
+    protected:
         void _setAction(uint8_t value);
+};
+
+class ControlHeat: public ControlPWM {
+    public:
+        ControlHeat(): ControlPWM(PIN_HEAT, PWM_FREQ_HEAT) {};
+        bool begin();
+        bool loopTick();
+
+    protected:
+        void _setAction(uint8_t value);
+
+    private:
+        bool isTransitioning = false;
+        uint8_t oldValue = 0;
+        ControlOnOff heatRelay = ControlOnOff(PIN_HEAT_RELAY);
 };
 
 
 class StateCommanded {
     public:
-        ControlPWM heat     = ControlPWM(PIN_HEAT, PWM_FREQ_HEAT);
+        ControlHeat heat;
         ControlPWM vent     = ControlPWM(PIN_EXHAUST, PWM_FREQ_EXHAUST);
         ControlPWM drum     = ControlPWM(PIN_DRUM, PWM_FREQ_DRUM);
         ControlOnOff cool   = ControlOnOff(PIN_COOL);

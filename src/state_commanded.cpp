@@ -7,6 +7,11 @@ ControlBasic::ControlBasic() {
 }
 
 
+bool ControlBasic::loopTick() {
+    return true;
+}
+
+
 bool StateCommanded::begin() {
     bool isSuccess = true;
 
@@ -20,7 +25,14 @@ bool StateCommanded::begin() {
 
 
 bool StateCommanded::loopTick() {
-    return true;
+    bool isSuccess = true;
+    isSuccess &= this->heat.loopTick();
+    isSuccess &= this->vent.loopTick();
+    isSuccess &= this->drum.loopTick();
+    isSuccess &= this->cool.loopTick();
+    isSuccess &= this->filter.loopTick();
+
+    return isSuccess;
 }
 
 
@@ -110,5 +122,50 @@ void ControlPWM::_setAction(uint8_t value) {
     } else {
         // set pwm to 0
         timer->setPWM(this->channel, this->pin, this->freq, value);
+    }
+}
+
+
+bool ControlHeat::begin() {
+    bool isSuccess = true;
+    isSuccess &= this->heatRelay.begin();
+    isSuccess &= ControlPWM::begin();
+
+    return isSuccess;
+}
+
+
+bool ControlHeat::loopTick() {
+    if ( isTransitioning ) {
+        if ( get() > 0 ) {
+            // transitioning to ON, set the PWM
+            ControlPWM::_setAction(this->oldValue);
+        } else {
+            // transitioning to OFF, turn off the relay
+            this->heatRelay.off();
+        }
+    }
+
+    return this->heatRelay.loopTick();
+}
+
+
+void ControlHeat::_setAction(uint8_t newValue) {
+    // is the state transitioning from Off->On or On->Off
+    bool oldIsOn = (this->oldValue > 0);
+    bool newIsOn = (newValue > 0);
+
+    this->isTransitioning = oldIsOn ^ newIsOn;
+    this->oldValue = newValue;
+
+    if ( !isTransitioning ) {
+        ControlPWM::_setAction(newValue);
+    } else {
+        ControlPWM::_setAction(0);
+        if ( newIsOn ) {
+            // The state is transitioning to ON
+            // turn on the Relay and loopTick will set the new PWM value
+            this->heatRelay.on();
+        }
     }
 }
