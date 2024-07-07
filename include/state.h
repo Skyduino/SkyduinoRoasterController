@@ -39,6 +39,7 @@ class Reported {
         void readAmbient();
         void readTemperature();
         void tcError();
+        void _readNTC();
 };
 
 class Status {

@@ -25,6 +25,9 @@ Reported::Reported(Config *config) {
 
 
 bool Reported::begin() {
+    pinMode(PIN_NTC, INPUT_ANALOG);
+    analogReadResolution(12);
+
     bool isSuccess = true;
     isSuccess &= tc1->begin();
     if ( !isSuccess ) {
@@ -36,6 +39,7 @@ bool Reported::begin() {
 bool Reported::loopTick() {
     if (tcTimer->hasTicked()) {
         readTemperature();
+        _readNTC();
         tcTimer->reset();
     }
 
@@ -123,4 +127,29 @@ void Reported::tcError() {
 
 void Reported::setChanMapping(uint8_t idx, uint8_t mapping) {
     this->_chanMapping[idx] = mapping;
+}
+
+
+void Reported::_readNTC() {
+    #define VREF_MV 3300
+    #define R1      10000
+    #define ADCMAX  0xFFF
+
+    uint32_t reading = analogRead(PIN_NTC);
+    uint32_t readingMV = VREF_MV * reading / ADCMAX;
+    uint32_t readingOhms;
+    if ( (ADCMAX - reading) <= 4 ) {
+        readingOhms = 0xffffffff;
+    } else {
+        readingOhms = readingMV * R1 / (VREF_MV - readingMV);
+    }
+
+    double temp = filter[TEMPERATURE_CHANNEL_ROASTER].doFilter(readingMV / 1000.0);
+    TEMPERATURE_ROASTER(chanTemp) = temp;
+
+    char buf[257];
+    const char tmplt[] = "ADC %d raw, %1.4f mv, %3.3f KOhms, %3.1f F from thermocouple";
+    sprintf(buf, tmplt, reading, temp, (readingOhms/1000.0), TEMPERATURE_TC(chanTemp));
+    Serial.println(buf);
+    
 }
