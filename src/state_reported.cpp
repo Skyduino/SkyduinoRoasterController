@@ -137,19 +137,25 @@ void Reported::_readNTC() {
 
     uint32_t reading = analogRead(PIN_NTC);
     uint32_t readingMV = VREF_MV * reading / ADCMAX;
-    uint32_t readingOhms;
+    uint32_t readingOhms, altOhms;
     if ( (ADCMAX - reading) <= 4 ) {
-        readingOhms = 0xffffffff;
+        readingOhms = altOhms = 0xffffffff;
     } else {
         readingOhms = readingMV * R1 / (VREF_MV - readingMV);
+        altOhms = reading * R1 / (ADCMAX - reading);
     }
 
     double temp = filter[TEMPERATURE_CHANNEL_ROASTER].doFilter(readingMV / 1000.0);
     TEMPERATURE_ROASTER(chanTemp) = temp;
 
     char buf[257];
-    const char tmplt[] = "ADC %d raw, %1.4f mv, %3.3f KOhms, %3.1f F from thermocouple";
-    sprintf(buf, tmplt, reading, temp, (readingOhms/1000.0), TEMPERATURE_TC(chanTemp));
+    const char tmplt[] = "ADC %d raw, %1.4f mv, %3.3f KOhms, %3.3f alt Kohms %3.1f F from thermocouple";
+    sprintf(buf, tmplt,
+        reading,
+        temp,
+        (readingOhms/1000.0),
+        (altOhms/1000.0),
+        TEMPERATURE_TC(chanTemp));
     Serial.println(buf);
     
 }
