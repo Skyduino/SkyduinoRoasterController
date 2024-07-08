@@ -21,8 +21,8 @@ class NTC {
     
     private:
         int32_t lastLookup = -1;
-        const uint32_t tableSize = NTC_TABLE_SIZE;
-        NTC_Temp_Resistance_t _tempResistanceTable[NTC_TABLE_SIZE] = NTC_DATA;
+        static constexpr uint32_t tableSize = NTC_TABLE_SIZE;
+        static constexpr NTC_Temp_Resistance_t _tempResistanceTable[] = NTC_DATA;
 };
 
 #endif  // _SW_NTC_H

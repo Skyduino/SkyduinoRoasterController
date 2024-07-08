@@ -13,7 +13,7 @@ float NTC::AdcToTempC(int32_t adcReading) {
     uint32_t highBound = tableSize - 1;
     uint32_t attempts = tableSize - 1;
     uint32_t midpoint;
-    NTC_Temp_Resistance_t *entry;
+    NTC_Temp_Resistance_t const *entry;
 
     while ( ((highBound - lowBound) > 1) && attempts ) {
         attempts--;
@@ -29,8 +29,9 @@ float NTC::AdcToTempC(int32_t adcReading) {
     }
 
     // we narrowed it down to two entries, check if the upper one matches exactly
-    NTC_Temp_Resistance_t *entry_l = &(_tempResistanceTable[ lowBound]);
-    NTC_Temp_Resistance_t *entry_h = &(_tempResistanceTable[ highBound]);
+    NTC_Temp_Resistance_t const *entry_l, *entry_h;
+    entry_l = &(_tempResistanceTable[ lowBound]);
+    entry_h = &(_tempResistanceTable[ highBound]);
 
     if (entry_l->adcReading == adcReading) {
         return entry_l->temperatureC;
