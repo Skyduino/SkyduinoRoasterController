@@ -1,6 +1,14 @@
+#include <cmath>
+
 #include "ntc.h"
 
 float NTC::AdcToTempC(int32_t adcReading) {
+    // check if the value is outside of lookup range
+    if ( adcReading >  _tempResistanceTable[0].adcReading
+         || adcReading < _tempResistanceTable[tableSize-1].adcReading) {
+        return NAN;
+    }
+
     uint32_t lowBound = 0;
     uint32_t highBound = tableSize - 1;
     uint32_t attempts = tableSize - 1;

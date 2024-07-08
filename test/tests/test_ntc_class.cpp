@@ -15,7 +15,20 @@ void test_temp_inexact_find(void) {
     TEST_ASSERT_EQUAL_FLOAT(-273, ntc.AdcToTempC(101));
 }
 
+void test_temp_adc_outside_of_table(void) {
+    NTC ntc;
+
+    TEST_ASSERT_FLOAT_IS_NAN(ntc.AdcToTempC(69));
+    TEST_ASSERT_FLOAT_IS_NAN(ntc.AdcToTempC(60));
+    TEST_ASSERT_FLOAT_IS_NAN(ntc.AdcToTempC(61));
+
+    TEST_ASSERT_FLOAT_IS_NAN(ntc.AdcToTempC(4087));
+    TEST_ASSERT_FLOAT_IS_NAN(ntc.AdcToTempC(4095));
+}
+
+
 void runAllNtcClassTests() {
     RUN_TEST(test_temp_exact_find);
     RUN_TEST(test_temp_inexact_find);
+    RUN_TEST(test_temp_adc_outside_of_table);
 }
