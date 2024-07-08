@@ -12,7 +12,7 @@ void test_temp_exact_find(void) {
 void test_temp_inexact_find(void) {
     NTC ntc;
 
-    TEST_ASSERT_EQUAL_FLOAT(0, ntc.AdcToTempC(101));
+    TEST_ASSERT_EQUAL_FLOAT(-273, ntc.AdcToTempC(101));
 }
 
 void runAllNtcClassTests() {

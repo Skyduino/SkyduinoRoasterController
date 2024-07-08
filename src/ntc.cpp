@@ -20,12 +20,15 @@ double NTC::AdcToTempC(int32_t adcReading) {
         }
     }
 
-    // we came close to two entries, check if any matches exactly
-    if (_tempResistanceTable[lowBound].adcReading == adcReading) {
-        return _tempResistanceTable[lowBound].temperatureC;
-    } else if (_tempResistanceTable[highBound].adcReading == adcReading) {
-        return _tempResistanceTable[highBound].temperatureC;
-    } else {
-        return 0;
+    // we narrowed it down to two entries, check if the upper one matches exactly
+    NTC_Temp_Resistance_t *entry_l = &(_tempResistanceTable[ lowBound]);
+    NTC_Temp_Resistance_t *entry_h = &(_tempResistanceTable[ highBound]);
+
+    if (entry_l->adcReading == adcReading) {
+        return entry_l->temperatureC;
+    } else if (entry_h->adcReading == adcReading) {
+        return entry_h->temperatureC;
     }
+
+    return -273;
 }
