@@ -17,7 +17,7 @@ typedef struct {
  */
 class NTC {
     public:
-        double AdcToTempC(int32_t adcReading);
+        float AdcToTempC(int32_t adcReading);
     
     private:
         int32_t lastLookup = -1;

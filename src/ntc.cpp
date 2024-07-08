@@ -1,6 +1,6 @@
 #include "ntc.h"
 
-double NTC::AdcToTempC(int32_t adcReading) {
+float NTC::AdcToTempC(int32_t adcReading) {
     uint32_t lowBound = 0;
     uint32_t highBound = tableSize - 1;
     uint32_t attempts = tableSize - 1;
