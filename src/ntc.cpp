@@ -38,5 +38,8 @@ float NTC::AdcToTempC(int32_t adcReading) {
         return entry_h->temperatureC;
     }
 
-    return -273;
+    // the ADC value is between the two point. Interpolate the temperature
+    float slope = (float)(entry_l->temperatureC - entry_h->temperatureC )
+                       / (entry_l->adcReading - entry_h->adcReading );
+    return entry_l->temperatureC + slope * (adcReading - entry_l->adcReading); 
 }

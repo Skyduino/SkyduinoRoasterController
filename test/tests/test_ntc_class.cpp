@@ -12,7 +12,12 @@ void test_temp_exact_find(void) {
 void test_temp_inexact_find(void) {
     NTC ntc;
 
-    TEST_ASSERT_EQUAL_FLOAT(-273, ntc.AdcToTempC(101));
+    TEST_ASSERT_EQUAL_FLOAT(212.166, ntc.AdcToTempC(297));
+    TEST_ASSERT_EQUAL_FLOAT(212.833, ntc.AdcToTempC(293));
+    TEST_ASSERT_EQUAL_FLOAT(117.5, ntc.AdcToTempC(1775));
+    TEST_ASSERT_EQUAL_FLOAT(20.1666, ntc.AdcToTempC(3958));
+    TEST_ASSERT_EQUAL_FLOAT(20.5, ntc.AdcToTempC(3956));
+
 }
 
 void test_temp_adc_outside_of_table(void) {
