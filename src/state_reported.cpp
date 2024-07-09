@@ -90,7 +90,7 @@ uint8_t Reported::setChanFilter(uint8_t idx, uint8_t percent) {
  * Protected and private implementations
  */
 void Reported::readAmbient() {
-    double temp = tc1->readInternal();
+    float temp = tc1->readInternal();
  
     if ( ! (isnan(temp) || config->isMetric) ) {
         temp = CONVERT_C_TO_F(temp);
@@ -99,7 +99,7 @@ void Reported::readAmbient() {
 }
 
 void Reported::readTemperature() {
-    double temp = config->isMetric ? tc1->readCelsius() : tc1->readFahrenheit();
+    float temp = config->isMetric ? tc1->readCelsius() : tc1->readFahrenheit();
  
     if ( !isnan(temp)) {
         temp = filter[TEMPERATURE_CHANNEL_THERMOCOUPLE].doFilter(temp);

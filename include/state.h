@@ -32,11 +32,11 @@ class Reported {
         TimerMS             *tcTimer;
         TimerMS             *ambTimer;
         Config              *config;
-        filterRC<double>    filter[TEMPERATURE_CHANNELS_MAX];
+        filterRC<float>     filter[TEMPERATURE_CHANNELS_MAX];
         NTC                 ntc;
         uint8_t             _chanMapping[TEMPERATURE_CHANNELS_MAX];
-        double              chanTemp[TEMPERATURE_CHANNELS_MAX]; // Physical temp channels
-        double              ambient;  // Ambient temperature
+        float               chanTemp[TEMPERATURE_CHANNELS_MAX]; // Physical temp channels
+        float               ambient;  // Ambient temperature
 
         void readAmbient();
         void readTemperature();
