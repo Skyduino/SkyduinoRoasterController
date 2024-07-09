@@ -90,28 +90,21 @@ uint8_t Reported::setChanFilter(uint8_t idx, uint8_t percent) {
  * Protected and private implementations
  */
 void Reported::readAmbient() {
-    double temp = tc1->readInternal();
+    float temp = tc1->readInternal();
  
-    if (isnan(temp)) {
-        this->tcError();
-    } else {
-        if ( !(config->isMetric) ) {
-            temp = CONVERT_C_TO_F(temp);
-        }
-        ambient = temp;
+    if ( ! (isnan(temp) || config->isMetric) ) {
+        temp = CONVERT_C_TO_F(temp);
     }
+    ambient = temp;
 }
 
 void Reported::readTemperature() {
-    double temp = config->isMetric ? tc1->readCelsius() : tc1->readFahrenheit();
+    float temp = config->isMetric ? tc1->readCelsius() : tc1->readFahrenheit();
  
-    if (isnan(temp)) {
-        return;
-        this->tcError();
-    } else {
+    if ( !isnan(temp)) {
         temp = filter[TEMPERATURE_CHANNEL_THERMOCOUPLE].doFilter(temp);
-        TEMPERATURE_TC(chanTemp) = temp;
     }
+    TEMPERATURE_TC(chanTemp) = temp;
 }
 
 void Reported::tcError() {
@@ -131,8 +124,12 @@ void Reported::setChanMapping(uint8_t idx, uint8_t mapping) {
 
 void Reported::_readNTC() {
     float ntcTemp = ntc.AdcToTempC( analogRead(PIN_NTC) );
-    if ( !( isnan(ntcTemp) || config->isMetric ) ) {
+    if ( !(config->isMetric) ) {
         ntcTemp = CONVERT_C_TO_F( ntcTemp );
     }
+    if ( !isnan(ntcTemp) ) {
+        ntcTemp = filter[TEMPERATURE_CHANNEL_ROASTER].doFilter(ntcTemp);
+    }
+
     TEMPERATURE_ROASTER(chanTemp) = ntcTemp;
 }
