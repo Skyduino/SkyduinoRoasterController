@@ -58,14 +58,16 @@ bool Reported::loopTick() {
  * part of the response to READ command
 */
 void Reported::printState() {
-    Serial.print( this->ambient );
+    Serial.print( config->isMetric ? this->ambient : CONVERT_C_TO_F( this->ambient ));
     uint8_t mapping = 0;
+    float temp;
     for (uint8_t i = 0; i < TEMPERATURE_CHANNELS_MAX; i++) {
         mapping = this->_chanMapping[i];
         if ((mapping >= 1)
             && (mapping <= TEMPERATURE_CHANNELS_MAX)) {
             Serial.print(F(","));
-            Serial.print( this->chanTemp[mapping - 1] );
+            temp = this->chanTemp[mapping - 1];
+            Serial.print( config->isMetric ? temp : CONVERT_C_TO_F( temp ) );
         }
     }
 }
@@ -90,16 +92,11 @@ uint8_t Reported::setChanFilter(uint8_t idx, uint8_t percent) {
  * Protected and private implementations
  */
 void Reported::readAmbient() {
-    float temp = tc1->readInternal();
- 
-    if ( ! (isnan(temp) || config->isMetric) ) {
-        temp = CONVERT_C_TO_F(temp);
-    }
-    ambient = temp;
+    ambient = tc1->readInternal();
 }
 
 void Reported::readTemperature() {
-    float temp = config->isMetric ? tc1->readCelsius() : tc1->readFahrenheit();
+    float temp = tc1->readCelsius();
  
     if ( !isnan(temp)) {
         temp = filter[TEMPERATURE_CHANNEL_THERMOCOUPLE].doFilter(temp);
@@ -124,9 +121,6 @@ void Reported::setChanMapping(uint8_t idx, uint8_t mapping) {
 
 void Reported::_readNTC() {
     float ntcTemp = ntc.AdcToTempC( analogRead(PIN_NTC) );
-    if ( !(config->isMetric) ) {
-        ntcTemp = CONVERT_C_TO_F( ntcTemp );
-    }
     if ( !isnan(ntcTemp) ) {
         ntcTemp = filter[TEMPERATURE_CHANNEL_ROASTER].doFilter(ntcTemp);
     }
