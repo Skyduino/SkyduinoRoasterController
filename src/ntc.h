@@ -20,7 +20,6 @@ class NTC {
         float AdcToTempC(int32_t adcReading);
     
     private:
-        int32_t lastLookup = -1;
         static constexpr uint32_t tableSize = NTC_TABLE_SIZE;
         static constexpr NTC_Temp_Resistance_t _tempResistanceTable[] = NTC_DATA;
 };
