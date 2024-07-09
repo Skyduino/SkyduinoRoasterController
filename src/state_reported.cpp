@@ -1,5 +1,6 @@
 #include <SPI.h>
 
+#include "roaster.h"
 #include "logging.h"
 #include "state.h"
 
@@ -25,6 +26,9 @@ Reported::Reported(Config *config) {
 
 
 bool Reported::begin() {
+    pinMode(PIN_NTC, INPUT_ANALOG);
+    analogReadResolution(12);
+
     bool isSuccess = true;
     isSuccess &= tc1->begin();
     if ( !isSuccess ) {
@@ -36,6 +40,7 @@ bool Reported::begin() {
 bool Reported::loopTick() {
     if (tcTimer->hasTicked()) {
         readTemperature();
+        _readNTC();
         tcTimer->reset();
     }
 
@@ -91,9 +96,7 @@ void Reported::readAmbient() {
         this->tcError();
     } else {
         if ( !(config->isMetric) ) {
-            temp *= 9.0;
-            temp /= 5.0;
-            temp += 32;
+            temp = CONVERT_C_TO_F(temp);
         }
         ambient = temp;
     }
@@ -123,4 +126,13 @@ void Reported::tcError() {
 
 void Reported::setChanMapping(uint8_t idx, uint8_t mapping) {
     this->_chanMapping[idx] = mapping;
+}
+
+
+void Reported::_readNTC() {
+    float ntcTemp = ntc.AdcToTempC( analogRead(PIN_NTC) );
+    if ( !( isnan(ntcTemp) || config->isMetric ) ) {
+        ntcTemp = CONVERT_C_TO_F( ntcTemp );
+    }
+    TEMPERATURE_ROASTER(chanTemp) = ntcTemp;
 }
