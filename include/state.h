@@ -3,10 +3,11 @@
 
 #include <Adafruit_MAX31855.h>
 #include <filterRC.h>
+#include <tick-timer.h>
 
 #include <roaster.h>
 #include "state_commanded.h"
-#include "tick-timer.h"
+#include "ntc.h"
 
 class Config {
     public:
@@ -32,6 +33,7 @@ class Reported {
         TimerMS             *ambTimer;
         Config              *config;
         filterRC<double>    filter[TEMPERATURE_CHANNELS_MAX];
+        NTC                 ntc;
         uint8_t             _chanMapping[TEMPERATURE_CHANNELS_MAX];
         double              chanTemp[TEMPERATURE_CHANNELS_MAX]; // Physical temp channels
         double              ambient;  // Ambient temperature

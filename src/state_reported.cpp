@@ -1,5 +1,6 @@
 #include <SPI.h>
 
+#include "roaster.h"
 #include "logging.h"
 #include "state.h"
 
@@ -95,9 +96,7 @@ void Reported::readAmbient() {
         this->tcError();
     } else {
         if ( !(config->isMetric) ) {
-            temp *= 9.0;
-            temp /= 5.0;
-            temp += 32;
+            temp = CONVERT_C_TO_F(temp);
         }
         ambient = temp;
     }
@@ -131,31 +130,9 @@ void Reported::setChanMapping(uint8_t idx, uint8_t mapping) {
 
 
 void Reported::_readNTC() {
-    #define VREF_MV 3300
-    #define R1      10000
-    #define ADCMAX  0xFFF
-
-    uint32_t reading = analogRead(PIN_NTC);
-    uint32_t readingMV = VREF_MV * reading / ADCMAX;
-    uint32_t readingOhms, altOhms;
-    if ( (ADCMAX - reading) <= 4 ) {
-        readingOhms = altOhms = 0xffffffff;
-    } else {
-        readingOhms = readingMV * R1 / (VREF_MV - readingMV);
-        altOhms = reading * R1 / (ADCMAX - reading);
+    float ntcTemp = ntc.AdcToTempC( analogRead(PIN_NTC) );
+    if ( !( isnan(ntcTemp) || config->isMetric ) ) {
+        ntcTemp = CONVERT_C_TO_F( ntcTemp );
     }
-
-    double temp = filter[TEMPERATURE_CHANNEL_ROASTER].doFilter(readingMV / 1000.0);
-    TEMPERATURE_ROASTER(chanTemp) = temp;
-
-    char buf[257];
-    const char tmplt[] = "ADC %d raw, %1.4f mv, %3.3f KOhms, %3.3f alt Kohms %3.1f F from thermocouple";
-    sprintf(buf, tmplt,
-        reading,
-        temp,
-        (readingOhms/1000.0),
-        (altOhms/1000.0),
-        TEMPERATURE_TC(chanTemp));
-    Serial.println(buf);
-    
+    TEMPERATURE_ROASTER(chanTemp) = ntcTemp;
 }

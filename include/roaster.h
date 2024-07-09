@@ -12,6 +12,7 @@
 
 #define TEMPERATURE_ROASTER(x) x[TEMPERATURE_CHANNEL_ROASTER]
 #define TEMPERATURE_TC(x)      x[TEMPERATURE_CHANNEL_THERMOCOUPLE]
+#define CONVERT_C_TO_F(C)      (C * 9.0f / 5.0f + 32.0f)
 
 // PIN Definitions
 #define PIN_LED         PA3
