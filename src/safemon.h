@@ -13,4 +13,7 @@ class SafetyMonitor {
         State   *_state;
         TimerMS *timer;
         bool    isInitialized = false;
+        unsigned int exceedCounter = 0;
+
+        bool _isTempExceeded();
 };

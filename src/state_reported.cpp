@@ -139,6 +139,9 @@ void Reported::setChanMapping(uint8_t idx, uint8_t mapping) {
     this->_chanMapping[idx] = mapping;
 }
 
+float Reported::getChanTemp(uint8_t chan) {
+    return this->chanTemp[ chan ];
+}
 
 void Reported::_readNTC() {
     float ntcTemp = ntc.AdcToTempC( analogRead(PIN_NTC) );
