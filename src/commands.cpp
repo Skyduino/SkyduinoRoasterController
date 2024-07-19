@@ -8,6 +8,7 @@
 #include "commands/handler_filt.h"
 #include "commands/handler_ot.h"
 #include "commands/handler_read.h"
+#include "commands/handler_stat.h"
 #include "commands/handler_skywalker.h"
 #include "commands/handler_unit.h"
 #include "commands/handler_version.h"
@@ -29,6 +30,7 @@ cmndOff     cmnd_handler_off  = cmndOff( &state );
 cmndOT1     cmnd_handler_ot1  = cmndOT1( &state );
 cmndOT2     cmnd_handler_ot2  = cmndOT2( &state );
 cmndRead    cmnd_handler_read = cmndRead( &state );
+cmndStat    cmnd_handler_stat = cmndStat( &state );
 cmndUnit    cmnd_handler_unit = cmndUnit( &state );
 cmndVersion cmnd_handler_version;
 
@@ -38,6 +40,7 @@ void setupCommandHandlers(void) {
     Command* commands[] = {
         &cmnd_handler_version,
         &cmnd_handler_dfu,
+        &cmnd_handler_stat,
         &cmnd_handler_unit,
         &cmnd_handler_filt,
         &cmnd_handler_chan,
