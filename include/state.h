@@ -17,6 +17,15 @@ class Config {
     protected:
 };
 
+class Stats {
+    public:
+        uint32_t tc_read_attempts_total;
+        uint32_t tc_read_attempts_retries;
+        uint32_t tc_read_attempts_failures;
+
+        void print();
+};
+
 class Reported {
     public:
         Reported(Config *config);
@@ -24,6 +33,7 @@ class Reported {
         bool loopTick();
         uint8_t setChanFilter(uint8_t idx, uint8_t percent);
         void printState();
+        void printStatistics();
         uint8_t getChanMapping(uint8_t idx);
         void setChanMapping(uint8_t idx, uint8_t mapping);
     
@@ -35,6 +45,7 @@ class Reported {
         filterRC<float>     filter[TEMPERATURE_CHANNELS_MAX];
         NTC                 ntc;
         uint8_t             _chanMapping[TEMPERATURE_CHANNELS_MAX];
+        Stats               statitstics;
         float               chanTemp[TEMPERATURE_CHANNELS_MAX]; // Physical temp channels
         float               ambient;  // Ambient temperature
 

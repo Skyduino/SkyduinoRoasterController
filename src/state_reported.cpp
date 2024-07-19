@@ -1,8 +1,11 @@
+#include <cmath>
 #include <SPI.h>
 
 #include "roaster.h"
 #include "logging.h"
 #include "state.h"
+
+#define TC_MAX_READ_ATTEMPTS 10
 
 
 Reported::Reported(Config *config) {
@@ -21,7 +24,6 @@ Reported::Reported(Config *config) {
     tc1 = new Adafruit_MAX31855(SPI_BTCS);
     tcTimer = new TimerMS(THERMOCOUPLE_UPDATE_INTERVAL_MS);
     ambTimer = new TimerMS(THERMOCOUPLE_UPDATE_INTERVAL_MS << 3);
-
 }
 
 
@@ -73,6 +75,11 @@ void Reported::printState() {
 }
 
 
+void Reported::printStatistics() {
+    this->statitstics.print();
+}
+
+
 uint8_t Reported::setChanFilter(uint8_t idx, uint8_t percent) {
     // convert from logical to phiscial channel
     uint8_t chan = this->_chanMapping[idx];
@@ -96,7 +103,19 @@ void Reported::readAmbient() {
 }
 
 void Reported::readTemperature() {
-    float temp = tc1->readCelsius();
+    float temp = NAN;
+    
+    this->statitstics.tc_read_attempts_total++;
+    uint8_t attempts = TC_MAX_READ_ATTEMPTS;
+    
+    while ( attempts && isnan(temp = tc1->readCelsius()) ) {
+        attempts--;
+        this->statitstics.tc_read_attempts_retries++;
+    }
+
+    if ( ! attempts ) {
+        this->statitstics.tc_read_attempts_failures++;
+    } 
  
     if ( !isnan(temp)) {
         temp = filter[TEMPERATURE_CHANNEL_THERMOCOUPLE].doFilter(temp);
@@ -126,4 +145,14 @@ void Reported::_readNTC() {
     }
 
     TEMPERATURE_ROASTER(chanTemp) = ntcTemp;
+}
+
+
+void Stats::print() {
+    Serial.print(F("Thermocouple Read Attempts Total/Retries/Failed: "));
+    
+    char buf[255];
+    const char format[] = "%lu/%lu/%lu";
+    sprintf(buf, format, tc_read_attempts_total, tc_read_attempts_retries, tc_read_attempts_failures);
+    Serial.println(buf);
 }
