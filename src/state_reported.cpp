@@ -112,15 +112,13 @@ void Reported::readTemperature() {
         attempts--;
         this->statitstics.tc_read_attempts_retries++;
     }
-
-    if ( ! attempts ) {
-        this->statitstics.tc_read_attempts_failures++;
-    } 
  
     if ( !isnan(temp)) {
         temp = filter[TEMPERATURE_CHANNEL_THERMOCOUPLE].doFilter(temp);
+        TEMPERATURE_TC(chanTemp) = temp;
+    } else {
+        this->statitstics.tc_read_attempts_failures++;
     }
-    TEMPERATURE_TC(chanTemp) = temp;
 }
 
 void Reported::tcError() {
