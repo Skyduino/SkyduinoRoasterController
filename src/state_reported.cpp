@@ -118,6 +118,7 @@ void Reported::readTemperature() {
         TEMPERATURE_TC(chanTemp) = temp;
     } else {
         this->statitstics.tc_read_attempts_failures++;
+        this->tcError();
     }
 }
 
@@ -125,7 +126,10 @@ void Reported::tcError() {
     uint8_t e = tc1->readError();
 
     WARN(F("TC Fault: "));
-    if (e & MAX31855_FAULT_OPEN) WARNLN(F("FAULT: Thermocouple is open - no connections."));
+    if (e & MAX31855_FAULT_OPEN) {
+        WARNLN(F("FAULT: Thermocouple is open - no connections."));
+        TEMPERATURE_TC(chanTemp) = NAN;
+    }
     if (e & MAX31855_FAULT_SHORT_GND) WARNLN(F("FAULT: Thermocouple is short-circuited to GND."));
     if (e & MAX31855_FAULT_SHORT_VCC) WARNLN(F("FAULT: Thermocouple is short-circuited to VCC."));
 }
