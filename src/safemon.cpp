@@ -26,5 +26,8 @@ bool SafetyMonitor::_isTempExceeded() {
     float tcTemp = _state->reported.getChanTemp(TEMPERATURE_CHANNEL_THERMOCOUPLE);
     float ntcTemp = _state->reported.getChanTemp(TEMPERATURE_CHANNEL_ROASTER);
 
-    return IS_EXCEEDING( tcTemp ) || IS_EXCEEDING( ntcTemp ); 
+    // it temperature reading is not available at all, then better safe than sorry
+    bool noTempAtAll = isnan(tcTemp) && isnan(ntcTemp);
+
+    return noTempAtAll || IS_EXCEEDING( tcTemp ) || IS_EXCEEDING( ntcTemp ); 
 }
