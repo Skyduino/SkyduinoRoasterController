@@ -14,7 +14,27 @@ bool ControlBasic::loopTick() {
 }
 
 
-bool StateCommanded::begin() {
+/**
+ * @brief Emergency shutdown of all controls
+ */
+void StateCommanded::abort() {
+    ControlBasic* controls[] = {
+        &cool,
+        &drum,
+        &filter,
+        &heat,
+        &vent
+    };
+
+    uint8_t count = sizeof(controls) / sizeof(controls[0]);
+    for (uint8_t i=0; i < count; i++) {
+        controls[i]->abort();
+    }
+}
+
+
+bool StateCommanded::begin()
+{
     bool isSuccess = true;
 
     isSuccess &= this->heat.begin();
@@ -24,7 +44,6 @@ bool StateCommanded::begin() {
     isSuccess &= this->filter.begin();
     return isSuccess;
 }
-
 
 bool StateCommanded::loopTick() {
     bool isSuccess = true;
@@ -71,6 +90,18 @@ void StateCommanded::off() {
 }
 
 
+/**
+ * @brief Abort -- Emergency shutdown
+ *
+ * Turn everything off and lock out the controls
+ */
+void ControlBasic::abort() {
+    off();
+    _abortAction();
+    this->_isAborted = true;
+}
+
+
 void ControlBasic::on() {
     this->set(100);
 }
@@ -104,6 +135,8 @@ bool ControlOnOff::begin() {
 
 
 void ControlOnOff::_setAction(uint8_t value) {
+    if ( _isAborted ) return;
+
     if ( value ) {
         digitalWrite(pin, HIGH);
     } else {
@@ -140,6 +173,8 @@ bool ControlPWM::begin() {
 
 
 void ControlPWM::_setAction(uint8_t value) {
+    if ( _isAborted ) return;
+
     if (NULL == timer) {
         // was not initialized yet
         this->begin();
@@ -184,14 +219,17 @@ bool ControlHeat::loopTick() {
 
 /**
  * @brief Emergency heater shutdown
- * 
+ *
  * Emergency heater turn off. If the heater is On, turn it off, wait 11ms
  * for zero crossing and then turn off the heating relay.
  */
-void ControlHeat::abort() {
+void ControlHeat::_abortAction() {
     bool wasItOn = isOn();
     this->off();
+
     if ( wasItOn ) {
+        // if it was on, then wait for a zero crossing in worst case scenario
+        // 50Hz + 1MS
         delay(11);
     }
     this->heatRelay.off();
@@ -203,6 +241,8 @@ void ControlHeat::abort() {
 
 
 void ControlHeat::_setAction(uint8_t newValue) {
+    if ( _isAborted ) return;
+
     // is the state transitioning from Off->On or On->Off
     bool oldIsOn = (this->oldValue > 0);
     bool newIsOn = (newValue > 0);

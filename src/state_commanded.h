@@ -19,12 +19,16 @@ class ControlBasic {
         uint8_t virtual get();
         void virtual set(uint8_t value);
         bool virtual loopTick();
+        void virtual abort();
 
     private:
         uint8_t         value;
     
     protected:
+        bool _isAborted = false;
         void virtual _setAction(uint8_t value) {};
+        void virtual _abortAction() {};
+
 };
 
 class ControlOnOff: public ControlBasic {
@@ -56,7 +60,6 @@ class ControlHeat: public ControlPWM {
         ControlHeat(): ControlPWM(PIN_HEAT, PWM_FREQ_HEAT) {};
         bool begin();
         bool loopTick();
-        void abort();
 
     protected:
         void _setAction(uint8_t value);
@@ -66,6 +69,7 @@ class ControlHeat: public ControlPWM {
         uint8_t oldValue = 0;
         TimerMS *transitionTimer;
         ControlOnOff heatRelay = ControlOnOff(PIN_HEAT_RELAY);
+        void _abortAction();
 };
 
 
@@ -77,6 +81,7 @@ class StateCommanded {
         ControlOnOff cool   = ControlOnOff(PIN_COOL);
         ControlBasic filter;
 
+        void abort();
         bool begin();
         bool loopTick();
         void printState();
