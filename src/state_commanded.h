@@ -15,6 +15,7 @@ class ControlBasic {
         bool virtual begin() {return true;};
         void virtual off();
         void virtual on();
+        bool virtual isOn();
         uint8_t virtual get();
         void virtual set(uint8_t value);
         bool virtual loopTick();
@@ -55,6 +56,7 @@ class ControlHeat: public ControlPWM {
         ControlHeat(): ControlPWM(PIN_HEAT, PWM_FREQ_HEAT) {};
         bool begin();
         bool loopTick();
+        void abort();
 
     protected:
         void _setAction(uint8_t value);

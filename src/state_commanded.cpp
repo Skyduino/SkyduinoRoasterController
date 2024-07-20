@@ -75,6 +75,9 @@ void ControlBasic::on() {
     this->set(100);
 }
 
+bool ControlBasic::isOn() {
+    return (this->value > 0);
+}
 
 void ControlBasic::off() {
     this->set(0);
@@ -165,7 +168,7 @@ bool ControlHeat::loopTick() {
          and NULL != this->transitionTimer
          and this->transitionTimer->hasTicked())
     {
-        if ( get() > 0 ) {
+        if ( isOn() ) {
             // transitioning to ON, set the PWM
             ControlPWM::_setAction(this->oldValue);
         } else {
@@ -176,6 +179,26 @@ bool ControlHeat::loopTick() {
     }
 
     return this->heatRelay.loopTick();
+}
+
+
+/**
+ * @brief Emergency heater shutdown
+ * 
+ * Emergency heater turn off. If the heater is On, turn it off, wait 11ms
+ * for zero crossing and then turn off the heating relay.
+ */
+void ControlHeat::abort() {
+    bool wasItOn = isOn();
+    this->off();
+    if ( wasItOn ) {
+        delay(11);
+    }
+    this->heatRelay.off();
+
+    // double tap: explicitly turn relay off via GPIO
+    pinMode(PIN_HEAT_RELAY, OUTPUT);
+    digitalWrite(PIN_HEAT_RELAY, LOW);
 }
 
 
