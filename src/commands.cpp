@@ -21,6 +21,7 @@
  */
 extern State state;
 
+cmndAbort   cmnd_handler_abrt = cmndAbort( &state );
 cmndChan    cmnd_handler_chan = cmndChan( &state );
 cmndCool    cmnd_handler_cool = cmndCool( &state );
 cmndDrum    cmnd_handler_drum = cmndDrum( &state );
@@ -38,6 +39,7 @@ static CmndInterp ci( DELIM ); // command interpreter object
 
 void setupCommandHandlers(void) {
     Command* commands[] = {
+        &cmnd_handler_abrt,
         &cmnd_handler_version,
         &cmnd_handler_dfu,
         &cmnd_handler_stat,

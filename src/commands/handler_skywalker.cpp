@@ -4,6 +4,7 @@
 #define CMD_COOL    "COOL"
 #define CMD_DRUM    "DRUM"
 #define CMD_OFF     "OFF"
+#define CMD_ABORT   "ABORT"
 
 
 cmndCool::cmndCool(State *state):
@@ -37,4 +38,14 @@ cmndOff::cmndOff(State *state):
 
 void cmndOff::_doCommand(CmndParser *pars) {
     state->commanded.off();
+}
+
+
+cmndAbort::cmndAbort(State *state):
+    Command(CMD_ABORT, state) {
+}
+
+
+void cmndAbort::_doCommand(CmndParser *pars) {
+    state->commanded.abort();
 }
