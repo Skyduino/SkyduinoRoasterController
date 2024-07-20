@@ -36,16 +36,5 @@ cmndOff::cmndOff(State *state):
 
 
 void cmndOff::_doCommand(CmndParser *pars) {
-    ControlBasic* controls[] = {
-        &(state->commanded.cool),
-        &(state->commanded.drum),
-        &(state->commanded.filter),
-        &(state->commanded.heat),
-        &(state->commanded.vent)
-    };
-
-    uint8_t count = sizeof(controls) / sizeof(controls[0]);
-    for (uint8_t i=0; i < count; i++) {
-        controls[i]->off();
-    }
+    state->commanded.off();
 }

@@ -78,6 +78,7 @@ class StateCommanded {
         bool begin();
         bool loopTick();
         void printState();
+        void off();
 };
 
 

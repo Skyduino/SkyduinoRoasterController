@@ -52,6 +52,25 @@ void StateCommanded::printState() {
 }
 
 
+/**
+ * @brief Turn everything off gracefully
+ */
+void StateCommanded::off() {
+    ControlBasic* controls[] = {
+        &cool,
+        &drum,
+        &filter,
+        &heat,
+        &vent
+    };
+
+    uint8_t count = sizeof(controls) / sizeof(controls[0]);
+    for (uint8_t i=0; i < count; i++) {
+        controls[i]->off();
+    }
+}
+
+
 void ControlBasic::on() {
     this->set(100);
 }
