@@ -64,7 +64,7 @@ bool SafetyMonitor::loopTick() {
  * @brief Trigger abort action for the roaster commanded state
  */
 void SafetyMonitor::triggerSafetyAction() {
-    DEBUG(micros()); DEBUGLN(F(" Triggering Safety Action"));
+    ERROR(micros()); ERRORLN(F(" Triggering Safety Action"));
     this->_roasterState->commanded.abort();
 }
 
