@@ -1,3 +1,5 @@
+#include <logging.h>
+
 #include "state.h"
 #include "state_commanded.h"
 
@@ -122,6 +124,8 @@ void ControlPWM::_setAction(uint8_t value) {
     } else {
         // set pwm to 0
         timer->setPWM(this->channel, this->pin, this->freq, value);
+        timer->refresh();
+        DEBUG(micros()); DEBUG(F(" PWM::_setAction value: ")); DEBUGLN(value);
     }
 }
 
