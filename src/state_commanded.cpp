@@ -96,11 +96,21 @@ void StateCommanded::off() {
  * Turn everything off and lock out the controls
  */
 void ControlBasic::abort() {
-    off();
     _abortAction();
+    off();
     this->_isAborted = true;
 }
 
+
+/**
+ * @brief action to perform prior the public abort() method
+ * 
+ * This is a handler for the "pre-abort" actions, called from the public
+ * abort method, giving a chance to do any extra changes, before the conrol
+ * switches off and is locked out from other changes. 
+ */
+void ControlBasic::_abortAction() {
+}
 
 void ControlBasic::on() {
     this->set(100);

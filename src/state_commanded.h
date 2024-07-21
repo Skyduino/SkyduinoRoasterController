@@ -27,7 +27,7 @@ class ControlBasic {
     protected:
         bool _isAborted = false;
         void virtual _setAction(uint8_t value) {};
-        void virtual _abortAction() {};
+        void virtual _abortAction();
 
 };
 
