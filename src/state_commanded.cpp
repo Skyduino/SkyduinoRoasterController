@@ -165,7 +165,7 @@ void ControlHeat::_setAction(uint8_t newValue) {
     this->oldValue = newValue;
 
     if ( isTransitioning ) {
-        if ( NULL != transitionTimer ) {
+        if ( NULL == transitionTimer ) {
             this->begin();
         }
         this->transitionTimer->reset();
