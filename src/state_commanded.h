@@ -2,7 +2,12 @@
 #define _SW_STATE_CMD_PH
 
 #include <HardwareTimer.h>
+#include <tick-timer.h>
+
 #include "roaster.h"
+
+// delay between SSR and heat relay transitions
+#define CONTROL_HEAT_SSR_RELAY_DELAY_MS 11U
 
 class ControlBasic {
     public:
@@ -57,6 +62,7 @@ class ControlHeat: public ControlPWM {
     private:
         bool isTransitioning = false;
         uint8_t oldValue = 0;
+        TimerMS *transitionTimer;
         ControlOnOff heatRelay = ControlOnOff(PIN_HEAT_RELAY);
 };
 

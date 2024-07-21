@@ -126,7 +126,9 @@ void ControlPWM::_setAction(uint8_t value) {
 }
 
 
-bool ControlHeat::begin() {
+bool ControlHeat::begin()
+{
+    transitionTimer = new TimerMS(CONTROL_HEAT_SSR_RELAY_DELAY_MS);
     bool isSuccess = true;
     isSuccess &= this->heatRelay.begin();
     isSuccess &= ControlPWM::begin();
@@ -136,7 +138,10 @@ bool ControlHeat::begin() {
 
 
 bool ControlHeat::loopTick() {
-    if ( isTransitioning ) {
+    if ( isTransitioning 
+         and NULL != this->transitionTimer
+         and this->transitionTimer->hasTicked())
+    {
         if ( get() > 0 ) {
             // transitioning to ON, set the PWM
             ControlPWM::_setAction(this->oldValue);
@@ -144,6 +149,7 @@ bool ControlHeat::loopTick() {
             // transitioning to OFF, turn off the relay
             this->heatRelay.off();
         }
+        isTransitioning = false;
     }
 
     return this->heatRelay.loopTick();
@@ -158,14 +164,24 @@ void ControlHeat::_setAction(uint8_t newValue) {
     this->isTransitioning = oldIsOn ^ newIsOn;
     this->oldValue = newValue;
 
-    if ( !isTransitioning ) {
-        ControlPWM::_setAction(newValue);
-    } else {
+    if ( isTransitioning ) {
+        if ( NULL != transitionTimer ) {
+            this->begin();
+        }
+        this->transitionTimer->reset();
+
+        // If transitioning from On to Off, then set PWM to 0 and next loopTick
+        // will turn off the Heat realy on timer expiration
+        // If transitioning from Off to On, then make sure the SSR is off(pwm=0)
+        // and turn on the relay now. Next loopTick will turn on the SSR (set the
+        // desired PWM)
         ControlPWM::_setAction(0);
         if ( newIsOn ) {
             // The state is transitioning to ON
             // turn on the Relay and loopTick will set the new PWM value
             this->heatRelay.on();
         }
+    } else {
+        ControlPWM::_setAction(newValue);
     }
 }
