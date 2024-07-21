@@ -5,6 +5,7 @@
 #include "state.h"
 #include "logging.h"
 #include "commands.h"
+#include "safemon.h"
 
 
 /*
@@ -13,11 +14,14 @@
  * and commanded roaster status
  */
 State state;
+SafetyMonitor safeMon = SafetyMonitor( &state );
 
 void setup() {
   Serial.begin(115200);
   Serial.setTimeout(100);
   Serial.println(F(VERSION));
+
+  safeMon.begin();
 
   while ( !(state.begin()) ) {
     Serial.println(F("Failed to initialize"));
@@ -33,4 +37,6 @@ void loop() {
   commandsLoopTick();
 
   state.loopTick();
+
+  safeMon.loopTick();
 }

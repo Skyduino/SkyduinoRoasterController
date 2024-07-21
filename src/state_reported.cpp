@@ -139,6 +139,15 @@ void Reported::setChanMapping(uint8_t idx, uint8_t mapping) {
     this->_chanMapping[idx] = mapping;
 }
 
+float Reported::getChanTemp(uint8_t chan) {
+    if ( chan >= TEMPERATURE_CHANNELS_MAX ) {
+        // this should not happen, but as a precaution
+        // for wrong channels return temperature exceeding safety limits
+        return (MAX_SAFE_TEMP_C + 1);
+    }
+    
+    return this->chanTemp[ chan ];
+}
 
 void Reported::_readNTC() {
     float ntcTemp = ntc.AdcToTempC( analogRead(PIN_NTC) );

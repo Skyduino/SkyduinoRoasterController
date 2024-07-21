@@ -4,6 +4,7 @@
 #define CMD_COOL    "COOL"
 #define CMD_DRUM    "DRUM"
 #define CMD_OFF     "OFF"
+#define CMD_ABORT   "ABORT"
 
 
 cmndCool::cmndCool(State *state):
@@ -36,16 +37,15 @@ cmndOff::cmndOff(State *state):
 
 
 void cmndOff::_doCommand(CmndParser *pars) {
-    ControlBasic* controls[] = {
-        &(state->commanded.cool),
-        &(state->commanded.drum),
-        &(state->commanded.filter),
-        &(state->commanded.heat),
-        &(state->commanded.vent)
-    };
+    state->commanded.off();
+}
 
-    uint8_t count = sizeof(controls) / sizeof(controls[0]);
-    for (uint8_t i=0; i < count; i++) {
-        controls[i]->off();
-    }
+
+cmndAbort::cmndAbort(State *state):
+    Command(CMD_ABORT, state) {
+}
+
+
+void cmndAbort::_doCommand(CmndParser *pars) {
+    state->commanded.abort();
 }

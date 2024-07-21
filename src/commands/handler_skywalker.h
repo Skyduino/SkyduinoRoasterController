@@ -27,4 +27,12 @@ class cmndOff: public Command {
         void _doCommand( CmndParser* pars);
 };
 
+class cmndAbort: public Command {
+    public:
+        cmndAbort(State *state);
+
+    protected:
+        void _doCommand( CmndParser* pars);
+};
+
 #endif // __CMD_SKYWALKER_H

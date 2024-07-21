@@ -36,6 +36,7 @@ class Reported {
         void printStatistics();
         uint8_t getChanMapping(uint8_t idx);
         void setChanMapping(uint8_t idx, uint8_t mapping);
+        float getChanTemp(uint8_t chan);
     
     private:
         Adafruit_MAX31855   *tc1;

@@ -14,7 +14,27 @@ bool ControlBasic::loopTick() {
 }
 
 
-bool StateCommanded::begin() {
+/**
+ * @brief Emergency shutdown of all controls
+ */
+void StateCommanded::abort() {
+    ControlBasic* controls[] = {
+        &cool,
+        &drum,
+        &filter,
+        &heat,
+        &vent
+    };
+
+    uint8_t count = sizeof(controls) / sizeof(controls[0]);
+    for (uint8_t i=0; i < count; i++) {
+        controls[i]->abort();
+    }
+}
+
+
+bool StateCommanded::begin()
+{
     bool isSuccess = true;
 
     isSuccess &= this->heat.begin();
@@ -24,7 +44,6 @@ bool StateCommanded::begin() {
     isSuccess &= this->filter.begin();
     return isSuccess;
 }
-
 
 bool StateCommanded::loopTick() {
     bool isSuccess = true;
@@ -52,10 +71,54 @@ void StateCommanded::printState() {
 }
 
 
+/**
+ * @brief Turn everything off gracefully
+ */
+void StateCommanded::off() {
+    ControlBasic* controls[] = {
+        &cool,
+        &drum,
+        &filter,
+        &heat,
+        &vent
+    };
+
+    uint8_t count = sizeof(controls) / sizeof(controls[0]);
+    for (uint8_t i=0; i < count; i++) {
+        controls[i]->off();
+    }
+}
+
+
+/**
+ * @brief Abort -- Emergency shutdown
+ *
+ * Turn everything off and lock out the controls
+ */
+void ControlBasic::abort() {
+    _abortAction();
+    off();
+    this->_isAborted = true;
+}
+
+
+/**
+ * @brief action to perform prior the public abort() method
+ * 
+ * This is a handler for the "pre-abort" actions, called from the public
+ * abort method, giving a chance to do any extra changes, before the conrol
+ * switches off and is locked out from other changes. 
+ */
+void ControlBasic::_abortAction() {
+}
+
 void ControlBasic::on() {
     this->set(100);
 }
 
+bool ControlBasic::isOn() {
+    return (this->value > 0);
+}
 
 void ControlBasic::off() {
     this->set(0);
@@ -82,6 +145,8 @@ bool ControlOnOff::begin() {
 
 
 void ControlOnOff::_setAction(uint8_t value) {
+    if ( _isAborted ) return;
+
     if ( value ) {
         digitalWrite(pin, HIGH);
     } else {
@@ -118,6 +183,8 @@ bool ControlPWM::begin() {
 
 
 void ControlPWM::_setAction(uint8_t value) {
+    if ( _isAborted ) return;
+
     if (NULL == timer) {
         // was not initialized yet
         this->begin();
@@ -146,11 +213,13 @@ bool ControlHeat::loopTick() {
          and NULL != this->transitionTimer
          and this->transitionTimer->hasTicked())
     {
-        if ( get() > 0 ) {
+        if ( isOn() ) {
             // transitioning to ON, set the PWM
+            DEBUG(micros()); DEBUG(F(" loopTick: Setting SSR to ")); DEBUGLN(this->oldValue);
             ControlPWM::_setAction(this->oldValue);
         } else {
             // transitioning to OFF, turn off the relay
+            DEBUG(micros()); DEBUGLN(F(" loopTick: Turning off Heat Relay"));
             this->heatRelay.off();
         }
         isTransitioning = false;
@@ -160,7 +229,33 @@ bool ControlHeat::loopTick() {
 }
 
 
+/**
+ * @brief Emergency heater shutdown
+ *
+ * Emergency heater turn off. If the heater is On, turn it off, wait 11ms
+ * for zero crossing and then turn off the heating relay.
+ */
+void ControlHeat::_abortAction() {
+    bool wasItOn = isOn();
+    this->off();
+
+    if ( wasItOn ) {
+        // if it was on, then wait for a zero crossing in worst case scenario
+        // 50Hz + 1MS
+        delay(11);
+    }
+    DEBUG(micros()); DEBUGLN(F(" _abort: Turning off Heat relay"));
+    this->heatRelay.off();
+
+    // double tap: explicitly turn relay off via GPIO
+    pinMode(PIN_HEAT_RELAY, OUTPUT);
+    digitalWrite(PIN_HEAT_RELAY, LOW);
+}
+
+
 void ControlHeat::_setAction(uint8_t newValue) {
+    if ( _isAborted ) return;
+
     // is the state transitioning from Off->On or On->Off
     bool oldIsOn = (this->oldValue > 0);
     bool newIsOn = (newValue > 0);
@@ -179,13 +274,16 @@ void ControlHeat::_setAction(uint8_t newValue) {
         // If transitioning from Off to On, then make sure the SSR is off(pwm=0)
         // and turn on the relay now. Next loopTick will turn on the SSR (set the
         // desired PWM)
+        DEBUG(micros()); DEBUGLN(F(" _setAction: Turning off SSR"));
         ControlPWM::_setAction(0);
         if ( newIsOn ) {
             // The state is transitioning to ON
             // turn on the Relay and loopTick will set the new PWM value
+            DEBUG(micros()); DEBUGLN(F(" _setAction: Turning on Heat Relay"));
             this->heatRelay.on();
         }
     } else {
+        DEBUG(micros()); DEBUG(F(" _setAction: Setting SSR to ")); DEBUGLN(newValue);
         ControlPWM::_setAction(newValue);
     }
 }
