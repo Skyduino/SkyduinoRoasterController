@@ -64,6 +64,7 @@ bool SafetyMonitor::loopTick() {
  * @brief Trigger abort action for the roaster commanded state
  */
 void SafetyMonitor::triggerSafetyAction() {
+    DEBUG(micros()); DEBUGLN(F(" Triggering Safety Action"));
     this->_roasterState->commanded.abort();
 }
 
@@ -95,6 +96,7 @@ bool SafetyMonitor::_isTempExceedingC(float threshold) {
  * @brief Transition to NORMAL state
  */
 void SafetyMonitor::_transitionToNormal() {
+    DEBUG(micros()); DEBUGLN(F(" Transitioning to Normal state"));
     _monitorState = NORMAL;
 }
 
@@ -115,6 +117,7 @@ void SafetyMonitor::_handleNormal() {
  * may trigger the safety action.
  */
 void SafetyMonitor::_transitionToPreArm() {
+    DEBUG(micros()); DEBUGLN(F(" Transitioning to PRE-ARM state"));
     _monitorState = PRE_ARM;
     if ( timer->hasTicked() ) timer->reset();
 }
@@ -141,6 +144,7 @@ void SafetyMonitor::_handlePreArm() {
  * 
  */
 void SafetyMonitor::_transitionToArmed() {
+    DEBUG(micros()); DEBUGLN(F(" Transitioning to ARM state"));
     _monitorState = ARMED;
     timer->reset();
 }
@@ -166,6 +170,7 @@ void SafetyMonitor::_handleArmed() {
  * @brief Transition to triggered state and effectively call safety action
  */
 void SafetyMonitor::_transitionToTriggered() {
+    DEBUG(micros()); DEBUGLN(F(" Transitioning to Triggered state"));
     _monitorState = TRIGGERED;
     _handleTriggered();
 }
