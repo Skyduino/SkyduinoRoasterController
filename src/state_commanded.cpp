@@ -215,9 +215,11 @@ bool ControlHeat::loopTick() {
     {
         if ( isOn() ) {
             // transitioning to ON, set the PWM
+            DEBUG(micros()); DEBUG(F(" loopTick: Setting SSR to ")); DEBUGLN(this->oldValue);
             ControlPWM::_setAction(this->oldValue);
         } else {
             // transitioning to OFF, turn off the relay
+            DEBUG(micros()); DEBUGLN(F(" loopTick: Turning off Heat Relay"));
             this->heatRelay.off();
         }
         isTransitioning = false;
@@ -242,6 +244,7 @@ void ControlHeat::_abortAction() {
         // 50Hz + 1MS
         delay(11);
     }
+    DEBUG(micros()); DEBUGLN(F(" _abort: Turning off Heat relay"));
     this->heatRelay.off();
 
     // double tap: explicitly turn relay off via GPIO
@@ -271,13 +274,16 @@ void ControlHeat::_setAction(uint8_t newValue) {
         // If transitioning from Off to On, then make sure the SSR is off(pwm=0)
         // and turn on the relay now. Next loopTick will turn on the SSR (set the
         // desired PWM)
+        DEBUG(micros()); DEBUGLN(F(" _setAction: Turning off SSR"));
         ControlPWM::_setAction(0);
         if ( newIsOn ) {
             // The state is transitioning to ON
             // turn on the Relay and loopTick will set the new PWM value
+            DEBUG(micros()); DEBUGLN(F(" _setAction: Turning on Heat Relay"));
             this->heatRelay.on();
         }
     } else {
+        DEBUG(micros()); DEBUG(F(" _setAction: Setting SSR to ")); DEBUGLN(newValue);
         ControlPWM::_setAction(newValue);
     }
 }
