@@ -12,3 +12,46 @@ void StatsReported::print() {
     sprintf(buf, format, tc_read_attempts_total, tc_read_attempts_retries, tc_read_attempts_failures);
     Serial.println(buf);
 }
+
+
+/**
+ * @brief Print general stats
+ */
+void Stats::print() {
+    Serial.print(F("Loop timing min/avg/max: "));
+    
+    char buf[255];
+    const char format[] = "%lums / %lums / %lums";
+    sprintf(buf, format, _loopMin/1000, _loopAvg/1000, _loopMax/1000);
+    Serial.println(buf);
+}
+
+
+/**
+ * @brief Mark loop start and store the tick for later loop time min/avg/max calculation
+ */
+void Stats::loopStart()
+{
+    this->_loopStartTime = micros();
+}
+
+/**
+ * @brief Mark loop end and calculate loop min/avg/max times
+ */
+void Stats::loopEnd() {
+    uint32_t loopDuration = micros() - this->_loopStartTime;
+
+    if ( loopDuration < this->_loopMin ) {
+        this->_loopMin = loopDuration;
+    } else if ( loopDuration > this->_loopMax ) {
+        this->_loopMax = loopDuration;
+    }
+
+    // at certain point this is going to overflow and it will reset the avg
+    if ( 0 == this->_count) {
+        this->_loopAvg = loopDuration;
+    } else {
+        this->_loopAvg += (loopDuration - _loopAvg) / _count;
+    }
+    this->_count++;
+}

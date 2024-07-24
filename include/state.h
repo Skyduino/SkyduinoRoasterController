@@ -61,11 +61,12 @@ class State {
         Reported        reported = Reported(&cfg);
         Config          cfg;
         Status          status;
+        Stats           stats;
 
         bool    begin();
         bool    loopTick();
         void    printState();
-
+        void    printStatistics();
 };
 
 #endif  // _SW_STATE_H

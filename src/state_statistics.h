@@ -3,6 +3,19 @@
 
 #include <Arduino.h>
 
+class Stats {
+    public:
+        void print();
+        void loopStart();
+        void loopEnd();
+    
+    protected:
+        uint32_t _loopStartTime;
+        uint32_t _count = 0;
+        uint32_t _loopMin, _loopMax, _loopAvg;
+};
+
+
 class StatsReported {
     public:
         uint32_t tc_read_attempts_total;
