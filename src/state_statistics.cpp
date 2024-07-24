@@ -21,8 +21,8 @@ void Stats::print() {
     Serial.print(F("Loop timing min/avg/max: "));
     
     char buf[255];
-    const char format[] = "%lums / %lums / %lums";
-    sprintf(buf, format, _loopMin/1000, _loopAvg/1000, _loopMax/1000);
+    const char format[] = "%3.2fms / %3.2fms / %3.2fms";
+    sprintf(buf, format, (float) _loopMin/1000, (float) _loopAvg/1000, (float) _loopMax/1000);
     Serial.println(buf);
 }
 

@@ -12,7 +12,9 @@ class Stats {
     protected:
         uint32_t _loopStartTime;
         uint32_t _count = 0;
-        uint32_t _loopMin, _loopMax, _loopAvg;
+        uint32_t _loopMin = 0xFFFFFFFF;
+        uint32_t _loopMax = 0;
+        uint32_t _loopAvg = 0;
 };
 
 
