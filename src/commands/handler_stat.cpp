@@ -9,5 +9,5 @@ cmndStat::cmndStat(State *state) :
 
 
 void cmndStat::_doCommand(CmndParser *pars) {
-    state->reported.printStatistics();
+    state->printStatistics();
 }

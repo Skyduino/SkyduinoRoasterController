@@ -33,10 +33,15 @@ void setup() {
 }
 
 void loop() {
+  // for loop timing statistics
+  state.stats.loopStart();
+
   // Check Serial Communication
   commandsLoopTick();
 
   state.loopTick();
 
   safeMon.loopTick();
+
+  state.stats.loopEnd();
 }
