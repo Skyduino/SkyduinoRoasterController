@@ -1,6 +1,7 @@
 #include "skywalker_remote_comms.h"
 
 SkywalkerRemoteComm::SkywalkerRemoteComm(State *state): _state(state) {
+    this->_commTimer = new TimerMS(SKW_REMOTE_COMM_PERIOD_MS);
 }
 
 
@@ -20,10 +21,12 @@ bool SkywalkerRemoteComm::begin() {
  *        Cycle between data transmit and data receive.
  */
 bool SkywalkerRemoteComm::loopTick() {
+    if ( !(this->_commTimer->hasTicked()) ) return true;
+
     if ( isTxCycle ) {
-        this->_toRemote.loopTick();
+        this->_toRemote.sendMessage();
     } else {
-        this->_fromRemote.loopTick();
+        this->_fromRemote.getMessage();
     }
 
     isTxCycle = !isTxCycle;

@@ -16,6 +16,7 @@ class SkywalkerRemoteComm {
 
     protected:
         State       *_state;
+        TimerMS     *_commTimer;
         bool        isTxCycle = false;
         SWRoasterTx _toRemote   = SWRoasterTx(PIN_DATA_TO_RMT);
         SWRemoteRx  _fromRemote = SWRemoteRx(PIN_DATA_FROM_RMT);
