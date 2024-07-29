@@ -1,0 +1,15 @@
+{
+    "name": "SkywalkerProtocol",
+    "version": "0.1.0",
+    "description": "ITop Skywalker Roaster raw protocol decoder/encoder",
+    "authors":
+    [
+      {
+        "name": "Alexei Chetroi"
+      }
+    ],
+    "license": "MIT",
+    "homepage": "https://github.com/Skyduino/lib-skywalkerprotocol/",
+    "frameworks": "*",
+    "platforms": "*"
+  }
