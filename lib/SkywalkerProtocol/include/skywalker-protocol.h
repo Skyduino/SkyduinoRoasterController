@@ -12,17 +12,13 @@ class _SWProtocolBase {
     protected:
         uint8_t *buffer;
         size_t   bufferSize;
-        uint32_t tickInterval, lastTick;
         uint8_t calculateCRC();
         // constructor for ProtocolTx/Rx child classes
         _SWProtocolBase() {};
         _SWProtocolBase(uint8_t *buffer, size_t bufferSize);
         void _clearBuffer();
-        virtual void tickIntervalHandler() {};
     public:
         virtual void begin() =0;
-        virtual void loopTick();
-        void setTickInterval(uint32_t interval);
         void shutdown();
 };
 
@@ -35,7 +31,6 @@ class _SWProtocolTx: public _SWProtocolBase {
         void updateCRC();
         void sendBit(uint8_t value);
         void sendPreamble();
-        void tickIntervalHandler();
     public:
         void begin();
         bool setByte(uint8_t idx, uint8_t value);
@@ -51,7 +46,6 @@ class _SWProtocolRx: public _SWProtocolBase {
         _SWProtocolRx(uint32_t rxpin, uint8_t *buffer, size_t bufferSize);
         bool receiveFrame();
         bool verifyCRC();
-        void tickIntervalHandler();
     public:
         void begin();
         bool getByte(uint8_t idx, uint8_t *value);

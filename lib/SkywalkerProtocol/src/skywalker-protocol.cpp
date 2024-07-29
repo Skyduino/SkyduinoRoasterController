@@ -23,7 +23,6 @@
  */
 _SWProtocolBase::_SWProtocolBase(uint8_t *buffer, size_t bufferSize) : buffer(buffer), bufferSize(bufferSize) {
     _clearBuffer();
-    tickInterval = 0;
 };
 
 
@@ -50,25 +49,6 @@ void _SWProtocolBase::_clearBuffer() {
 
 void _SWProtocolBase::shutdown() {
     return _clearBuffer();
-}
-
-
-/*
- * Process loop tick. Call interval handler on defined interval
- */
-void _SWProtocolBase::loopTick() {
-    if ((micros() - lastTick) < tickInterval) return;
-
-    tickIntervalHandler();
-    lastTick = micros();
-}
-
-
-/*
- * Loop interval setter
- */
-void _SWProtocolBase::setTickInterval(uint32_t interval) {
-    tickInterval = interval;
 }
 
 
@@ -140,17 +120,6 @@ bool _SWProtocolTx::setByte(uint8_t idx, uint8_t value) {
 
     buffer[idx] = value;
     return true;
-}
-
-
-/*
- * Send frame on interval
- */
-void _SWProtocolTx::tickIntervalHandler() {
-    if ((micros() - lastTick) < tickInterval) return;
-
-    sendMessage();
-    lastTick = micros();
 }
 
 
@@ -262,14 +231,6 @@ bool _SWProtocolRx::getMessage() {
   lastSuccRx = micros();
 
   return true;
-}
-
-
-/*
- * Receiver tick handler
- */
-void _SWProtocolRx::tickIntervalHandler() {
-  getMessage();
 }
 
 
