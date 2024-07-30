@@ -249,7 +249,7 @@ void _SWProtocolRx::begin(void) {
  * 
  * @return returns current ADC value, bytes 0 & 1. 
  */
-uint16_t _SWRemote::getHighTempADC() {
+uint16_t _SWRoaster::getHighTempADC() {
     return bufMemory[1] << 8 | bufMemory[0];
 }
 
@@ -257,7 +257,7 @@ uint16_t _SWRemote::getHighTempADC() {
 /**
  * @brief Set ADC value for the higher temperature range
  */
-void _SWRemote::setHighTempADC(uint16_t adc) {
+void _SWRoaster::setHighTempADC(uint16_t adc) {
     bufMemory[0] = adc & 0xFF;
     bufMemory[1] = adc >> 8;
 }
@@ -269,7 +269,7 @@ void _SWRemote::setHighTempADC(uint16_t adc) {
  * 
  * @return returns current ADC value, bytes 2 & 3. 
  */
-uint16_t _SWRemote::getLowTempADC() {
+uint16_t _SWRoaster::getLowTempADC() {
     return bufMemory[3] << 8 | bufMemory[2];
 }
 
@@ -277,7 +277,7 @@ uint16_t _SWRemote::getLowTempADC() {
 /**
  * @brief Set ADC value for the lower temperature range
  */
-void _SWRemote::setLowTempADC(uint16_t adc) {
+void _SWRoaster::setLowTempADC(uint16_t adc) {
     bufMemory[2] = adc & 0xFF;
     bufMemory[3] = adc >> 8;
 }
@@ -286,7 +286,7 @@ void _SWRemote::setLowTempADC(uint16_t adc) {
 /**
  * @brief Get drum load, byte 5
  */
-uint8_t _SWRemote::getDrumLoad() {
+uint8_t _SWRoaster::getDrumLoad() {
     return bufMemory[5];
 }
 
@@ -294,6 +294,6 @@ uint8_t _SWRemote::getDrumLoad() {
 /**
  * @brief Set drum load, byte 5
  */
-void _SWRemote::setDrumLoad(uint8_t load) {
+void _SWRoaster::setDrumLoad(uint8_t load) {
     bufMemory[5] = load;
 }

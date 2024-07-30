@@ -54,6 +54,20 @@ class _SWProtocolRx: public _SWProtocolBase {
 };
 
 
+class _SWRoaster {
+    protected:
+        uint8_t bufMemory[MESSAGE_LENGTH_ROASTER];
+
+    public:
+        uint16_t getHighTempADC();
+        void setHighTempADC(uint16_t adc);
+        uint16_t getLowTempADC();
+        void setLowTempADC(uint16_t adc);
+        uint8_t getDrumLoad();
+        void setDrumLoad(uint8_t load);
+};
+
+
 /**
  * @brief Receive data from the roaster AKA pretend to be a remote on the
  *        receiving end. Roaster controller sends data to the remote on
@@ -66,9 +80,7 @@ class _SWProtocolRx: public _SWProtocolBase {
  *        bytes[6] -- CRC
  * @param pin: PA10 -- pin used for communication (receive)
  */
-class SWRoasterRx: public _SWProtocolRx {
-    private:
-        uint8_t bufMemory[MESSAGE_LENGTH_ROASTER];
+class SWRoasterRx: public _SWProtocolRx, public _SWRoaster {
     public:
         SWRoasterRx(uint8_t pin):
             _SWProtocolRx(pin, bufMemory, MESSAGE_LENGTH_ROASTER) {};
@@ -86,9 +98,7 @@ class SWRoasterRx: public _SWProtocolRx {
  *        bytes[6] -- CRC
  * @param pin: PA10 -- pin used for communication (transmit)
  */
-class SWRoasterTx: public _SWProtocolTx {
-    private:
-        uint8_t bufMemory[MESSAGE_LENGTH_ROASTER];
+class SWRoasterTx: public _SWProtocolTx, public _SWRoaster {
     public:
         SWRoasterTx(uint8_t pin):
             _SWProtocolTx(pin, bufMemory, MESSAGE_LENGTH_ROASTER) {};
@@ -98,14 +108,6 @@ class SWRoasterTx: public _SWProtocolTx {
 class _SWRemote {
     protected:
         uint8_t bufMemory[MESSAGE_LENGTH_REMOTE];
-
-    public:
-        uint16_t getHighTempADC();
-        void setHighTempADC(uint16_t adc);
-        uint16_t getLowTempADC();
-        void setLowTempADC(uint16_t adc);
-        uint8_t getDrumLoad();
-        void setDrumLoad(uint8_t load);
 };
 
 
@@ -122,7 +124,7 @@ class _SWRemote {
  *        bytes[5] -- CRC
  * @param pin: PA9 -- pin used for communication (receive)
  */
-class SWRemoteTx: public _SWProtocolTx, _SWRemote {
+class SWRemoteTx: public _SWProtocolTx, public _SWRemote {
     public:
         SWRemoteTx(uint8_t pin):
             _SWProtocolTx(pin, bufMemory, MESSAGE_LENGTH_REMOTE) {};
@@ -143,7 +145,7 @@ class SWRemoteTx: public _SWProtocolTx, _SWRemote {
  *        bytes[5] -- CRC
  * @param pin: PA9 -- pin used for communication (transmit)
  */
-class SWRemoteRx: public _SWProtocolRx, _SWRemote {
+class SWRemoteRx: public _SWProtocolRx, public _SWRemote {
     public:
         SWRemoteRx(uint8_t pin):
             _SWProtocolRx(pin, bufMemory, MESSAGE_LENGTH_REMOTE) {};
