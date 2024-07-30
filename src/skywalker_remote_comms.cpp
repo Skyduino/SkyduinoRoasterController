@@ -25,6 +25,8 @@ bool SkywalkerRemoteComm::loopTick() {
 
     if ( isTxCycle ) {
         uint32_t skwrADC = this->_state->reported.getSkywalkerADC();
+        this->_toRemote.setHighTempADC( skwrADC & 0xFFFF );
+        this->_toRemote.setLowTempADC( skwrADC >> 16 );
         this->_toRemote.sendMessage();
     } else {
         this->_fromRemote.getMessage();
