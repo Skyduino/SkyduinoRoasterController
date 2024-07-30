@@ -122,9 +122,7 @@ class _SWRemote {
  *        bytes[5] -- CRC
  * @param pin: PA9 -- pin used for communication (receive)
  */
-class SWRemoteTx: public _SWProtocolTx{
-    protected:
-        uint8_t bufMemory[MESSAGE_LENGTH_REMOTE];
+class SWRemoteTx: public _SWProtocolTx, _SWRemote {
     public:
         SWRemoteTx(uint8_t pin):
             _SWProtocolTx(pin, bufMemory, MESSAGE_LENGTH_REMOTE) {};
@@ -145,9 +143,7 @@ class SWRemoteTx: public _SWProtocolTx{
  *        bytes[5] -- CRC
  * @param pin: PA9 -- pin used for communication (transmit)
  */
-class SWRemoteRx: public _SWProtocolRx{
-    protected:
-        uint8_t bufMemory[MESSAGE_LENGTH_REMOTE];
+class SWRemoteRx: public _SWProtocolRx, _SWRemote {
     public:
         SWRemoteRx(uint8_t pin):
             _SWProtocolRx(pin, bufMemory, MESSAGE_LENGTH_REMOTE) {};
