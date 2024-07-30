@@ -95,6 +95,20 @@ class SWRoasterTx: public _SWProtocolTx {
 };
 
 
+class _SWRemote {
+    protected:
+        uint8_t bufMemory[MESSAGE_LENGTH_REMOTE];
+
+    public:
+        uint16_t getHighTempADC();
+        void setHighTempADC(uint16_t adc);
+        uint16_t getLowTempADC();
+        void setLowTempADC(uint16_t adc);
+        uint8_t getDrumLoad();
+        void setDrumLoad(uint8_t load);
+};
+
+
 /**
  * @brief Send "remote" data AKA pretend to be remote and control the roaster.
  *        Roaster remote uses USB D- (White) line for communication with the 

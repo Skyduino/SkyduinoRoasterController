@@ -240,3 +240,60 @@ bool _SWProtocolRx::getMessage() {
 void _SWProtocolRx::begin(void) {
   pinMode(pin, INPUT);
 }
+
+
+/**
+ * @brief Get ADC value representing temperature for the higher temperature
+ *        when there's an addition 2K 5V pull resistor is added to the existing
+ *        20K pull up
+ * 
+ * @return returns current ADC value, bytes 0 & 1. 
+ */
+uint16_t _SWRemote::getHighTempADC() {
+    return bufMemory[1] << 8 | bufMemory[0];
+}
+
+
+/**
+ * @brief Set ADC value for the higher temperature range
+ */
+void _SWRemote::setHighTempADC(uint16_t adc) {
+    bufMemory[0] = adc & 0xFF;
+    bufMemory[1] = adc >> 8;
+}
+
+
+/**
+ * @brief Get ADC value representing temperature for the lower temperature range
+ *        with just the 20K pull up resistor
+ * 
+ * @return returns current ADC value, bytes 2 & 3. 
+ */
+uint16_t _SWRemote::getLowTempADC() {
+    return bufMemory[3] << 8 | bufMemory[2];
+}
+
+
+/**
+ * @brief Set ADC value for the lower temperature range
+ */
+void _SWRemote::setLowTempADC(uint16_t adc) {
+    bufMemory[2] = adc & 0xFF;
+    bufMemory[3] = adc >> 8;
+}
+
+
+/**
+ * @brief Get drum load, byte 5
+ */
+uint8_t _SWRemote::getDrumLoad() {
+    return bufMemory[5];
+}
+
+
+/**
+ * @brief Set drum load, byte 5
+ */
+void _SWRemote::setDrumLoad(uint8_t load) {
+    bufMemory[5] = load;
+}
