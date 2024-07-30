@@ -55,12 +55,12 @@ float NTC::AdcToTempC(int32_t adcReading) {
  *          byte[0] and byte[1] in the lower 16bits and byte[2]/byte[3] in the
  *          higher 16 bits.
  */
-uint32_t NTC::TempCtoSkywalkerADC(double dTempC) {
+uint32_t NTC::TempCtoSkywalkerADC(float dTempC) {
     int16_t temperatureC = round(dTempC);
 
     // check if the value is outside of lookup range
-    if ( temperatureC >  _tempResistanceTable[0].temperatureC
-         ||  temperatureC < _tempResistanceTable[tableSize-1].temperatureC) {
+    if ( temperatureC <  _tempResistanceTable[0].temperatureC
+         ||  temperatureC > _tempResistanceTable[tableSize-1].temperatureC) {
         return 0;
     }
 
@@ -76,7 +76,7 @@ uint32_t NTC::TempCtoSkywalkerADC(double dTempC) {
         entry = &(_tempResistanceTable[ midpoint ]);
         if ( entry->temperatureC == temperatureC ) {
             return ( entry->skwAdcBytes23 << 16 ) | entry->skwAdcBytes01; 
-        } else if ( entry->temperatureC < temperatureC ) {
+        } else if ( entry->temperatureC > temperatureC ) {
             highBound = midpoint;
         } else {
             lowBound = midpoint;

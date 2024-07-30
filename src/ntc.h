@@ -20,7 +20,7 @@ typedef struct {
 class NTC {
     public:
         float AdcToTempC(int32_t adcReading);
-        uint32_t TempCtoSkywalkerADC(double temp);
+        uint32_t TempCtoSkywalkerADC(float temp);
     
     private:
         static constexpr uint32_t tableSize = NTC_TABLE_SIZE;
