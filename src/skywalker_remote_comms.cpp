@@ -33,6 +33,7 @@ bool SkywalkerRemoteComm::loopTick() {
     }
 
     isTxCycle = !isTxCycle;
+    this->_commTimer->reset();
 
     return true;
 }
