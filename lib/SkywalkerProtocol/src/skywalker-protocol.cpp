@@ -258,8 +258,9 @@ uint16_t _SWRoaster::getHighTempADC() {
  * @brief Set ADC value for the higher temperature range
  */
 void _SWRoaster::setHighTempADC(uint16_t adc) {
-    bufMemory[0] = adc & 0xFF;
-    bufMemory[1] = adc >> 8;
+    // MSB order
+    bufMemory[0] = adc >> 8;
+    bufMemory[1] = adc & 0xFF;
 }
 
 
@@ -278,8 +279,9 @@ uint16_t _SWRoaster::getLowTempADC() {
  * @brief Set ADC value for the lower temperature range
  */
 void _SWRoaster::setLowTempADC(uint16_t adc) {
-    bufMemory[2] = adc & 0xFF;
-    bufMemory[3] = adc >> 8;
+    // MSB Order
+    bufMemory[2] = adc >> 8;
+    bufMemory[3] = adc & 0xFF;
 }
 
 
