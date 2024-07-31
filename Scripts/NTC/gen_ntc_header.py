@@ -29,7 +29,7 @@ def temp2adc_1(Rntc: float) -> int:
 def temp2adc_2(Rntc: float) -> int:
     # Convert temperature C to skywalker ADC 2nd ADC reading
     # the one using 20k/Rntc divider
-    adc = (0x3FF * 1.0 * Rntc) / (20000.0 + Rntc)
+    adc = (0x3FF * 1.0 * Rntc) / (30000.0 + Rntc)
     return hex(round(adc))
     
 
