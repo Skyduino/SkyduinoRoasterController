@@ -108,6 +108,18 @@ class SWRoasterTx: public _SWProtocolTx, public _SWRoaster {
 class _SWRemote {
     protected:
         uint8_t bufMemory[MESSAGE_LENGTH_REMOTE];
+
+    public:
+        uint8_t getAirFan();
+        void setAirFan(uint8_t value);
+        uint8_t getFilterFan();
+        void setFilterFan(uint8_t value);
+        uint8_t getCoolingFan();
+        void setCoolingFan(uint8_t value);
+        uint8_t getDrumSpeed();
+        void setDrumSpeed(uint8_t value);
+        uint8_t getHeat();
+        void setHeat(uint8_t value);
 };
 
 

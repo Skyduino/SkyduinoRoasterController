@@ -7,6 +7,12 @@
 #define WARNLN(...)
 #endif
 
+#define BYTE_POS_AIR_FAN            0
+#define BYTE_POS_FILTER_FAN         1
+#define BYTE_POS_COOLING_FAN        2
+#define BYTE_POS_DRUM               3
+#define BYTE_POS_HEAT               4
+
 #define SWPROT_TX_1_LENGTH_US       1500
 #define SWPROT_TX_0_LENGTH_US       650
 #define SWPROT_TX_PREAMBLE_LOW_US   7500UL
@@ -298,4 +304,114 @@ uint8_t _SWRoaster::getDrumLoad() {
  */
 void _SWRoaster::setDrumLoad(uint8_t load) {
     bufMemory[5] = load;
+}
+
+
+/**
+ * @brief Get current air circulation fan setting
+ *
+ */
+uint8_t _SWRemote::getAirFan() {
+    return bufMemory[BYTE_POS_AIR_FAN];
+}
+
+
+/**
+ * @brief set air circulation fan speed
+ * @param value -- fan speed duty cycle 0-100
+ */
+void _SWRemote::setAirFan(uint8_t value) {
+    if ( value > 100 ) {
+        value = 100;
+    }
+
+    bufMemory[BYTE_POS_AIR_FAN] = value;
+}
+
+
+/**
+ * @brief Get current filter fan setting
+ *
+ */
+uint8_t _SWRemote::getFilterFan() {
+    return bufMemory[BYTE_POS_FILTER_FAN];
+}
+
+
+/**
+ * @brief set filter fan speed
+ * @param value -- fan speed duty cycle 0-100
+ */
+void _SWRemote::setFilterFan(uint8_t value) {
+    if ( value > 100 ) {
+        value = 100;
+    }
+
+    bufMemory[BYTE_POS_FILTER_FAN] = value;
+}
+
+
+/**
+ * @brief Get current cooling fan speed
+ *
+ */
+uint8_t _SWRemote::getCoolingFan() {
+    return bufMemory[BYTE_POS_FILTER_FAN];
+}
+
+
+/**
+ * @brief set cooling fan speed
+ * @param value -- fan speed duty cycle 0-100
+ */
+void _SWRemote::setCoolingFan(uint8_t value) {
+    if ( value > 100 ) {
+        value = 100;
+    }
+
+    bufMemory[BYTE_POS_FILTER_FAN] = value;
+}
+
+
+/**
+ * @brief Get current drum speed
+ *
+ */
+uint8_t _SWRemote::getDrumSpeed() {
+    return bufMemory[BYTE_POS_DRUM];
+}
+
+
+/**
+ * @brief set drum speed
+ * @param value -- speed duty cycle 0-100
+ */
+void _SWRemote::setDrumSpeed(uint8_t value) {
+    if ( value > 100 ) {
+        value = 100;
+    }
+
+    bufMemory[BYTE_POS_DRUM] = value;
+}
+
+
+/**
+ * @brief Get current heat setting
+ *
+ */
+uint8_t _SWRemote::getHeat() {
+    return bufMemory[BYTE_POS_HEAT];
+}
+
+
+/**
+ * @brief set heating value
+ * @param value -- heating duty cycle 0-100
+ */
+void _SWRemote::setHeat(uint8_t value) {
+    if ( value > 100 ) {
+        value = 100;
+    }
+
+    bufMemory[BYTE_POS_HEAT] = value;
 }
