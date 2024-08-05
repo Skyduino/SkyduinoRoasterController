@@ -91,6 +91,30 @@ void StateCommanded::off() {
 
 
 /**
+ * @brief check whether the roaster is controlled by the TC4 protocol or the
+ *        remote. By default, the roaster is controlled by the remote, however,
+ *        if any OT1, OT2, commands are recieved, then the control is
+ *        relinguished to TC4 protocol. Off commands resets to the deault
+ *        state.
+ * 
+ * @return true -- if the roaster is conrolled by the TC4 protocol
+ */
+bool StateCommanded::isArtisanIncontrol() {
+    return this->_isArtisanInControl;
+}
+
+
+/**
+ * @brief set control to the TC4 protocol
+ * 
+ * @param value -- true, if the roaster is to be controlled by the TC4 protocol
+ */
+void StateCommanded::setControlToArtisan(bool value) {
+    this->_isArtisanInControl = value;
+}
+
+
+/**
  * @brief Abort -- Emergency shutdown
  *
  * Turn everything off and lock out the controls
