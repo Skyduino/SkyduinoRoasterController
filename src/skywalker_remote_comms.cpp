@@ -85,6 +85,7 @@ void SkywalkerRemoteComm::_handleRx() {
             DEBUG(micros()); DEBUG(handler->valueName);
             DEBUG(F(" has changed to "));
             DEBUGLN(newValue);
+            *(handler->oldValue) = newValue;
         }
     }
 }
