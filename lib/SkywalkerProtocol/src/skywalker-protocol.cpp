@@ -7,11 +7,20 @@
 #define WARNLN(...)
 #endif
 
+// Remote to Roster
 #define BYTE_POS_AIR_FAN            0
 #define BYTE_POS_FILTER_FAN         1
 #define BYTE_POS_COOLING_FAN        2
 #define BYTE_POS_DRUM               3
 #define BYTE_POS_HEAT               4
+
+// Roaster to Remote
+#define BYTE_POS_TEMP_HIGH_MSB      0
+#define BYTE_POS_TEMP_HIGH_LSB      1
+#define BYTE_POS_TEMP_LOW_MSB       2
+#define BYTE_POS_TEMP_LOW_LSB       3
+#define BYTE_POS_DRUM_LOAD          5
+
 
 #define SWPROT_TX_1_LENGTH_US       1500
 #define SWPROT_TX_0_LENGTH_US       650
@@ -256,7 +265,8 @@ void _SWProtocolRx::begin(void) {
  * @return returns current ADC value, bytes 0 & 1. 
  */
 uint16_t _SWRoaster::getHighTempADC() {
-    return bufMemory[1] << 8 | bufMemory[0];
+    return bufMemory[BYTE_POS_TEMP_HIGH_MSB] << 8 
+           | bufMemory[BYTE_POS_TEMP_HIGH_LSB];
 }
 
 
@@ -265,8 +275,8 @@ uint16_t _SWRoaster::getHighTempADC() {
  */
 void _SWRoaster::setHighTempADC(uint16_t adc) {
     // MSB order
-    bufMemory[0] = adc >> 8;
-    bufMemory[1] = adc & 0xFF;
+    bufMemory[BYTE_POS_TEMP_HIGH_MSB] = adc >> 8;
+    bufMemory[BYTE_POS_TEMP_HIGH_LSB] = adc & 0xFF;
 }
 
 
@@ -277,7 +287,8 @@ void _SWRoaster::setHighTempADC(uint16_t adc) {
  * @return returns current ADC value, bytes 2 & 3. 
  */
 uint16_t _SWRoaster::getLowTempADC() {
-    return bufMemory[3] << 8 | bufMemory[2];
+    return bufMemory[BYTE_POS_TEMP_LOW_MSB] << 8
+           | bufMemory[BYTE_POS_TEMP_LOW_LSB];
 }
 
 
@@ -286,8 +297,8 @@ uint16_t _SWRoaster::getLowTempADC() {
  */
 void _SWRoaster::setLowTempADC(uint16_t adc) {
     // MSB Order
-    bufMemory[2] = adc >> 8;
-    bufMemory[3] = adc & 0xFF;
+    bufMemory[BYTE_POS_TEMP_LOW_MSB] = adc >> 8;
+    bufMemory[BYTE_POS_TEMP_LOW_LSB] = adc & 0xFF;
 }
 
 
@@ -295,7 +306,7 @@ void _SWRoaster::setLowTempADC(uint16_t adc) {
  * @brief Get drum load, byte 5
  */
 uint8_t _SWRoaster::getDrumLoad() {
-    return bufMemory[5];
+    return bufMemory[BYTE_POS_DRUM_LOAD];
 }
 
 
@@ -303,7 +314,7 @@ uint8_t _SWRoaster::getDrumLoad() {
  * @brief Set drum load, byte 5
  */
 void _SWRoaster::setDrumLoad(uint8_t load) {
-    bufMemory[5] = load;
+    bufMemory[BYTE_POS_DRUM_LOAD] = load;
 }
 
 
