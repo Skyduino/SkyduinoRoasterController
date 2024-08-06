@@ -26,6 +26,7 @@ class SkywalkerRemoteComm {
         uint8_t     _oldHeat       = 255;
 
         void _handleRx();
+        void _handleTx();
 };
 
 #endif //_SW_REMOTE_COMMS_H
