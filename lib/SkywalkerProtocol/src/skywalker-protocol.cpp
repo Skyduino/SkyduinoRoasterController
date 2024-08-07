@@ -367,7 +367,7 @@ void _SWRemote::setFilterFan(uint8_t value) {
  *
  */
 uint8_t _SWRemote::getCoolingFan() {
-    return bufMemory[BYTE_POS_FILTER_FAN];
+    return bufMemory[BYTE_POS_COOLING_FAN];
 }
 
 
@@ -380,7 +380,7 @@ void _SWRemote::setCoolingFan(uint8_t value) {
         value = 100;
     }
 
-    bufMemory[BYTE_POS_FILTER_FAN] = value;
+    bufMemory[BYTE_POS_COOLING_FAN] = value;
 }
 
 
