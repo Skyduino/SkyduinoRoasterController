@@ -346,11 +346,11 @@ void ControlDrum::_setAction(uint8_t value) {
     if ( _isAborted ) return;
     this->_drum.set(value);
 
-    // Turn the stepper enable pin on or off
+    // Turn the stepper enable pin on or off. DRV8825 is nEN
     if ( 0 == value ) {
-        this->_enable.off();
-    } else {
         this->_enable.on();
+    } else {
+        this->_enable.off();
     }
     ControlPWM::_setAction( value );
 }
@@ -363,7 +363,7 @@ void ControlDrum::_setPWM(uint8_t value) {
     this->timer->setMode(channel, TIMER_OUTPUT_COMPARE_PWM1, pin);
     uint32_t overflow = this->durationFromValue(value);
     this->timer->setOverflow(overflow, MICROSEC_FORMAT);
-    this->timer->setCaptureCompare(channel, 2, MICROSEC_COMPARE_FORMAT);
+    this->timer->setCaptureCompare(channel, 50, PERCENT_COMPARE_FORMAT);
     this->timer->resume();
 }
 
