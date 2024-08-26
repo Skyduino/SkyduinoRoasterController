@@ -53,6 +53,8 @@ class ControlPWM: public ControlOnOff {
     
     protected:
         void _setAction(uint8_t value);
+        void virtual _setPWM(uint8_t value);
+
 };
 
 class ControlHeat: public ControlPWM {
