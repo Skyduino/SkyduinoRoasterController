@@ -72,12 +72,35 @@ class ControlHeat: public ControlPWM {
         void _abortAction();
 };
 
+#ifdef USE_STEPPER_DRUM
+class ControlDrum : public ControlPWM {
+    public:
+        ControlDrum(): ControlPWM( PIN_STEPPER_STEP, 200 ),
+            _steps_per_rev( STEPPER_STEPS_PER_REV ),
+            _max_rpm( STEPPER_MAX_RPM ) {};
+        bool begin();
+
+    protected:
+        void _setAction(uint8_t value);
+    
+    private:
+        uint16_t      _steps_per_rev;
+        uint8_t       _max_rpm;
+        ControlOnOff  _enable = ControlOnOff( PIN_STEPPER_EN );
+        ControlPWM    _drum   = ControlPWM( PIN_DRUM, PWM_FREQ_DRUM );
+        void _abortAction();
+};
+#endif // USE_STEPPER_DRUM
 
 class StateCommanded {
     public:
         ControlHeat heat;
         ControlPWM vent     = ControlPWM(PIN_EXHAUST, PWM_FREQ_EXHAUST);
+#ifdef USE_STEPPER_DRUM
+        ControlDrum drum;
+#else  // USE_STEPPER_DRUM
         ControlPWM drum     = ControlPWM(PIN_DRUM, PWM_FREQ_DRUM);
+#endif // USE_STEPPER_DRUM
         ControlOnOff cool   = ControlOnOff(PIN_COOL);
         ControlBasic filter;
 

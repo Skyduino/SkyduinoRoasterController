@@ -316,3 +316,43 @@ void ControlHeat::_setAction(uint8_t newValue) {
         ControlPWM::_setAction(newValue);
     }
 }
+
+
+#ifdef USE_STEPPER_DRUM
+bool ControlDrum::begin() {
+    bool isSuccess = true;
+    
+    isSuccess &= ControlPWM::begin();
+    isSuccess &= this->_drum.begin();
+    isSuccess &= this->_enable.begin();
+
+    return isSuccess;
+}
+
+
+void ControlDrum::_setAction(uint8_t value) {
+    if ( _isAborted ) return;
+    this->_drum.set(value);
+
+    // Turn the stepper enable pin on or off
+    if ( 0 == value ) {
+        this->_enable.off();
+    } else {
+        this->_enable.on();
+    }
+
+    if (NULL == timer) {
+        // was not initialized yet
+        this->begin();
+    } else {
+        this->timer->setPWM(this->channel, this->pin, this->freq, value);
+        this->timer->refresh();
+    }
+}
+
+
+void ControlDrum::_abortAction() {
+    this->_drum.abort();
+    this->_enable.abort();
+}
+#endif // USE_STEPPER_DRUM
