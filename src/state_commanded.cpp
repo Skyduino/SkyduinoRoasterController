@@ -361,8 +361,9 @@ void ControlDrum::_setPWM(uint8_t value) {
 
     PinName pin = digitalPinToPinName( this->pin );
     this->timer->setMode(channel, TIMER_OUTPUT_COMPARE_PWM1, pin);
-    this->timer->setOverflow(this->freq, HERTZ_FORMAT);
-    this->timer->setCaptureCompare(channel, value, PERCENT_COMPARE_FORMAT);
+    uint32_t overflow = this->durationFromValue(value);
+    this->timer->setOverflow(overflow, MICROSEC_FORMAT);
+    this->timer->setCaptureCompare(channel, 2, MICROSEC_COMPARE_FORMAT);
     this->timer->resume();
 }
 
