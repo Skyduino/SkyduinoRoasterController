@@ -27,6 +27,23 @@
 
 #define SPI_BTCS          PA4
 
+// Allow use of DRV8855 stepper motor for drum driving
+#ifdef USE_STEPPER_DRUM
+
+#ifndef PIN_STEPPER_STEP
+#define PIN_STEPPER_STEP PB6
+#endif  // PIN_STEPPER_STEP
+
+#ifndef PIN_STEPPER_EN
+#define PIN_STEPPER_EN   PB7
+#endif  // PIN_STEPPER_EN
+
+#define STEPPER_STEPS_PER_REV 200
+#define STEPPER_MAX_RPM       60
+
+#endif  // USE_STEPPER_DRUM
+
+
 // PWM frequencies Hz
 #define PWM_FREQ_COOL       60
 #define PWM_FREQ_DRUM       60
