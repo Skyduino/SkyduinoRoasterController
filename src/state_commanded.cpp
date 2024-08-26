@@ -322,9 +322,9 @@ void ControlHeat::_setAction(uint8_t newValue) {
 bool ControlDrum::begin() {
     bool isSuccess = true;
     
-    isSuccess &= ControlPWM::begin();
-    isSuccess &= this->_drum.begin();
     isSuccess &= this->_enable.begin();
+    isSuccess &= this->_drum.begin();
+    isSuccess &= ControlPWM::begin();
 
     return isSuccess;
 }
@@ -358,6 +358,14 @@ void ControlDrum::_setAction(uint8_t value) {
 
 void ControlDrum::_setPWM(uint8_t value) {
     DEBUG(micros()); DEBUG(F(" Stepper Drum value: ")); DEBUGLN(value);
+
+    uint32_t pwm_freq = this->_steps_per_rev * value / 100;
+    if ( 0 == pwm_freq ) {
+        this->timer->setPWM(channel, pin, _steps_per_rev, 0);
+    } else {
+        this->timer->setPWM(channel, pin, pwm_freq, 50);
+    }
+    return;
 
     PinName pin = digitalPinToPinName( this->pin );
     this->timer->setMode(channel, TIMER_OUTPUT_COMPARE_PWM1, pin);
