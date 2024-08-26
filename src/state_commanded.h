@@ -84,11 +84,12 @@ class ControlDrum : public ControlPWM {
         void _setAction(uint8_t value);
     
     private:
-        uint16_t      _steps_per_rev;
-        uint8_t       _max_rpm;
-        ControlOnOff  _enable = ControlOnOff( PIN_STEPPER_EN );
-        ControlPWM    _drum   = ControlPWM( PIN_DRUM, PWM_FREQ_DRUM );
-        void _abortAction();
+        uint16_t     _steps_per_rev;
+        uint8_t      _max_rpm;
+        ControlOnOff _enable = ControlOnOff( PIN_STEPPER_EN );
+        ControlPWM   _drum   = ControlPWM( PIN_DRUM, PWM_FREQ_DRUM );
+        void virtual _setPWM(uint8_t value);
+        void         _abortAction();
 };
 #endif // USE_STEPPER_DRUM
 

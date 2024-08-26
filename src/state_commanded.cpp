@@ -340,18 +340,18 @@ void ControlDrum::_setAction(uint8_t value) {
     } else {
         this->_enable.on();
     }
-
-    if (NULL == timer) {
-        // was not initialized yet
-        this->begin();
-    } else {
-        this->timer->setPWM(this->channel, this->pin, this->freq, value);
-        this->timer->refresh();
-    }
+    ControlPWM::_setAction( value );
 }
 
 
-void ControlDrum::_abortAction() {
+void ControlDrum::_setPWM(uint8_t value) {
+    DEBUG(micros()); DEBUG(F(" Stepper Drum value: ")); DEBUGLN(value);
+    ControlPWM( value );
+}
+
+
+void ControlDrum::_abortAction()
+{
     this->_drum.abort();
     this->_enable.abort();
 }
