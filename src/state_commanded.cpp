@@ -330,6 +330,18 @@ bool ControlDrum::begin() {
 }
 
 
+/**
+ * @brief convert value (%) into timer overflow duration, based on the steps
+ *        per revolution and Max supported rpm. 100% value is Max rpm
+ * @param value Value % of max RPM
+ * @return timer overflow duration in us
+*/ 
+uint32_t ControlDrum::durationFromValue(uint8_t value) {
+    uint16_t rpm = ( value * this->_max_rpm ) / 100;
+    return 60 * 1000 * 1000 / ( rpm * this->_steps_per_rev );
+}
+
+
 void ControlDrum::_setAction(uint8_t value) {
     if ( _isAborted ) return;
     this->_drum.set(value);
@@ -346,7 +358,12 @@ void ControlDrum::_setAction(uint8_t value) {
 
 void ControlDrum::_setPWM(uint8_t value) {
     DEBUG(micros()); DEBUG(F(" Stepper Drum value: ")); DEBUGLN(value);
-    ControlPWM::_setPWM( value );
+
+    PinName pin = digitalPinToPinName( this->pin );
+    this->timer->setMode(channel, TIMER_OUTPUT_COMPARE_PWM1, pin);
+    this->timer->setOverflow(this->freq, HERTZ_FORMAT);
+    this->timer->setCaptureCompare(channel, value, PERCENT_COMPARE_FORMAT);
+    this->timer->resume();
 }
 
 
