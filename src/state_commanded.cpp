@@ -342,6 +342,19 @@ uint32_t ControlDrum::durationFromValue(uint8_t value) {
 }
 
 
+
+/**
+ * @brief convert value (%) into PWM frequence, based on the steps
+ *        per revolution and Max supported rpm. 100% value is Max rpm
+ * @param value Value % of max RPM
+ * @return timer PWM frequency in HZ
+*/ 
+uint32_t ControlDrum::frequencyFromValue(uint8_t value) {
+    uint16_t rpm = ( value * this->_max_rpm ) / 100;
+    return ( rpm * this->_steps_per_rev ) / 60;
+}
+
+
 void ControlDrum::_setAction(uint8_t value) {
     if ( _isAborted ) return;
     this->_drum.set(value);
@@ -359,11 +372,10 @@ void ControlDrum::_setAction(uint8_t value) {
 void ControlDrum::_setPWM(uint8_t value) {
     DEBUG(micros()); DEBUG(F(" Stepper Drum value: ")); DEBUGLN(value);
 
-    uint32_t pwm_freq = this->_steps_per_rev * value / 100;
-    if ( 0 == pwm_freq ) {
-        this->timer->setPWM(channel, pin, _steps_per_rev, 0);
+    if ( 0 == value ) {
+        this->timer->setPWM(channel, pin, frequencyFromValue(100), 0);
     } else {
-        this->timer->setPWM(channel, pin, pwm_freq, 50);
+        this->timer->setPWM(channel, pin, frequencyFromValue(value), 50);
     }
 }
 

@@ -80,6 +80,7 @@ class ControlDrum : public ControlPWM {
             _max_rpm( STEPPER_MAX_RPM ) {};
         bool     begin();
         uint32_t durationFromValue(uint8_t value);
+        uint32_t frequencyFromValue(uint8_t value);
 
     protected:
         void _setAction(uint8_t value);
