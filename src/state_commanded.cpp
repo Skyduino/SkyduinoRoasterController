@@ -350,8 +350,9 @@ uint32_t ControlDrum::durationFromValue(uint8_t value) {
  * @return timer PWM frequency in HZ
 */ 
 uint32_t ControlDrum::frequencyFromValue(uint8_t value) {
-    uint16_t rpm = ( value * this->_max_rpm ) / 100;
-    return ( rpm * this->_steps_per_rev ) / 60;
+    uint32_t freq = ( value * this->_max_rpm * this->_steps_per_rev ) \
+                    / 6000;
+    return freq;
 }
 
 
