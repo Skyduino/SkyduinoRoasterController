@@ -373,10 +373,11 @@ void ControlDrum::_setAction(uint8_t value) {
 void ControlDrum::_setPWM(uint8_t value) {
     DEBUG(micros()); DEBUG(F(" Stepper Drum value: ")); DEBUGLN(value);
 
-    if ( 0 == value ) {
-        this->timer->setPWM(channel, pin, frequencyFromValue(100), 0);
+    uint32_t freq = frequencyFromValue(value);
+    if ( 0 == freq ) {
+        this->timer->pause();
     } else {
-        this->timer->setPWM(channel, pin, frequencyFromValue(value), 50);
+        this->timer->setPWM(channel, pin, freq, 50);
     }
 }
 
