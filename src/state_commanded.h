@@ -81,6 +81,8 @@ class ControlDrum : public ControlPWM {
         bool     begin();
         uint32_t durationFromValue(uint8_t value);
         uint32_t frequencyFromValue(uint8_t value);
+        void     setStepsPerRevolution(uint16_t steps);
+        void     setMaxRPM(uint8_t rpm);
 
     protected:
         void _setAction(uint8_t value);

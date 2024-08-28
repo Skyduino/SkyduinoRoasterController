@@ -342,7 +342,6 @@ uint32_t ControlDrum::durationFromValue(uint8_t value) {
 }
 
 
-
 /**
  * @brief convert value (%) into PWM frequence, based on the steps
  *        per revolution and Max supported rpm. 100% value is Max rpm
@@ -353,6 +352,26 @@ uint32_t ControlDrum::frequencyFromValue(uint8_t value) {
     uint32_t freq = ( value * this->_max_rpm * this->_steps_per_rev ) \
                     / 6000;
     return freq;
+}
+
+
+/**
+ * @brief sets steps per revolution for the stepper drum driver
+ * @param steps number of steps for a complete revolution
+ */
+void ControlDrum::setStepsPerRevolution(uint16_t steps) {
+    this->_steps_per_rev = steps;
+    this->set( this->get() );
+}
+
+
+/**
+ * @brief sets max RPM for the stepper driver
+ * @param rpm -- max rpm
+ */
+void ControlDrum::setMaxRPM(uint8_t rpm) {
+    this->_max_rpm = rpm;
+    this->set( this->get() );
 }
 
 
