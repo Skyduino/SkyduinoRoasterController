@@ -86,6 +86,11 @@ class StateCommanded {
         bool loopTick();
         void printState();
         void off();
+        bool isArtisanIncontrol();
+        void setControlToArtisan(bool value = true);
+
+    protected:
+        bool _isArtisanInControl = false;
 };
 
 

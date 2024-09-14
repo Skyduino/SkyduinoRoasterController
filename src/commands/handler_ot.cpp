@@ -12,6 +12,7 @@ cmndOT1::cmndOT1(State *state):
 
 void cmndOT1::_handleValue(int32_t value) {
     state->commanded.heat.set(value);
+    state->commanded.setControlToArtisan(true);
 }
 
 
@@ -22,4 +23,5 @@ cmndOT2::cmndOT2(State *state):
 
 void cmndOT2::_handleValue(int32_t value) {
     state->commanded.vent.set(value);
+    state->commanded.setControlToArtisan(true);
 }

@@ -6,6 +6,7 @@
 #include "logging.h"
 #include "commands.h"
 #include "safemon.h"
+#include "skywalker_remote_comms.h"
 
 
 /*
@@ -15,6 +16,7 @@
  */
 State state;
 SafetyMonitor safeMon = SafetyMonitor( &state );
+SkywalkerRemoteComm skwRemoteComm = SkywalkerRemoteComm( &state );
 
 void setup() {
   Serial.begin(115200);
@@ -22,6 +24,7 @@ void setup() {
   Serial.println(F(VERSION));
 
   safeMon.begin();
+  skwRemoteComm.begin();
 
   while ( !(state.begin()) ) {
     Serial.println(F("Failed to initialize"));
@@ -42,6 +45,8 @@ void loop() {
   state.loopTick();
 
   safeMon.loopTick();
+
+  skwRemoteComm.loopTick();
 
   state.stats.loopEnd();
 }

@@ -38,6 +38,7 @@ cmndOff::cmndOff(State *state):
 
 void cmndOff::_doCommand(CmndParser *pars) {
     state->commanded.off();
+    state->commanded.setControlToArtisan(false);
 }
 
 

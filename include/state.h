@@ -30,6 +30,7 @@ class Reported {
         uint8_t getChanMapping(uint8_t idx);
         void setChanMapping(uint8_t idx, uint8_t mapping);
         float getChanTemp(uint8_t chan);
+        uint32_t getSkywalkerADC();
     
     private:
         Adafruit_MAX31855   *tc1;
