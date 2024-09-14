@@ -61,6 +61,21 @@ firmware, but the DRUM speed is now adjustable. Sample config is available in [S
 If you are using Linux, then you can also add an udev rule, so the serial port is always available as `/dev/ttyUSB.artisan` The udev rule file is in [Settings/udev/90-arduino-stm32-acm.rules](./Settings/udev/90-arduino-stm32-acm.rules) Copy this file into `/etc/udev/rules.d` then restart the udev daemon with `sudo udevadm control --reload` and replug the board.
 
 
+# Internals
+## Temperature channels
+Firmware support TC4 `CHAN` command which allows remapping of the logical to physical channels. Artisan expects **ET** on the logical channel #1 and **BT** on the logical channel #2. On the controller, the physical channel #1 is the Thermocouple Probe and physical channel #2 for the NTC resistive temperature probe.
+Thus, `CHAN;2100` configures roaster to use the thermocouple for the **BT** and NTC for the **ET** (just to log the other probe?).
+Alternatively, you could use `CHAN;1200` command to use NTC for **BT** and the thermocouple for **ET**. Or, if you don't use the thermoucouple at all, use `CHAN;1000` to disable ET & thermocouple completely.
+
+## Safety
+The firmware monitors both physical channels for the max temperature, defined as `MAX_SAFE_TEMP_C` macro in [platformio.ini](https://github.com/Skyduino/SkyduinoRoasterController/blob/4a706247c2a8c93f3a51e89be9654132c200d2fa/platformio.ini#L20)
+The safety monitor component requires at least one working temperature channel.
+If none of the temperature channels are working (both the NTC & thermocouple are disconnected) then the firmware 
+switches into failsafe mode. In other words, if you are testing the hardware/firmware, have either NTC or thermocouple connected, otherwise 
+the firmware is going to ignore the control commands, due to failsafe.
+
+
+
 
 [Reference Table]: #
 [dfu-util-win]: http://dfu-util.sourceforge.net/releases/dfu-util-0.8-binaries/win32-mingw32/dfu-util-static.exe "dfu-util for Windows"
