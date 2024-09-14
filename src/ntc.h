@@ -6,8 +6,10 @@
 #include "ntc-data.h"
 
 typedef struct {
-    int      temperatureC;
+    int16_t  temperatureC;
     uint16_t adcReading;
+    uint16_t skwAdcBytes01;
+    uint16_t skwAdcBytes23;
 } NTC_Temp_Resistance_t;
 
 
@@ -18,6 +20,7 @@ typedef struct {
 class NTC {
     public:
         float AdcToTempC(int32_t adcReading);
+        uint32_t TempCtoSkywalkerADC(float temp);
     
     private:
         static constexpr uint32_t tableSize = NTC_TABLE_SIZE;

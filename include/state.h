@@ -7,6 +7,7 @@
 
 #include <roaster.h>
 #include "state_commanded.h"
+#include "state_statistics.h"
 #include "ntc.h"
 
 class Config {
@@ -17,14 +18,6 @@ class Config {
     protected:
 };
 
-class Stats {
-    public:
-        uint32_t tc_read_attempts_total;
-        uint32_t tc_read_attempts_retries;
-        uint32_t tc_read_attempts_failures;
-
-        void print();
-};
 
 class Reported {
     public:
@@ -37,6 +30,7 @@ class Reported {
         uint8_t getChanMapping(uint8_t idx);
         void setChanMapping(uint8_t idx, uint8_t mapping);
         float getChanTemp(uint8_t chan);
+        uint32_t getSkywalkerADC();
     
     private:
         Adafruit_MAX31855   *tc1;
@@ -46,7 +40,7 @@ class Reported {
         filterRC<float>     filter[TEMPERATURE_CHANNELS_MAX];
         NTC                 ntc;
         uint8_t             _chanMapping[TEMPERATURE_CHANNELS_MAX];
-        Stats               statitstics;
+        StatsReported       statitstics;
         float               chanTemp[TEMPERATURE_CHANNELS_MAX]; // Physical temp channels
         float               ambient;  // Ambient temperature
 
@@ -68,11 +62,12 @@ class State {
         Reported        reported = Reported(&cfg);
         Config          cfg;
         Status          status;
+        Stats           stats;
 
         bool    begin();
         bool    loopTick();
         void    printState();
-
+        void    printStatistics();
 };
 
 #endif  // _SW_STATE_H

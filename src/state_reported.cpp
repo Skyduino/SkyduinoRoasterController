@@ -159,11 +159,24 @@ void Reported::_readNTC() {
 }
 
 
-void Stats::print() {
-    Serial.print(F("Thermocouple Read Attempts Total/Retries/Failed: "));
-    
-    char buf[255];
-    const char format[] = "%lu/%lu/%lu";
-    sprintf(buf, format, tc_read_attempts_total, tc_read_attempts_retries, tc_read_attempts_failures);
-    Serial.println(buf);
+/**
+ * @brief Get Skywalker ADC data, return 2x 10bit ADC values packed into 32 bits
+ *        The BT is Channel 1 so get the reading which is mapped to this channel
+ *        depending how Artisan/User set ups channel mapping, this could be the
+ *        NTC or the thermocouple reading.
+ *
+ * @return uint32_t of two ADC values for the Skywalker Remote
+ */
+uint32_t Reported::getSkywalkerADC() {
+    float tempC;
+
+    uint8_t mapping = this->_chanMapping[1];
+    if ((mapping >= 1)
+        && (mapping <= TEMPERATURE_CHANNELS_MAX)) {
+        tempC = this->chanTemp[mapping - 1];
+    } else {
+        tempC = 0;
+    }
+
+    return this->ntc.TempCtoSkywalkerADC(tempC);
 }

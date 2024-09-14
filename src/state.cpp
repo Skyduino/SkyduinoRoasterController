@@ -38,3 +38,11 @@ void State::printState() {
     reported.printState();
     commanded.printState();
 }
+
+/**
+ * @brief print all the available statistics
+ */
+void State::printStatistics() {
+    this->reported.printStatistics();
+    this->stats.print();
+}
