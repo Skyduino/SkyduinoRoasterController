@@ -1,3 +1,4 @@
+#ifdef USE_STEPPER_DRUM
 #include "state.h"
 #include "handler_stepper_drum.h"
 
@@ -38,3 +39,4 @@ void cmndMaxRPM::_handleValue(int32_t value) {
     state->commanded.drum.setMaxRPM( value );
     Serial.print(F("Setting MAX rpm to ")); Serial.println( value );
 }
+#endif // USE_STEPPER_DRUM
