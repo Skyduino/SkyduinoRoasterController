@@ -7,7 +7,7 @@
 #define MAX_RPM    120
 
 cmndSteps::cmndSteps(State *state):
-    ControlCommand(CMD_STEPS, state) {
+    ControlCommand(CMD_STEPS, state, 60, 30000) {
 }
 
 
@@ -21,7 +21,7 @@ void cmndSteps::_handleValue(int32_t value) {
 
 
 cmndMaxRPM::cmndMaxRPM(State *state):
-    ControlCommand(CMD_MAXRPM, state) {
+    ControlCommand(CMD_MAXRPM, state, MIN_RPM, MAX_RPM) {
 }
 
 
