@@ -179,7 +179,7 @@ void ControlOnOff::_setAction(uint8_t value) {
 }
 
 
-ControlPWM::ControlPWM(uint8_t pin, uint32_t freq): ControlOnOff(pin) {
+ControlPWM::ControlPWM(uint32_t pin, uint32_t freq): ControlOnOff(pin) {
     this->freq = freq;
     this->timer = NULL;
 }

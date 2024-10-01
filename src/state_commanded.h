@@ -33,17 +33,17 @@ class ControlBasic {
 
 class ControlOnOff: public ControlBasic {
     public:
-        ControlOnOff(uint8_t pin): pin(pin) {};
+        ControlOnOff(uint32_t pin): pin(pin) {};
         bool begin();
 
     protected:
-        const uint8_t   pin;
+        const uint32_t pin;
         void _setAction(uint8_t value);
 };
 
 class ControlPWM: public ControlOnOff {
     public:
-        ControlPWM(uint8_t pin, uint32_t freq);
+        ControlPWM(uint32_t pin, uint32_t freq);
         bool begin();
 
     protected:
