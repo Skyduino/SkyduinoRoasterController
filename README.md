@@ -21,6 +21,19 @@ build firmware yourself (easiest way is to use the [PlatformIO IDE](https://plat
 in [VSCode](https://code.visualstudio.com/download)) or as the last resort, try finding a latest
 artifact in [Github Actions](https://github.com/Skyduino/SkyduinoRoasterController/actions/workflows/Platformio-ci.yaml) run history.
 
+### Stepper drum motor firmware
+The "Firmware Stepper" zip file contains the modified firmware to control the drum
+using a stepper motor. This does require a separate stepper motor driver,
+controlled through **J13 Disp** header, using the following pins:
+
+| Pin Name | Function | Description |
+| --- | --- | --- |
+| SCL | STEP | Step signal to stepper driver |
+| SDA | nEN | Enable signal to driver, low level is active |
+
+The firmware was tested with TMC2209 driver board. You may need to hardwire the direction pin, as this is not controlled at the moment.
+
+
 ## DFU Mode
 
 The board is based on ST32F412RET6 microcontroller, therefore the easiest way to install or
