@@ -46,13 +46,13 @@ class ControlPWM: public ControlOnOff {
         ControlPWM(uint8_t pin, uint32_t freq);
         bool begin();
 
-    private:
-        HardwareTimer*  timer;
-        uint32_t        channel;
-        uint32_t        freq;
-    
     protected:
-        void _setAction(uint8_t value);
+        HardwareTimer *timer;
+        uint32_t      channel;
+        uint32_t      freq;
+        void          _setAction(uint8_t value);
+        void virtual  _setPWM(uint8_t value);
+
 };
 
 class ControlHeat: public ControlPWM {

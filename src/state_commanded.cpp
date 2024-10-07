@@ -214,10 +214,15 @@ void ControlPWM::_setAction(uint8_t value) {
         this->begin();
     } else {
         // set pwm to 0
-        timer->setPWM(this->channel, this->pin, this->freq, value);
-        timer->refresh();
+        this->_setPWM( value );
         DEBUG(micros()); DEBUG(F(" PWM::_setAction value: ")); DEBUGLN(value);
     }
+}
+
+
+void ControlPWM::_setPWM(uint8_t value) {
+    this->timer->setPWM(this->channel, this->pin, this->freq, value);
+    timer->refresh();
 }
 
 
