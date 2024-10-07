@@ -20,8 +20,6 @@ jobs:
     steps:
       - id: download
         uses: actions/download-artifact@v4
-        with:
-          merge-multiple: true
 
       - id: zip_firmware
         run: zip -r -5 '${{ env.firmware_zip }}' Firmware
