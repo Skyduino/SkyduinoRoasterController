@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       firmware_zip: 'Skyduino Firmware-${{ github.ref_name }}.zip'
+      firmware_stepper_zip: 'Skyduino Stepper Firmware-${{ github.ref_name }}.zip'
 
     steps:
       - id: download
@@ -23,7 +24,10 @@ jobs:
           merge-multiple: true
 
       - id: zip_firmware
-        run: zip -r -5 '${{ env.firmware_zip }}' .
+        run: zip -r -5 '${{ env.firmware_zip }}' Firmware
+
+      - id: zip_firmware_stepper
+        run: zip -r -5 '${{ env.firmware_stepper_zip }}' 'Firmware Stepper'
       
       - id: upload_assets
         name: Upload assets
@@ -31,4 +35,5 @@ jobs:
         with:
           files: |
             ${{ env.firmware_zip }}
+            ${{ env.firmware_stepper_zip }}
           generate_release_notes: false
