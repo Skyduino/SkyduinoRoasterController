@@ -21,13 +21,14 @@ class Command : public CmndBase {
 class ControlCommand: public Command {
     public:
         ControlCommand(const char *cmdName, State *state);
+        ControlCommand(const char *cmdName, State *state, uint32_t clamp_min, int32_t clamp_max);
     protected:
         void _doCommand( CmndParser* pars);
         void virtual _handleValue(int32_t value) =0;
 
     private:
-        const int32_t min = 0;
-        const int32_t max = 100;
+        int32_t min;
+        int32_t max;
 };
 
 #endif // __CMD_BASE_H

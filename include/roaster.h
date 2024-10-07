@@ -21,11 +21,28 @@
 #define PIN_DATA_TO_RMT   PA10
 #define PIN_DRUM          PA15
 #define PIN_HEAT_RELAY    PB8
-#define PIN_HEAT          PB9
+#define PIN_HEAT          PB9_ALT1
 #define PIN_NTC           PC5
 #define PIN_COOL          PC8
 
 #define SPI_BTCS          PA4
+
+// Allow use of DRV8855 stepper motor for drum driving
+#ifdef USE_STEPPER_DRUM
+
+#ifndef PIN_STEPPER_STEP
+#define PIN_STEPPER_STEP PB6
+#endif  // PIN_STEPPER_STEP
+
+#ifndef PIN_STEPPER_EN
+#define PIN_STEPPER_EN   PB7
+#endif  // PIN_STEPPER_EN
+
+#define STEPPER_STEPS_PER_REV 1500
+#define STEPPER_MAX_RPM       60
+
+#endif  // USE_STEPPER_DRUM
+
 
 // PWM frequencies Hz
 #define PWM_FREQ_COOL       60

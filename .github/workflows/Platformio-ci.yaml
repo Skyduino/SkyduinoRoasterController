@@ -63,6 +63,17 @@ jobs:
             .pio/build/skyduino-dfu/firmware.bin
             .pio/build/skyduino-dfu/firmware.elf
 
+      - name: Build Stepper environment
+        run: pio run -e skyduino-stepper
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Firmware Stepper
+          path: |
+            .pio/build/skyduino-stepper/firmware.bin
+            .pio/build/skyduino-stepper/firmware.elf
+
   UploadAssets:
     name: Upload Assets
     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
