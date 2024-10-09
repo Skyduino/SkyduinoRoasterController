@@ -1,6 +1,7 @@
 #include <CRC16.h>
 #include <CRC.h>
 #include <EEPROM.h>
+#include <logging.h>
 
 #include "eeprom_settings.h"
 
@@ -15,6 +16,7 @@ bool EepromSettings::begin() {
     if ( (settings.crc16 != crc) || (settings.eepromMagic != EEPROM_SETTINGS_MAGIC) )
     {
         // load the defaults
+        DEBUG(micros()); DEBUGLN(F(" Loading NVM Settings defaults"));
         memcpy_P(&settings, this->defaultSettings, sizeof(t_Settings));
         this->save();
     }
@@ -40,6 +42,7 @@ bool EepromSettings::loopTick() {
  * @brief save the eeprom container
  */
 void EepromSettings::save() {
+    DEBUG(micros()); DEBUGLN(F(" Saving NVM Settings"));
     this->settings.crc16 = calcCRC16((uint8_t *) &settings, offsetof(t_Settings, crc16));
     EEPROM.put(EEPROM_SETTINGS_ADDR, this->settings);
     isDirty = false;
