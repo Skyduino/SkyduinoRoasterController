@@ -9,7 +9,7 @@
  * @brief initialize the Eeprom settings container. Load from eeprom
  *        and initialize the defaults if eeprom data is garbage
  */ 
-void EepromSettings::begin() {
+bool EepromSettings::begin() {
     EEPROM.get(EEPROM_SETTINGS_ADDR, settings);
     uint16_t crc = calcCRC16((uint8_t *) &settings, offsetof(t_Settings, crc16));
     if ( (settings.crc16 != crc) || (settings.eepromMagic != EEPROM_SETTINGS_MAGIC) )
@@ -18,17 +18,21 @@ void EepromSettings::begin() {
         memcpy_P(&settings, this->defaultSettings, sizeof(t_Settings));
         this->save();
     }
+
+    return true;
 }
 
 
 /**
  * @brief check if the timer is fired and is the buffer is marked as dirty
  */
-void EepromSettings::looptick() {
+bool EepromSettings::loopTick() {
     if ( isDirty && this->timer.hasTicked() ) {
         this->save();
         this->timer.reset();
     }
+
+    return true;
 }
 
 

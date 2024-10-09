@@ -30,8 +30,8 @@ class EepromSettings {
         t_Settings settings;
 
         EepromSettings(const t_Settings *eeprom): defaultSettings(eeprom) {};
-        void begin();
-        void looptick();
+        bool begin();
+        bool loopTick();
 
     private:
         TimerMS          timer = TimerMS(EEPROM_SAVE_TIME_MS); 
@@ -40,19 +40,6 @@ class EepromSettings {
 
         void save();
         void markDirty();
-};
-
-const t_Settings defaultSettings = {
-#ifdef USE_STEPPER_DRUM
-    STEPPER_STEPS_PER_REV, // stepsPerRevolution;
-    STEPPER_MAX_RPM, // Max RPM for stepper drum driver
-#endif  // USE_STEPPER_DRUM
-    MAX_SAFE_TEMP_C,
-    // Counters
-    0, // power on resets
-    0, // safetyTriggers
-    EEPROM_SETTINGS_MAGIC, // EEPROM MAGIC number
-    0 // CRC
 };
 
 #endif  // __SW_EEPROM_SETTINGS_H

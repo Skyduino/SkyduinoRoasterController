@@ -6,9 +6,11 @@
 #include <tick-timer.h>
 
 #include <roaster.h>
+#include "eeprom_settings.h"
 #include "state_commanded.h"
 #include "state_statistics.h"
 #include "ntc.h"
+
 
 class Config {
     public:
@@ -58,11 +60,13 @@ class Status {
 
 class State {
     public:
+        State( EepromSettings *nvmSettings ): nvmSettings(nvmSettings) {}
         StateCommanded  commanded;
         Reported        reported = Reported(&cfg);
         Config          cfg;
         Status          status;
         Stats           stats;
+        EepromSettings  *nvmSettings;
 
         bool    begin();
         bool    loopTick();

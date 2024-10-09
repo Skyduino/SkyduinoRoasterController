@@ -2,6 +2,7 @@
 #include <filterRC.h>
 
 #include "roaster.h"
+#include "eeprom_settings.h"
 #include "state.h"
 #include "logging.h"
 #include "commands.h"
@@ -9,12 +10,28 @@
 #include "skywalker_remote_comms.h"
 
 
+// NVM container & default settings
+PROGMEM const static t_Settings nvmSettingsStorage = {
+#ifdef USE_STEPPER_DRUM
+    STEPPER_STEPS_PER_REV, // stepsPerRevolution;
+    STEPPER_MAX_RPM, // Max RPM for stepper drum driver
+#endif  // USE_STEPPER_DRUM
+    MAX_SAFE_TEMP_C,
+    // Counters
+    0, // power on resets
+    0, // safetyTriggers
+    EEPROM_SETTINGS_MAGIC, // EEPROM MAGIC number
+    0 // CRC
+};
+
+
 /*
  * Until this is replaced by an Class, this structure
  * contains the entire state, status, config, reported
  * and commanded roaster status
  */
-State state;
+EepromSettings nvmSettings = EepromSettings( &nvmSettingsStorage );
+State state = State( &nvmSettings );
 SafetyMonitor safeMon = SafetyMonitor( &state );
 SkywalkerRemoteComm skwRemoteComm = SkywalkerRemoteComm( &state );
 

@@ -13,6 +13,7 @@ Status::Status() {
 bool State::begin() {
     bool isSuccess = true;
 
+    isSuccess &= nvmSettings->begin();
     isSuccess &= commanded.begin();
     isSuccess &= reported.begin();
 
@@ -22,6 +23,7 @@ bool State::begin() {
 bool State::loopTick() {
     bool isSuccess = true;
 
+    isSuccess &= nvmSettings->loopTick();
     isSuccess &= commanded.loopTick();
     isSuccess &= reported.loopTick();
 
