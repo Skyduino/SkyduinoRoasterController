@@ -13,7 +13,6 @@ Status::Status() {
 bool State::begin() {
     bool isSuccess = true;
 
-    isSuccess &= nvmSettings->begin();
     isSuccess &= commanded.begin();
     isSuccess &= reported.begin();
 
