@@ -33,6 +33,7 @@ class EepromSettings {
         bool begin();
         bool loopTick();
         void markDirty();
+        void print();
 
     private:
         TimerMS          timer = TimerMS(EEPROM_SAVE_TIME_MS); 

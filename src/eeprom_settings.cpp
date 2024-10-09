@@ -39,6 +39,14 @@ bool EepromSettings::loopTick() {
 
 
 /**
+ * @brief print current eeprom settings
+ */
+void EepromSettings::print() {
+    Serial.print(F("Power On count: "));
+    Serial.println(this->settings.counters.powerOnResets);
+}
+
+/**
  * @brief save the eeprom container
  */
 void EepromSettings::save() {

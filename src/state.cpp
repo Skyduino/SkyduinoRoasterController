@@ -44,6 +44,7 @@ void State::printState() {
  * @brief print all the available statistics
  */
 void State::printStatistics() {
+    this->nvmSettings->print();
     this->reported.printStatistics();
     this->stats.print();
 }
