@@ -32,6 +32,7 @@ class EepromSettings {
         EepromSettings(const t_Settings *eeprom): defaultSettings(eeprom) {};
         bool begin();
         bool loopTick();
+        void markDirty();
 
     private:
         TimerMS          timer = TimerMS(EEPROM_SAVE_TIME_MS); 
@@ -39,7 +40,6 @@ class EepromSettings {
         const t_Settings *defaultSettings;
 
         void save();
-        void markDirty();
 };
 
 #endif  // __SW_EEPROM_SETTINGS_H
