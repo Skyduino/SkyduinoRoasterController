@@ -11,7 +11,7 @@
  */ 
 void EepromSettings::begin() {
     EEPROM.get(EEPROM_SETTINGS_ADDR, settings);
-    uint16_t crc = calcCRC16((uint8_t *) &settings, sizeof(t_Settings));
+    uint16_t crc = calcCRC16((uint8_t *) &settings, offsetof(t_Settings, crc16));
     if ( (settings.crc16 != crc) || (settings.eepromMagic != EEPROM_SETTINGS_MAGIC) )
     {
         // load the defaults
@@ -36,7 +36,7 @@ void EepromSettings::looptick() {
  * @brief save the eeprom container
  */
 void EepromSettings::save() {
-    this->settings.crc16 = calcCRC16((uint8_t *) &settings, sizeof(t_Settings));
+    this->settings.crc16 = calcCRC16((uint8_t *) &settings, offsetof(t_Settings, crc16));
     EEPROM.put(EEPROM_SETTINGS_ADDR, this->settings);
     isDirty = false;
 }
