@@ -179,7 +179,7 @@ void ControlOnOff::_setAction(uint8_t value) {
 }
 
 
-ControlPWM::ControlPWM(uint8_t pin, uint32_t freq): ControlOnOff(pin) {
+ControlPWM::ControlPWM(uint32_t pin, uint32_t freq): ControlOnOff(pin) {
     this->freq = freq;
     this->timer = NULL;
 }
@@ -214,10 +214,15 @@ void ControlPWM::_setAction(uint8_t value) {
         this->begin();
     } else {
         // set pwm to 0
-        timer->setPWM(this->channel, this->pin, this->freq, value);
-        timer->refresh();
+        this->_setPWM( value );
         DEBUG(micros()); DEBUG(F(" PWM::_setAction value: ")); DEBUGLN(value);
     }
+}
+
+
+void ControlPWM::_setPWM(uint8_t value) {
+    this->timer->setPWM(this->channel, this->pin, this->freq, value);
+    timer->refresh();
 }
 
 
@@ -311,3 +316,94 @@ void ControlHeat::_setAction(uint8_t newValue) {
         ControlPWM::_setAction(newValue);
     }
 }
+
+
+#ifdef USE_STEPPER_DRUM
+bool ControlDrum::begin() {
+    bool isSuccess = true;
+    
+    isSuccess &= this->_enable.begin();
+    isSuccess &= this->_drum.begin();
+    isSuccess &= ControlPWM::begin();
+
+    return isSuccess;
+}
+
+
+/**
+ * @brief convert value (%) into timer overflow duration, based on the steps
+ *        per revolution and Max supported rpm. 100% value is Max rpm
+ * @param value Value % of max RPM
+ * @return timer overflow duration in us
+*/ 
+uint32_t ControlDrum::durationFromValue(uint8_t value) {
+    uint16_t rpm = ( value * this->_max_rpm ) / 100;
+    return 60 * 1000 * 1000 / ( rpm * this->_steps_per_rev );
+}
+
+
+/**
+ * @brief convert value (%) into PWM frequence, based on the steps
+ *        per revolution and Max supported rpm. 100% value is Max rpm
+ * @param value Value % of max RPM
+ * @return timer PWM frequency in HZ
+*/ 
+uint32_t ControlDrum::frequencyFromValue(uint8_t value) {
+    uint32_t freq = ( value * this->_max_rpm * this->_steps_per_rev ) \
+                    / 6000;
+    return freq;
+}
+
+
+/**
+ * @brief sets steps per revolution for the stepper drum driver
+ * @param steps number of steps for a complete revolution
+ */
+void ControlDrum::setStepsPerRevolution(uint16_t steps) {
+    this->_steps_per_rev = steps;
+    this->set( this->get() );
+}
+
+
+/**
+ * @brief sets max RPM for the stepper driver
+ * @param rpm -- max rpm
+ */
+void ControlDrum::setMaxRPM(uint8_t rpm) {
+    this->_max_rpm = rpm;
+    this->set( this->get() );
+}
+
+
+void ControlDrum::_setAction(uint8_t value) {
+    if ( _isAborted ) return;
+    this->_drum.set(value);
+
+    // Turn the stepper enable pin on or off. DRV8825 is nEN
+    if ( 0 == value ) {
+        this->_enable.on();
+    } else {
+        this->_enable.off();
+    }
+    ControlPWM::_setAction( value );
+}
+
+
+void ControlDrum::_setPWM(uint8_t value) {
+    DEBUG(micros()); DEBUG(F(" Stepper Drum value: ")); DEBUGLN(value);
+
+    uint32_t freq = frequencyFromValue(value);
+    if ( 0 == freq ) {
+        this->timer->pause();
+    } else {
+        this->timer->setPWM(channel, pin, freq, 50);
+    }
+}
+
+
+void ControlDrum::_abortAction()
+{
+    this->_drum.abort();
+    this->_enable.abort();
+}
+#endif // USE_STEPPER_DRUM

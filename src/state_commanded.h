@@ -33,26 +33,26 @@ class ControlBasic {
 
 class ControlOnOff: public ControlBasic {
     public:
-        ControlOnOff(uint8_t pin): pin(pin) {};
+        ControlOnOff(uint32_t pin): pin(pin) {};
         bool begin();
 
     protected:
-        const uint8_t   pin;
+        const uint32_t pin;
         void _setAction(uint8_t value);
 };
 
 class ControlPWM: public ControlOnOff {
     public:
-        ControlPWM(uint8_t pin, uint32_t freq);
+        ControlPWM(uint32_t pin, uint32_t freq);
         bool begin();
 
-    private:
-        HardwareTimer*  timer;
-        uint32_t        channel;
-        uint32_t        freq;
-    
     protected:
-        void _setAction(uint8_t value);
+        HardwareTimer *timer;
+        uint32_t      channel;
+        uint32_t      freq;
+        void          _setAction(uint8_t value);
+        void virtual  _setPWM(uint8_t value);
+
 };
 
 class ControlHeat: public ControlPWM {
@@ -72,12 +72,40 @@ class ControlHeat: public ControlPWM {
         void _abortAction();
 };
 
+#ifdef USE_STEPPER_DRUM
+class ControlDrum : public ControlPWM {
+    public:
+        ControlDrum(): ControlPWM( PIN_STEPPER_STEP, 200 ),
+            _steps_per_rev( STEPPER_STEPS_PER_REV ),
+            _max_rpm( STEPPER_MAX_RPM ) {};
+        bool     begin();
+        uint32_t durationFromValue(uint8_t value);
+        uint32_t frequencyFromValue(uint8_t value);
+        void     setStepsPerRevolution(uint16_t steps);
+        void     setMaxRPM(uint8_t rpm);
+
+    protected:
+        void _setAction(uint8_t value);
+    
+    private:
+        uint16_t     _steps_per_rev;
+        uint8_t      _max_rpm;
+        ControlOnOff _enable = ControlOnOff( PIN_STEPPER_EN );
+        ControlPWM   _drum   = ControlPWM( PIN_DRUM, PWM_FREQ_DRUM );
+        void virtual _setPWM(uint8_t value);
+        void         _abortAction();
+};
+#endif // USE_STEPPER_DRUM
 
 class StateCommanded {
     public:
         ControlHeat heat;
         ControlPWM vent     = ControlPWM(PIN_EXHAUST, PWM_FREQ_EXHAUST);
+#ifdef USE_STEPPER_DRUM
+        ControlDrum drum;
+#else  // USE_STEPPER_DRUM
         ControlPWM drum     = ControlPWM(PIN_DRUM, PWM_FREQ_DRUM);
+#endif // USE_STEPPER_DRUM
         ControlOnOff cool   = ControlOnOff(PIN_COOL);
         ControlBasic filter;
 

@@ -25,9 +25,16 @@ bool Command::doCommand(CmndParser *pars) {
 
 
 ControlCommand::ControlCommand(const char *cmdName, State *state):
-    Command(cmdName, state) {
+    Command(cmdName, state), min(0), max(100) {
 }
 
+ControlCommand::ControlCommand(const char *cmdName,
+                               State *state,
+                               uint32_t clamp_min,
+                               int32_t clamp_max):
+    Command(cmdName, state), min(clamp_min), max(clamp_max) {
+
+}
 
 void ControlCommand::_doCommand(CmndParser *pars)
 {

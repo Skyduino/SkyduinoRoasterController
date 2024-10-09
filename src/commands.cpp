@@ -10,6 +10,9 @@
 #include "commands/handler_read.h"
 #include "commands/handler_stat.h"
 #include "commands/handler_skywalker.h"
+#ifdef USE_STEPPER_DRUM
+#include "commands/handler_stepper_drum.h"
+#endif // USE_STEPPER_DRUM
 #include "commands/handler_unit.h"
 #include "commands/handler_version.h"
 
@@ -32,6 +35,10 @@ cmndOT1     cmnd_handler_ot1  = cmndOT1( &state );
 cmndOT2     cmnd_handler_ot2  = cmndOT2( &state );
 cmndRead    cmnd_handler_read = cmndRead( &state );
 cmndStat    cmnd_handler_stat = cmndStat( &state );
+#ifdef USE_STEPPER_DRUM
+cmndSteps   cmnd_handler_steps= cmndSteps( &state );
+cmndMaxRPM  cmnd_handler_rpm  = cmndMaxRPM( &state ); 
+#endif // USE_STEPPER_DRUM
 cmndUnit    cmnd_handler_unit = cmndUnit( &state );
 cmndVersion cmnd_handler_version;
 
@@ -39,6 +46,10 @@ static CmndInterp ci( DELIM ); // command interpreter object
 
 void setupCommandHandlers(void) {
     Command* commands[] = {
+#ifdef USE_STEPPER_DRUM
+        &cmnd_handler_steps,
+        &cmnd_handler_rpm,
+#endif // USE_STEPPER_DRUM
         &cmnd_handler_abrt,
         &cmnd_handler_version,
         &cmnd_handler_dfu,
