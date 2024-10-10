@@ -38,7 +38,7 @@ PROGMEM const static t_Settings nvmSettingsStorage = {
  */
 EepromSettings nvmSettings = EepromSettings( &nvmSettingsStorage );
 State state = State( &nvmSettings );
-SafetyMonitor safeMon = SafetyMonitor( &state );
+SafetyMonitor safeMon = SafetyMonitor( &state, nvmSettings.settings.maxSafeTempC );
 SkywalkerRemoteComm skwRemoteComm = SkywalkerRemoteComm( &state );
 
 void setup() {
