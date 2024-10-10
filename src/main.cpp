@@ -17,8 +17,14 @@ PROGMEM const static t_Settings nvmSettingsStorage = {
     STEPPER_MAX_RPM, // Max RPM for stepper drum driver
 #endif  // USE_STEPPER_DRUM
     MAX_SAFE_TEMP_C,
+    PWM_FREQ_COOL,
+    PWM_FREQ_DRUM,
+    PWM_FREQ_EXHAUST,
+    PWM_FREQ_HEAT,
+    PWM_FREQ_LED,
     // Counters
     0, // power on resets
+    0, // Watchdog resets
     0, // safetyTriggers
     EEPROM_SETTINGS_MAGIC, // EEPROM MAGIC number
     0 // CRC
