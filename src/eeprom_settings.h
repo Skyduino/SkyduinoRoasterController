@@ -8,6 +8,7 @@
 
 typedef struct {
     uint32_t powerOnResets;
+    uint32_t watchdogReset;
     uint32_t safetyTriggers;
 } t_Counters;
 
@@ -18,6 +19,11 @@ typedef struct {
 #endif  // USE_STEPPER_DRUM
 
     uint16_t   maxSafeTempC;
+    uint16_t   pwmCoolHz;
+    uint16_t   pwmDrumHz;
+    uint16_t   pwmExhaustHz;
+    uint16_t   pwmSSRHz;
+    uint16_t   pwmLedHz;
     t_Counters counters;
 
     uint32_t   eepromMagic;
