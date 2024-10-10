@@ -39,6 +39,7 @@ cmndStat    cmnd_handler_stat = cmndStat( &state );
 cmndSteps   cmnd_handler_steps= cmndSteps( &state );
 cmndMaxRPM  cmnd_handler_rpm  = cmndMaxRPM( &state ); 
 #endif // USE_STEPPER_DRUM
+cmndMaxTemp cmnd_handler_maxt = cmndMaxTemp( &state );
 cmndUnit    cmnd_handler_unit = cmndUnit( &state );
 cmndVersion cmnd_handler_version;
 
@@ -50,6 +51,7 @@ void setupCommandHandlers(void) {
         &cmnd_handler_steps,
         &cmnd_handler_rpm,
 #endif // USE_STEPPER_DRUM
+        &cmnd_handler_maxt,
         &cmnd_handler_abrt,
         &cmnd_handler_version,
         &cmnd_handler_dfu,
