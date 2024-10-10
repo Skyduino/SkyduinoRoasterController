@@ -40,7 +40,6 @@ void setup() {
   Serial.setTimeout(100);
   Serial.println(F(VERSION));
 
-  nvmSettings.begin();
   if (__HAL_RCC_GET_FLAG(RCC_FLAG_BORRST)) {
       nvmSettings.settings.counters.powerOnResets++;
       nvmSettings.markDirty();

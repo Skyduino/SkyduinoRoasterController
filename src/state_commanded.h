@@ -102,17 +102,25 @@ class ControlDrum : public ControlPWM {
 
 class StateCommanded {
     public:
-        StateCommanded(EepromSettings *nvmSettings): _nvmSettings(nvmSettings) {};
-        ControlHeat heat;
-        ControlPWM vent     = ControlPWM(PIN_EXHAUST, PWM_FREQ_EXHAUST);
+        StateCommanded(EepromSettings *nvm):
+            vent(ControlPWM(PIN_EXHAUST, PWM_FREQ_EXHAUST)),
 #ifdef USE_STEPPER_DRUM
-        ControlDrum drum    = ControlDrum(
-            _nvmSettings->settings.stepsPerRevolution,
-            _nvmSettings->settings.stepsMaxRpm);
+            drum(ControlDrum(
+                nvm->settings.stepsPerRevolution,
+                nvm->settings.stepsMaxRpm)),
 #else  // USE_STEPPER_DRUM
-        ControlPWM drum     = ControlPWM(PIN_DRUM, PWM_FREQ_DRUM);
+            drum(ControlPWM(PIN_DRUM, PWM_FREQ_DRUM)),
 #endif // USE_STEPPER_DRUM
-        ControlOnOff cool   = ControlOnOff(PIN_COOL);
+            cool(ControlOnOff(PIN_COOL)),
+            _nvmSettings(nvm) {};
+        ControlHeat heat;
+        ControlPWM vent;
+#ifdef USE_STEPPER_DRUM
+        ControlDrum drum;
+#else  // USE_STEPPER_DRUM
+        ControlPWM drum;
+#endif // USE_STEPPER_DRUM
+        ControlOnOff cool;
         ControlBasic filter;
 
         void abort();

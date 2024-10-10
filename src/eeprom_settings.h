@@ -29,8 +29,7 @@ class EepromSettings {
     public:
         t_Settings settings;
 
-        EepromSettings(const t_Settings *eeprom): defaultSettings(eeprom) {};
-        bool begin();
+        EepromSettings(const t_Settings *eeprom);
         bool loopTick();
         void markDirty();
         void print();
