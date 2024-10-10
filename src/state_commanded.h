@@ -75,9 +75,12 @@ class ControlHeat: public ControlPWM {
 #ifdef USE_STEPPER_DRUM
 class ControlDrum : public ControlPWM {
     public:
-        ControlDrum(): ControlPWM( PIN_STEPPER_STEP, 200 ),
-            _steps_per_rev( STEPPER_STEPS_PER_REV ),
-            _max_rpm( STEPPER_MAX_RPM ) {};
+        ControlDrum(
+            uint16_t stepsPR = STEPPER_STEPS_PER_REV,
+            uint8_t maxRPM = STEPPER_MAX_RPM):
+                ControlPWM( PIN_STEPPER_STEP, 200 ),
+                _steps_per_rev( stepsPR ),
+                _max_rpm( maxRPM ) {};
         bool     begin();
         uint32_t durationFromValue(uint8_t value);
         uint32_t frequencyFromValue(uint8_t value);
@@ -99,10 +102,13 @@ class ControlDrum : public ControlPWM {
 
 class StateCommanded {
     public:
+        StateCommanded(EepromSettings *nvmSettings): _nvmSettings(nvmSettings) {};
         ControlHeat heat;
         ControlPWM vent     = ControlPWM(PIN_EXHAUST, PWM_FREQ_EXHAUST);
 #ifdef USE_STEPPER_DRUM
-        ControlDrum drum;
+        ControlDrum drum    = ControlDrum(
+            _nvmSettings->settings.stepsPerRevolution,
+            _nvmSettings->settings.stepsMaxRpm);
 #else  // USE_STEPPER_DRUM
         ControlPWM drum     = ControlPWM(PIN_DRUM, PWM_FREQ_DRUM);
 #endif // USE_STEPPER_DRUM
@@ -118,6 +124,7 @@ class StateCommanded {
         void setControlToArtisan(bool value = true);
 
     protected:
+        EepromSettings *_nvmSettings;
         bool _isArtisanInControl = false;
 };
 
