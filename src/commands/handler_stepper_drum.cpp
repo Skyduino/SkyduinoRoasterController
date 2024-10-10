@@ -15,6 +15,8 @@ cmndSteps::cmndSteps(State *state):
 void cmndSteps::_handleValue(int32_t value) {
     if ( value > 0 ) {
         state->commanded.drum.setStepsPerRevolution( value );
+        state->nvmSettings->settings.stepsPerRevolution = value;
+        state->nvmSettings->markDirty();
         Serial.print(F("Setting ")); Serial.print(value);
         Serial.println(F(" steps per revolution"));
     }
@@ -37,6 +39,8 @@ void cmndMaxRPM::_handleValue(int32_t value) {
     }
 
     state->commanded.drum.setMaxRPM( value );
+    state->nvmSettings->settings.stepsMaxRpm = value;
+    state->nvmSettings->markDirty();
     Serial.print(F("Setting MAX rpm to ")); Serial.println( value );
 }
 #endif // USE_STEPPER_DRUM

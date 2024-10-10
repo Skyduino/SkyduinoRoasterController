@@ -9,8 +9,8 @@
 /**
  * @brief initialize the Eeprom settings container. Load from eeprom
  *        and initialize the defaults if eeprom data is garbage
- */ 
-bool EepromSettings::begin() {
+ */
+EepromSettings::EepromSettings(const t_Settings *eeprom): defaultSettings(eeprom) {
     EEPROM.get(EEPROM_SETTINGS_ADDR, settings);
     uint16_t crc = calcCRC16((uint8_t *) &settings, offsetof(t_Settings, crc16));
     if ( (settings.crc16 != crc) || (settings.eepromMagic != EEPROM_SETTINGS_MAGIC) )
@@ -20,8 +20,6 @@ bool EepromSettings::begin() {
         memcpy_P(&settings, this->defaultSettings, sizeof(t_Settings));
         this->save();
     }
-
-    return true;
 }
 
 
@@ -42,8 +40,14 @@ bool EepromSettings::loopTick() {
  * @brief print current eeprom settings
  */
 void EepromSettings::print() {
-    Serial.print(F("Power On count: "));
+    Serial.print(F("NVM Power On count: "));
     Serial.println(this->settings.counters.powerOnResets);
+#ifdef USE_STEPPER_DRUM
+    Serial.print(F("NVM Stepper driver steps per revolution: "));
+    Serial.println(this->settings.stepsPerRevolution);
+    Serial.print(F("NVM Stepper driver Max RPM: "));
+    Serial.println(this->settings.stepsMaxRpm);
+#endif  // USE_STEPPER_DRUM
 }
 
 /**

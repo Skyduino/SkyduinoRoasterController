@@ -33,6 +33,15 @@ controlled through **J13 Disp** header, using the following pins:
 
 The firmware was tested with TMC2209 driver board. You may need to hardwire the direction pin, as this is not controlled at the moment.
 
+Depending on the stepper motor and configured micro-step resolution of the stepper
+driver, you need to configure how many steps are needed for the full revolution.
+The firmware default is 1600 steps: 200 motor steps * 8 microstep configuration of TMC2209, when MS0 & MS1 pins are left floating.
+You can configure the number of steps with `STPR=1600` Serial command.
+The setting is persistent, unless the device is fully erased or there are
+incompatible firmware change.
+
+Beside steps per revolution, you can change the max RPM for the drum with `MXRPM=60` command. This corresponds to 60 RPMs when drum speed is set to 100%
+
 
 ## DFU Mode
 
