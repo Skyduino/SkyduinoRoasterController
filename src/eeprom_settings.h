@@ -8,7 +8,8 @@
 
 typedef struct {
     uint32_t powerOnResets;
-    uint32_t watchdogReset;
+    uint32_t watchdogResets;
+    uint32_t softResets;
     uint32_t safetyTriggers;
 } t_Counters;
 
