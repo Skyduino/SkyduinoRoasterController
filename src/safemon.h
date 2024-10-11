@@ -2,6 +2,8 @@
 
 #include "state.h"
 
+using callback_t = std::function<void()>;
+
 enum MonitorState {
     NORMAL,
     PRE_ARM,
@@ -12,9 +14,12 @@ enum MonitorState {
 
 class SafetyMonitor {
     public:
-        SafetyMonitor(State *state, int16_t maxTempC=MAX_SAFE_TEMP_C):
+        SafetyMonitor(State *state,
+                      int16_t maxTempC=MAX_SAFE_TEMP_C,
+                      callback_t callback = NULL):
             _roasterState(state),
-            _maxTemp(maxTempC) {};
+            _maxTemp(maxTempC),
+            incCounter(callback) {};
         bool begin();
         bool loopTick();
         void triggerSafetyAction();
@@ -35,4 +40,5 @@ class SafetyMonitor {
         void _handleArmed();
         void _transitionToTriggered();
         void _handleTriggered();
+        callback_t incCounter;
 };

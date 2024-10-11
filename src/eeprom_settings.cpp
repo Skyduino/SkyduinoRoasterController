@@ -52,6 +52,16 @@ void EepromSettings::print() {
     Serial.println(this->settings.maxSafeTempC);
 }
 
+
+/**
+ * @brief Increment safety counter
+ */
+void EepromSettings::incSafetyCounter() {
+    this->settings.counters.safetyTriggers++;
+    this->markDirty();
+}
+
+
 /**
  * @brief save the eeprom container
  */
