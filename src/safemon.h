@@ -2,8 +2,6 @@
 
 #include "state.h"
 
-using callback_t = std::function<void()>;
-
 enum MonitorState {
     NORMAL,
     PRE_ARM,
