@@ -110,6 +110,7 @@ The following symbols are used for the `Separator` value:
 | READ | READ | READ | Requests current temperature readings on all active channels. Response from the device is the ambient temperature followed by a comma separated list of temperatures in current active units in logical channel order: ambient,chan1,chan2,chan3,chan4, followed up by Heater cyty cycle (0 - 100%) and Exhaust Fan duty cycle |
 | STAT | STAT | STAT | This is an undocumented command. It should print the internal statistics, but currently does not work as expected |
 | STPR | STPR;{NUM} | STPR;1000 | Set the steps per revolutio to {NUM}. This command is only supported for the "Stepper" firmware. |
+| MAXTEMP | MAXTEMP;{NUM} | MAXTEMP;250 | Set the safety temperature threshold in °C The new threshold is activated upon next reboot: Power Off and USB-C disconnect |
 | MXRPM | MXRPM;{NUM} | MXRPM;60 | Set the maximum number of RPMs for drum at 100% speed. Min 10, Max: 120. This command is only supported for the "Stepper" firmware. |
 | UNIT | UNIT;U | UNIT;C<br>UNIT;F | Change the temperature unit of measurement to C or F |
 | VERSION | VERSION | VERSION | Print the controller firmware version |

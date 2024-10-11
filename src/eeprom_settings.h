@@ -18,7 +18,7 @@ typedef struct {
     uint8_t    stepsMaxRpm;
 #endif  // USE_STEPPER_DRUM
 
-    uint16_t   maxSafeTempC;
+    int16_t    maxSafeTempC;
     uint16_t   pwmCoolHz;
     uint16_t   pwmDrumHz;
     uint16_t   pwmExhaustHz;

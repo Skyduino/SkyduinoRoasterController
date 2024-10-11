@@ -48,6 +48,8 @@ void EepromSettings::print() {
     Serial.print(F("NVM Stepper driver Max RPM: "));
     Serial.println(this->settings.stepsMaxRpm);
 #endif  // USE_STEPPER_DRUM
+    Serial.print(F("NVM Safety Temperature Threshold C: "));
+    Serial.println(this->settings.maxSafeTempC);
 }
 
 /**

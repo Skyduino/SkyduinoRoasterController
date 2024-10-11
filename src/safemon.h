@@ -12,16 +12,19 @@ enum MonitorState {
 
 class SafetyMonitor {
     public:
-        SafetyMonitor(State *state): _roasterState(state) {};
+        SafetyMonitor(State *state, int16_t maxTempC=MAX_SAFE_TEMP_C):
+            _roasterState(state),
+            _maxTemp(maxTempC) {};
         bool begin();
         bool loopTick();
         void triggerSafetyAction();
     
     private:
-        State        *_roasterState;
-        MonitorState _monitorState = NORMAL;
-        TimerMS      *timer;
-        bool         isInitialized = false;
+        State         *_roasterState;
+        MonitorState  _monitorState = NORMAL;
+        TimerMS       *timer;
+        const int16_t _maxTemp;
+        bool          isInitialized = false;
 
         bool _isTempExceedingC(float threshold);
         void _transitionToNormal();
