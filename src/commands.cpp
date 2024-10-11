@@ -34,6 +34,7 @@ cmndOff     cmnd_handler_off  = cmndOff( &state );
 cmndOT1     cmnd_handler_ot1  = cmndOT1( &state );
 cmndOT2     cmnd_handler_ot2  = cmndOT2( &state );
 cmndRead    cmnd_handler_read = cmndRead( &state );
+cmndReset   cmnd_handler_reset;
 cmndStat    cmnd_handler_stat = cmndStat( &state );
 #ifdef USE_STEPPER_DRUM
 cmndSteps   cmnd_handler_steps= cmndSteps( &state );
@@ -51,6 +52,7 @@ void setupCommandHandlers(void) {
         &cmnd_handler_steps,
         &cmnd_handler_rpm,
 #endif // USE_STEPPER_DRUM
+        &cmnd_handler_reset,
         &cmnd_handler_maxt,
         &cmnd_handler_abrt,
         &cmnd_handler_version,
