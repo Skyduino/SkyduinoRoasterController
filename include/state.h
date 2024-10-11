@@ -11,6 +11,7 @@
 #include "state_statistics.h"
 #include "ntc.h"
 
+using callback_t = std::function<void(void)>;
 
 class Config {
     public:

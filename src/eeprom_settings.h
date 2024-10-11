@@ -39,6 +39,7 @@ class EepromSettings {
         bool loopTick();
         void markDirty();
         void print();
+        void incSafetyCounter();
 
     private:
         TimerMS          timer = TimerMS(EEPROM_SAVE_TIME_MS); 

@@ -171,6 +171,7 @@ void SafetyMonitor::_handleArmed() {
  */
 void SafetyMonitor::_transitionToTriggered() {
     DEBUG(micros()); DEBUGLN(F(" Transitioning to Triggered state"));
+    if ( incCounter ) incCounter();
     _monitorState = TRIGGERED;
     _handleTriggered();
 }
