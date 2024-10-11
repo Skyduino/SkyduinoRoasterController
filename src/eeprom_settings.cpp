@@ -42,6 +42,8 @@ bool EepromSettings::loopTick() {
 void EepromSettings::print() {
     Serial.print(F("NVM Power On count: "));
     Serial.println(this->settings.counters.powerOnResets);
+    Serial.print(F("NVM Safety triggered count: "));
+    Serial.println(this->settings.counters.safetyTriggers);
 #ifdef USE_STEPPER_DRUM
     Serial.print(F("NVM Stepper driver steps per revolution: "));
     Serial.println(this->settings.stepsPerRevolution);
