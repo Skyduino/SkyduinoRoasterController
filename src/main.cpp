@@ -25,6 +25,7 @@ PROGMEM const static t_Settings nvmSettingsStorage = {
     // Counters
     0, // power on resets
     0, // Watchdog resets
+    0, // Software resets
     0, // safetyTriggers
     EEPROM_SETTINGS_MAGIC, // EEPROM MAGIC number
     0 // CRC
@@ -49,8 +50,14 @@ void setup() {
   Serial.setTimeout(100);
   Serial.println(F(VERSION));
 
-  if (__HAL_RCC_GET_FLAG(RCC_FLAG_BORRST)) {
+  if ( __HAL_RCC_GET_FLAG(RCC_FLAG_BORRST) ) {
       nvmSettings.settings.counters.powerOnResets++;
+      nvmSettings.markDirty();
+  } else if ( __HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST) ) {
+      nvmSettings.settings.counters.watchdogResets++;
+      nvmSettings.markDirty();
+  } else if ( __HAL_RCC_GET_FLAG(RCC_FLAG_SFTRST) ) {
+      nvmSettings.settings.counters.softResets++;
       nvmSettings.markDirty();
   }
   __HAL_RCC_CLEAR_RESET_FLAGS();

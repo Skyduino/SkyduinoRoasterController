@@ -42,6 +42,10 @@ bool EepromSettings::loopTick() {
 void EepromSettings::print() {
     Serial.print(F("NVM Power On count: "));
     Serial.println(this->settings.counters.powerOnResets);
+    Serial.print(F("NVM Watchdog Reset count: "));
+    Serial.println(this->settings.counters.watchdogResets);
+    Serial.print(F("NVM Software Reset count: "));
+    Serial.println(this->settings.counters.softResets);
     Serial.print(F("NVM Safety triggered count: "));
     Serial.println(this->settings.counters.safetyTriggers);
 #ifdef USE_STEPPER_DRUM
@@ -52,6 +56,7 @@ void EepromSettings::print() {
 #endif  // USE_STEPPER_DRUM
     Serial.print(F("NVM Safety Temperature Threshold C: "));
     Serial.println(this->settings.maxSafeTempC);
+    Serial.println(F("---"));
 }
 
 
