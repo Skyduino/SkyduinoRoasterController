@@ -16,6 +16,8 @@
 class cmndChallenge : public Command {
     public:
         cmndChallenge(const char *cmdName): Command(cmdName) {};
+        cmndChallenge(const char *cmdName, State *state):
+            Command(cmdName, state) {};
     protected:
         void _doCommand( CmndParser* pars);
 
@@ -42,6 +44,15 @@ class cmndDFU : public cmndChallenge {
 class cmndReset : public cmndChallenge {
     public:
         cmndReset();
+    
+    protected:
+        void executeCommand();
+};
+
+
+class cmndDflts: public cmndChallenge {
+    public:
+        cmndDflts(State *state);
     
     protected:
         void executeCommand();
