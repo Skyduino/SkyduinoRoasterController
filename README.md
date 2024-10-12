@@ -104,6 +104,8 @@ The following symbols are used for the `Separator` value:
 | DFU | DFU;{num} | DFU;2345 | Answers the DFU challenge. The number is obtained just by the `DFU` command, which gives you the challenge, which you should repeat as `DFU;{challenge}` command within the 5s. If it matches, the MCU enters the DFU mode and the new firmware can be uploaded |
 | DRUM | DRUM;pp | DRUM;90 | Set the drum speed to `pp`%
 | FILT | FILT;ppp;ppp;ppp;ppp | FILT;5;5;5;5 | where ppp = percent filtering on phisical channels 1 to 4. For example `5` indicates how much weight the old value has, so the filtered value = 95% of the new value + 5% of the old value|
+| NVMRST | NVMRST | NVMRST | Resets non-volatile memory settings to defaults. Generates a challenge, which has to be answered within the 5s. This commands works similarly to the `DFU` command |
+| NVMRST | NVMRST;{num} | NVMRST;4523 | Answers the `NVMRST` challenge. See the `DFU` commands for more details |
 | OFF | OFF | OFF | Turns everything off. Turns off: cooling, exhaust fan, heater, drum |
 | OT1 | OT1;pp | OT1;50 | where `pp` is the % duty cycle for the heater |
 | OT2 | OT2;pp | OT2;50 | where `pp` is the % duty cycle for the exhause air fan |
