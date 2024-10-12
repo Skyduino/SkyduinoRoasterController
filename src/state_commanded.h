@@ -57,7 +57,10 @@ class ControlPWM: public ControlOnOff {
 
 class ControlHeat: public ControlPWM {
     public:
-        ControlHeat(): ControlPWM(PIN_HEAT, PWM_FREQ_HEAT) {};
+        ControlHeat():
+            ControlPWM(PIN_HEAT, PWM_FREQ_HEAT) {};
+        ControlHeat(uint32_t pin=PIN_HEAT, uint32_t freq=PWM_FREQ_HEAT):
+            ControlPWM(pin, freq) {};
         bool begin();
         bool loopTick();
 
@@ -103,13 +106,14 @@ class ControlDrum : public ControlPWM {
 class StateCommanded {
     public:
         StateCommanded(EepromSettings *nvm):
-            vent(ControlPWM(PIN_EXHAUST, PWM_FREQ_EXHAUST)),
+            heat(ControlHeat(PIN_HEAT, nvm->settings.pwmSSRHz)),
+            vent(ControlPWM(PIN_EXHAUST, nvm->settings.pwmExhaustHz)),
 #ifdef USE_STEPPER_DRUM
             drum(ControlDrum(
                 nvm->settings.stepsPerRevolution,
                 nvm->settings.stepsMaxRpm)),
 #else  // USE_STEPPER_DRUM
-            drum(ControlPWM(PIN_DRUM, PWM_FREQ_DRUM)),
+            drum(ControlPWM(PIN_DRUM, nvm->settings.pwmDrumHz)),
 #endif // USE_STEPPER_DRUM
             cool(ControlOnOff(PIN_COOL)),
             _nvmSettings(nvm) {};
