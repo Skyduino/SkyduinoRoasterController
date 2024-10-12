@@ -31,6 +31,7 @@ cmndCool    cmnd_handler_cool = cmndCool( &state );
 cmndDrum    cmnd_handler_drum = cmndDrum( &state );
 cmndDFU     cmnd_handler_dfu;
 cmndFilt    cmnd_handler_filt = cmndFilt( &state );
+cmndDflts   cmnd_handler_dflt = cmndDflts( &state );
 cmndOff     cmnd_handler_off  = cmndOff( &state );
 cmndOT1     cmnd_handler_ot1  = cmndOT1( &state );
 cmndOT2     cmnd_handler_ot2  = cmndOT2( &state );
@@ -54,6 +55,7 @@ void setupCommandHandlers(void) {
         &cmnd_handler_steps,
         &cmnd_handler_rpm,
 #endif // USE_STEPPER_DRUM
+        &cmnd_handler_dflt,
         &cmnd_handler_pwm,
         &cmnd_handler_reset,
         &cmnd_handler_maxt,
