@@ -15,10 +15,7 @@ EepromSettings::EepromSettings(const t_Settings *eeprom): defaultSettings(eeprom
     uint16_t crc = calcCRC16((uint8_t *) &settings, offsetof(t_Settings, crc16));
     if ( (settings.crc16 != crc) || (settings.eepromMagic != EEPROM_SETTINGS_MAGIC) )
     {
-        // load the defaults
-        DEBUG(micros()); DEBUGLN(F(" Loading NVM Settings defaults"));
-        memcpy_P(&settings, this->defaultSettings, sizeof(t_Settings));
-        this->save();
+        this->loadDefaults();
     }
 }
 
@@ -74,6 +71,17 @@ void EepromSettings::incSafetyCounter() {
     this->markDirty();
 }
 
+
+/**
+ * @brief Reset settings to default
+ */
+void EepromSettings::loadDefaults() {
+    // load the defaults
+    DEBUG(micros()); DEBUGLN(F(" Loading NVM Settings defaults"));
+    memcpy_P(&settings, this->defaultSettings, sizeof(t_Settings));
+    this->save();
+    this->timer.reset();
+}
 
 /**
  * @brief save the eeprom container

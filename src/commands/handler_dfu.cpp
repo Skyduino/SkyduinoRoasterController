@@ -4,6 +4,7 @@
 
 #define CMD_DFU "DFU"
 #define CMD_RESET "RESET"
+#define CMD_NVMRST "NVMRST"
 
 typedef struct {
     uint32_t Initial_SP;
@@ -122,4 +123,13 @@ cmndReset::cmndReset() :
 
 void cmndReset::executeCommand() {
     HAL_NVIC_SystemReset();
+}
+
+cmndDflts::cmndDflts(State *state):
+    cmndChallenge( CMD_NVMRST, state ) {
+}
+
+void cmndDflts::executeCommand() {
+    this->state->nvmSettings->loadDefaults();
+    Serial.println(F("Reset NVM settings to defaults"));
 }

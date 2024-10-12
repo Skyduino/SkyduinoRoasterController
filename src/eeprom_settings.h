@@ -41,6 +41,7 @@ class EepromSettings {
         void markDirty();
         void print();
         void incSafetyCounter();
+        void loadDefaults();
 
     private:
         TimerMS          timer = TimerMS(EEPROM_SAVE_TIME_MS); 
