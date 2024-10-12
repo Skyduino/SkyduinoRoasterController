@@ -57,7 +57,10 @@ class ControlPWM: public ControlOnOff {
 
 class ControlHeat: public ControlPWM {
     public:
-        ControlHeat(): ControlPWM(PIN_HEAT, PWM_FREQ_HEAT) {};
+        ControlHeat():
+            ControlPWM(PIN_HEAT, PWM_FREQ_HEAT) {};
+        ControlHeat(uint32_t pin=PIN_HEAT, uint32_t freq=PWM_FREQ_HEAT):
+            ControlPWM(pin, freq) {};
         bool begin();
         bool loopTick();
 
@@ -77,10 +80,14 @@ class ControlDrum : public ControlPWM {
     public:
         ControlDrum(
             uint16_t stepsPR = STEPPER_STEPS_PER_REV,
-            uint8_t maxRPM = STEPPER_MAX_RPM):
+            uint8_t maxRPM = STEPPER_MAX_RPM,
+            uint32_t pwmDRV8871 = PWM_FREQ_DRUM
+            ):
                 ControlPWM( PIN_STEPPER_STEP, 200 ),
                 _steps_per_rev( stepsPR ),
-                _max_rpm( maxRPM ) {};
+                _max_rpm( maxRPM ),
+                _drum(ControlPWM( PIN_DRUM, pwmDRV8871 ))
+                {}
         bool     begin();
         uint32_t durationFromValue(uint8_t value);
         uint32_t frequencyFromValue(uint8_t value);
@@ -94,7 +101,7 @@ class ControlDrum : public ControlPWM {
         uint16_t     _steps_per_rev;
         uint8_t      _max_rpm;
         ControlOnOff _enable = ControlOnOff( PIN_STEPPER_EN );
-        ControlPWM   _drum   = ControlPWM( PIN_DRUM, PWM_FREQ_DRUM );
+        ControlPWM   _drum;
         void virtual _setPWM(uint8_t value);
         void         _abortAction();
 };
@@ -103,13 +110,15 @@ class ControlDrum : public ControlPWM {
 class StateCommanded {
     public:
         StateCommanded(EepromSettings *nvm):
-            vent(ControlPWM(PIN_EXHAUST, PWM_FREQ_EXHAUST)),
+            heat(ControlHeat(PIN_HEAT, nvm->settings.pwmSSRHz)),
+            vent(ControlPWM(PIN_EXHAUST, nvm->settings.pwmExhaustHz)),
 #ifdef USE_STEPPER_DRUM
             drum(ControlDrum(
                 nvm->settings.stepsPerRevolution,
-                nvm->settings.stepsMaxRpm)),
+                nvm->settings.stepsMaxRpm,
+                nvm->settings.pwmDrumHz)),
 #else  // USE_STEPPER_DRUM
-            drum(ControlPWM(PIN_DRUM, PWM_FREQ_DRUM)),
+            drum(ControlPWM(PIN_DRUM, nvm->settings.pwmDrumHz)),
 #endif // USE_STEPPER_DRUM
             cool(ControlOnOff(PIN_COOL)),
             _nvmSettings(nvm) {};

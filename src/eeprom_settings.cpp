@@ -56,6 +56,12 @@ void EepromSettings::print() {
 #endif  // USE_STEPPER_DRUM
     Serial.print(F("NVM Safety Temperature Threshold C: "));
     Serial.println(this->settings.maxSafeTempC);
+    Serial.print(F("NVM PWM frequency Drum Hz: "));
+    Serial.println(this->settings.pwmDrumHz);
+    Serial.print(F("NVM PWM frequency Exhaust fan Hz: "));
+    Serial.println(this->settings.pwmExhaustHz);
+    Serial.print(F("NVM PWM frequency SSR Hz: "));
+    Serial.println(this->settings.pwmSSRHz);
     Serial.println(F("---"));
 }
 
