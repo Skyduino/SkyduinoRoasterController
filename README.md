@@ -107,6 +107,7 @@ The following symbols are used for the `Separator` value:
 | OFF | OFF | OFF | Turns everything off. Turns off: cooling, exhaust fan, heater, drum |
 | OT1 | OT1;pp | OT1;50 | where `pp` is the % duty cycle for the heater |
 | OT2 | OT2;pp | OT2;50 | where `pp` is the % duty cycle for the exhause air fan |
+| PWM | PWM;{CTL};{FREQ_HZ} | PWM;SSR;2 | Set PWM frequency for `{CTL}`, where `{CTL}` is: <br>`DRUM` -- Drum driver PWM frequency <br>`EXHAUST` -- Exhaust fan PWM frequency <br>`SSR` -- SSR PWM frequency. <br>The new PWM frequency is applied upon next reboot
 | READ | READ | READ | Requests current temperature readings on all active channels. Response from the device is the ambient temperature followed by a comma separated list of temperatures in current active units in logical channel order: ambient,chan1,chan2,chan3,chan4, followed up by Heater cyty cycle (0 - 100%) and Exhaust Fan duty cycle |
 | RESET | RESET | RESET | Generate the RESET challenge. Software resets the board. The command prompts you a challenge and works similarly to the DFU command |
 | STAT | STAT | STAT | This is an undocumented command. It should print the internal statistics, but currently does not work as expected |
