@@ -121,16 +121,16 @@ class PID_Control {
         void turnOn();
     
     protected:
-        const EepromSettings    *_nvm;
-        const ControlHeat       *_heat;
-        const ControlPWM        *_vent;
-        HardwareTimer           *_timer;
-        bool                    isInitialized = false;
-        float                   input = 0;
-        float                   output = 0;
-        float                   setp = 0;
-        QuickPID::Control       _action = QuickPID::Control::manual;
-        QuickPID                _pid = QuickPID(&input, &output, &setp);
+        EepromSettings      *_nvm;
+        ControlHeat         *_heat;
+        ControlPWM          *_vent;
+        HardwareTimer       *_timer;
+        bool                isInitialized = false;
+        float               input = 0;
+        float               output = 0;
+        float               setp = 0;
+        QuickPID::Control   _action = QuickPID::Control::manual;
+        QuickPID            _pid = QuickPID(&input, &output, &setp);
         void _compute();
 };
 
