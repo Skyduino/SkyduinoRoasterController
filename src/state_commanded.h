@@ -116,6 +116,8 @@ class PID_Control {
             _vent(vent) {};
         bool begin();
         void loadProfile( uint8_t profileNum );
+        bool isOn();
+        void turnOff();
     
     protected:
         const EepromSettings    *_nvm;
