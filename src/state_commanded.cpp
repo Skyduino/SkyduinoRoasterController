@@ -418,7 +418,7 @@ bool PID_Control::begin() {
     if ( this->isInitialized ) return true;
 
     // Update PID settings
-    this->_pid.SetMode(QuickPID::Control::manual);
+    this->turnOff();
     this->loadProfile( this->_nvm->settings.pidCurrentProfile );
 
     // Configure the timer and attach interrupt
@@ -448,4 +448,23 @@ void PID_Control::loadProfile(uint8_t profileNum) {
         profile->dmode,
         profile->iAwMode
     );
+}
+
+
+/**
+ * @brief query current PID controller mode
+ * @return true if the PID controller is actively controlling the output
+ */
+bool PID_Control::isOn() {
+    return
+        this->_pid.GetMode() == (uint8_t) QuickPID::Control::automatic
+        || this->_pid.GetMode() == (uint8_t) QuickPID::Control::timer;
+}
+
+
+/**
+ * @brief Turn off the PID controller
+ */
+void PID_Control::turnOff() {
+    this->_pid.SetMode(QuickPID::Control::manual);
 }
