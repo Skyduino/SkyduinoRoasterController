@@ -469,3 +469,12 @@ bool PID_Control::isOn() {
 void PID_Control::turnOff() {
     this->_pid.SetMode(QuickPID::Control::manual);
 }
+
+
+/**
+ * @brief Turn on the PID controller
+ */
+void PID_Control::turnOn() {
+    this->_pid.Initialize();
+    this->_pid.SetMode(QuickPID::Control::timer);
+}

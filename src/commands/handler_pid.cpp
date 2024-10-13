@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <logging.h>
 
 #include "handler_pid.h"
 
@@ -83,6 +84,8 @@ void cmndPid::_handleDMode(CmndParser *pars) {
  * @brief Handle PID;OFF command to deactivate the PID
  */
 void cmndPid::_handleOff(CmndParser *pars) {
+    DEBUG(millis()); DEBUGLN(F("Turning the PID controller Off"));
+    this->state->commanded.pid.turnOff();
 }
 
 
@@ -90,6 +93,8 @@ void cmndPid::_handleOff(CmndParser *pars) {
  * @brief Handle PID;ON command to activate the PID
  */
 void cmndPid::_handleOn(CmndParser *pars) {
+    DEBUG(millis()); DEBUGLN(F("Turning the PID controller On"));
+    this->state->commanded.pid.turnOn();
 }
 
 
