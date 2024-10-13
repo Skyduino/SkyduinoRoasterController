@@ -116,9 +116,20 @@ void cmndPid::_handlePMode(CmndParser *pars) {
 
 
 /**
- * @brief Handle PID;SV;xxx command to change the setpoint
+ * @brief Handle PID;SV;xxx command to change the setpoint. The new setpoint
+ *        is in the current units of measurement
  */
 void cmndPid::_handleSV(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) {
+        float f = atof( pars->paramStr(3) );
+        float newSetPointC = state->cfg.isMetric ? f : CONVERT_F_TO_C( f );
+
+        // Sanity Check
+        if ( newSetPointC > 30 && newSetPointC < (state->nvmSettings->settings.maxSafeTempC) ) {
+            this->state->commanded.pid.updateSetPointC( newSetPointC );
+            Serial.print(F("# PID setpoint = ")); Serial.println( newSetPointC );
+        }
+    }
 }
 
 
@@ -130,12 +141,12 @@ void cmndPid::_handleT(CmndParser *pars) {
         float kP = atof( pars->paramStr(3) );
         float kI = atof( pars->paramStr(4) );
         float kD = atof( pars->paramStr(5) );
-        this->state->commanded.pid.SetTunings( kP, kI, kD );
+        this->state->commanded.pid.updateTuning( kP, kI, kD );
         Serial.print(F("# PID Tunings set.  Kp = "));
-        Serial.print(myPID.GetKp());
+        Serial.print( kP );
         Serial.print(F(",  Ki = "));
-        Serial.print(myPID.GetKi());
+        Serial.print( kI );
         Serial.print(F(",  Kd = "));
-        Serial.println(myPID.GetKd());
+        Serial.println( kD );
     }
 }
