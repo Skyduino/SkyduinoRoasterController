@@ -420,6 +420,7 @@ bool PID_Control::begin() {
     // Update PID settings
     this->turnOff();
     this->loadProfile( this->_nvm->settings.pidCurrentProfile );
+    this->_pid.SetOutputLimits(0, 100);
 
     // Configure the timer and attach interrupt
     // ToDo
