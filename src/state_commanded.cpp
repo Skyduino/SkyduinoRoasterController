@@ -503,6 +503,14 @@ void PID_Control::updateCycleTimeMs(uint32_t ctMS) {
 
 
 /**
+ * @brief update PID tuning parameters
+ */
+void PID_Control::updateTuning(float kP, float kI, float kD) {
+    this->_pid.SetTunings(kP, kI, kD);
+}
+
+
+/**
  * @brief Do the PID calculation here
  */
 void PID_Control::_compute() {

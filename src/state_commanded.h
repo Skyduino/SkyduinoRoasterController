@@ -120,6 +120,7 @@ class PID_Control {
         void turnOff();
         void turnOn();
         void updateCycleTimeMs(uint32_t ct);
+        void updateTuning(float kP, float kI, float kD);
     
     protected:
         EepromSettings      *_nvm;
