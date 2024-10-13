@@ -456,6 +456,7 @@ void PID_Control::loadProfile(uint8_t profileNum) {
         profile->dmode,
         profile->iAwMode
     );
+    this->updateCycleTimeMs( profile->cycleTimeMS );
 }
 
 
@@ -486,6 +487,18 @@ void PID_Control::turnOn() {
     this->_pid.Initialize();
     this->_pid.SetMode(QuickPID::Control::timer);
     this->_timer->resume();
+}
+
+
+/**
+ * @brief Update loop cycle time: update PID & Timer
+ */
+void PID_Control::updateCycleTimeMs(uint32_t ctMS) {
+    if ( !isInitialized ) this->begin();
+
+    uint32_t ctus = ctMS * 1000;
+    this->_pid.SetSampleTimeUs(ctus);
+    this->_timer->setOverflow(ctus, MICROSEC_FORMAT);
 }
 
 

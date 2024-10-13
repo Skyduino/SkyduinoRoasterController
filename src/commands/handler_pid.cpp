@@ -66,9 +66,17 @@ void cmndPid::_handleChan(CmndParser *pars) {
 
 
 /**
- * @brief Handle PID;CT;ssss command, to change the PID cycle time
+ * @brief Handle PID;CT;ssss command, to change the PID cycle time in MS
  */
 void cmndPid::_handleCT(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) {
+        uint32_t ctms = atoi( pars->paramStr(3) );
+        if ( ctms > 100 ) {
+            DEBUG(millis()); DEBUG(F(" Setting PID cycle time MS: "));
+            DEBUGLN( ctms );
+            this->state->commanded.pid.updateCycleTimeMs( ctms );
+        }
+    }
 }
 
 

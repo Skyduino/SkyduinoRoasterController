@@ -119,6 +119,7 @@ class PID_Control {
         bool isOn();
         void turnOff();
         void turnOn();
+        void updateCycleTimeMs(uint32_t ct);
     
     protected:
         EepromSettings      *_nvm;
