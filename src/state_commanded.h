@@ -119,8 +119,10 @@ class PID_Control {
         bool isOn();
         void turnOff();
         void turnOn();
-        void updateCycleTimeMs(uint32_t ct);
-        void updateTuning(float kP, float kI, float kD);
+        void updateCycleTimeMs( uint32_t ct );
+        void updateSetPointC( float setPointC );
+        float getSetPoint() { return this->setp; };
+        void updateTuning( float kP, float kI, float kD );
     
     protected:
         EepromSettings      *_nvm;

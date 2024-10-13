@@ -503,6 +503,16 @@ void PID_Control::updateCycleTimeMs(uint32_t ctMS) {
 
 
 /**
+ * @brief Update the PID setpoint. The new Setpoint is always in the current
+ *        units of measrement, but internally PID uses the Setpoint in C
+ * @paragraph setPoint -- new setpoint in the current units of measurement
+ */
+void PID_Control::updateSetPointC(float setPointC) {
+    this->setp = setPointC;
+}
+
+
+/**
  * @brief update PID tuning parameters
  */
 void PID_Control::updateTuning(float kP, float kI, float kD) {
