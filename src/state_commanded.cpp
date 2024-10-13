@@ -42,6 +42,7 @@ bool StateCommanded::begin()
     isSuccess &= this->drum.begin();
     isSuccess &= this->cool.begin();
     isSuccess &= this->filter.begin();
+    isSuccess &= this->pid.begin();
     return isSuccess;
 }
 
@@ -407,3 +408,44 @@ void ControlDrum::_abortAction()
     this->_enable.abort();
 }
 #endif // USE_STEPPER_DRUM
+
+
+/**
+ * @brief Initializes the PID instance. Set up the timers etc
+ * @returns true if initialization is a success
+ */
+bool PID_Control::begin() {
+    if ( this->isInitialized ) return true;
+
+    // Update PID settings
+    this->_pid.SetMode(QuickPID::Control::manual);
+    this->loadProfile( this->_nvm->settings.pidCurrentProfile );
+
+    // Configure the timer and attach interrupt
+    // ToDo
+
+    this->isInitialized = true;
+    return true;
+}
+
+
+/**
+ * @brief load a profile from NVM settings
+ * @param profileNum -- index of the loaded profile
+ */
+void PID_Control::loadProfile(uint8_t profileNum) {
+    if ( profileNum >= PID_NUM_PROFILES ) {
+        WARN(F("Profile ")); WARN(profileNum); WARNLN(F(" is not valid"));
+        return;
+    }
+    const t_NvmPIDSettings *profile =
+        &(this->_nvm->settings.pidProfiles[profileNum]);
+    this->_pid.SetTunings(
+        profile->kP,
+        profile->kI,
+        profile->kD,
+        profile->pmode,
+        profile->dmode,
+        profile->iAwMode
+    );
+}
