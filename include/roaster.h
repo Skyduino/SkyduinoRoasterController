@@ -61,6 +61,7 @@
 #define PID_KI              0.15f
 #define PID_KD              0.00f
 #define PID_CHAN            1
+#define PID_CYCLE_TIME_MS   1000U
 #define PID_PMODE           QuickPID::pMode::pOnError
 #define PID_DMODE           QuickPID::dMode::dOnMeas
 #define PID_AWMODE          QuickPID::iAwMode::iAwCondition
