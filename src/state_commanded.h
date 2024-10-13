@@ -107,6 +107,30 @@ class ControlDrum : public ControlPWM {
 };
 #endif // USE_STEPPER_DRUM
 
+
+class PID_Control {
+    public:
+        PID_Control(EepromSettings *nvm, ControlHeat *heat, ControlPWM *vent):
+            _nvm(nvm),
+            _heat(heat),
+            _vent(vent) {};
+        bool begin();
+        void loadProfile( uint8_t profileNum );
+    
+    protected:
+        const EepromSettings    *_nvm;
+        const ControlHeat       *_heat;
+        const ControlPWM        *_vent;
+        HardwareTimer           *_timer;
+        bool                    isInitialized = false;
+        float                   input = 0;
+        float                   output = 0;
+        float                   setp = 0;
+        QuickPID::Control       _action = QuickPID::Control::manual;
+        QuickPID                _pid = QuickPID(&input, &output, &setp);
+};
+
+
 class StateCommanded {
     public:
         StateCommanded(EepromSettings *nvm):
@@ -121,6 +145,7 @@ class StateCommanded {
             drum(ControlPWM(PIN_DRUM, nvm->settings.pwmDrumHz)),
 #endif // USE_STEPPER_DRUM
             cool(ControlOnOff(PIN_COOL)),
+            pid( PID_Control(nvm, &heat, &vent) ),
             _nvmSettings(nvm) {};
         ControlHeat heat;
         ControlPWM vent;
@@ -131,6 +156,7 @@ class StateCommanded {
 #endif // USE_STEPPER_DRUM
         ControlOnOff cool;
         ControlBasic filter;
+        PID_Control pid;
 
         void abort();
         bool begin();
