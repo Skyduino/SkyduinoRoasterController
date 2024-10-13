@@ -126,4 +126,16 @@ void cmndPid::_handleSV(CmndParser *pars) {
  * @brief Handle PID;T;ppp;iii;ddd command to change PID tuning parameters
  */
 void cmndPid::_handleT(CmndParser *pars) {
+    if ( 5 != pars->nTokens() ) {
+        float kP = atof( pars->paramStr(3) );
+        float kI = atof( pars->paramStr(4) );
+        float kD = atof( pars->paramStr(5) );
+        this->state->commanded.pid.SetTunings( kP, kI, kD );
+        Serial.print(F("# PID Tunings set.  Kp = "));
+        Serial.print(myPID.GetKp());
+        Serial.print(F(",  Ki = "));
+        Serial.print(myPID.GetKi());
+        Serial.print(F(",  Kd = "));
+        Serial.println(myPID.GetKd());
+    }
 }
