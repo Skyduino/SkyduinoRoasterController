@@ -54,4 +54,15 @@
 #define EEPROM_SETTINGS_MAGIC 0xbeefbeef
 #define EEPROM_SAVE_TIME_MS   5000
 #define EEPROM_SETTINGS_ADDR  0
+
+
+// PID definitions
+#define PID_KP              5.00f
+#define PID_KI              0.15f
+#define PID_KD              0.00f
+#define PID_CHAN            1
+#define PID_PMODE           QuickPID::pMode::pOnError
+#define PID_DMODE           QuickPID::dMode::dOnMeas
+#define PID_AWMODE          QuickPID::iAwMode::iAwCondition
+#define PID_NUM_PROFILES    4
 #endif  // __ROASTER_H
