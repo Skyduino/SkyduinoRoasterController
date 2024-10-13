@@ -38,6 +38,14 @@ bool State::loopTick() {
 void State::printState() {
     reported.printState();
     commanded.printState();
+    if ( commanded.pid.isOn() ) {
+        float spC = commanded.pid.getSetPoint();
+        Serial.println(
+            cfg.isMetric ? spC : CONVERT_C_TO_F( spC )
+        );
+    } else {
+        Serial.println(0);
+    }
 }
 
 /**
