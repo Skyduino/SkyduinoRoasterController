@@ -23,10 +23,20 @@ PROGMEM const static t_Settings nvmSettingsStorage = {
     PWM_FREQ_HEAT,
     PWM_FREQ_LED,
     // Counters
-    0, // power on resets
-    0, // Watchdog resets
-    0, // Software resets
-    0, // safetyTriggers
+    {
+        0, // power on resets
+        0, // Watchdog resets
+        0, // Software resets
+        0  // safetyTriggers
+    },
+    0, // pidCurrentProfile
+    // pidProfiles: kP, kI, kD, pmode, dmode, iAwMode, chan
+    {
+        {PID_KP, PID_KI, PID_KD, PID_PMODE, PID_DMODE, PID_AWMODE, PID_CHAN},
+        {PID_KP, PID_KI, PID_KD, PID_PMODE, PID_DMODE, PID_AWMODE, PID_CHAN},
+        {PID_KP, PID_KI, PID_KD, PID_PMODE, PID_DMODE, PID_AWMODE, PID_CHAN},
+        {PID_KP, PID_KI, PID_KD, PID_PMODE, PID_DMODE, PID_AWMODE, PID_CHAN},
+    },
     EEPROM_SETTINGS_MAGIC, // EEPROM MAGIC number
     0 // CRC
 };
