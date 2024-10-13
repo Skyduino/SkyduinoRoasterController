@@ -7,6 +7,7 @@
 #include "commands/handler_dfu.h"
 #include "commands/handler_filt.h"
 #include "commands/handler_ot.h"
+#include "commands/handler_pid.h"
 #include "commands/handler_pwm.h"
 #include "commands/handler_read.h"
 #include "commands/handler_stat.h"
@@ -35,6 +36,7 @@ cmndDflts   cmnd_handler_dflt = cmndDflts( &state );
 cmndOff     cmnd_handler_off  = cmndOff( &state );
 cmndOT1     cmnd_handler_ot1  = cmndOT1( &state );
 cmndOT2     cmnd_handler_ot2  = cmndOT2( &state );
+cmndPid     cmnd_handler_pid  = cmndPid( &state );
 cmndPwm     cmnd_handler_pwm  = cmndPwm( &state );
 cmndRead    cmnd_handler_read = cmndRead( &state );
 cmndReset   cmnd_handler_reset;
@@ -66,6 +68,7 @@ void setupCommandHandlers(void) {
         &cmnd_handler_unit,
         &cmnd_handler_filt,
         &cmnd_handler_chan,
+        &cmnd_handler_pid,
         &cmnd_handler_off,
         &cmnd_handler_cool,
         &cmnd_handler_drum,
