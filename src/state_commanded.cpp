@@ -417,13 +417,20 @@ void ControlDrum::_abortAction()
 bool PID_Control::begin() {
     if ( this->isInitialized ) return true;
 
+    // Configure the timer and attach interrupt
+    TIM_TypeDef  *instance = TIM6;
+    this->_timer = new HardwareTimer(instance);
+    this->_timer->setOverflow(PID_CYCLE_TIME_MS*1000, MICROSEC_FORMAT);
+
     // Update PID settings
     this->turnOff();
     this->loadProfile( this->_nvm->settings.pidCurrentProfile );
     this->_pid.SetOutputLimits(0, 100);
 
-    // Configure the timer and attach interrupt
-    // ToDo
+    this->_timer->attachInterrupt(
+        std::bind(&PID_Control::_compute, this)
+    );
+    this->_timer->pause();
 
     this->isInitialized = true;
     return true;
@@ -468,6 +475,7 @@ bool PID_Control::isOn() {
  */
 void PID_Control::turnOff() {
     this->_pid.SetMode(QuickPID::Control::manual);
+    this->_timer->pause();
 }
 
 
@@ -477,4 +485,17 @@ void PID_Control::turnOff() {
 void PID_Control::turnOn() {
     this->_pid.Initialize();
     this->_pid.SetMode(QuickPID::Control::timer);
+    this->_timer->resume();
+}
+
+
+/**
+ * @brief Do the PID calculation here
+ */
+void PID_Control::_compute() {
+    if ( this->_pid.Compute() ) {
+        DEBUG(millis()); DEBUG(F(" PID compute settings output to: "));
+        DEBUGLN(this->output);
+        this->_heat->set((uint8_t) this->output);
+    }
 }
