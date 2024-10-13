@@ -118,6 +118,7 @@ class PID_Control {
         void loadProfile( uint8_t profileNum );
         bool isOn();
         void turnOff();
+        void turnOn();
     
     protected:
         const EepromSettings    *_nvm;
@@ -130,6 +131,7 @@ class PID_Control {
         float                   setp = 0;
         QuickPID::Control       _action = QuickPID::Control::manual;
         QuickPID                _pid = QuickPID(&input, &output, &setp);
+        void _compute();
 };
 
 
