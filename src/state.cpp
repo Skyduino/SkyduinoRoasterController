@@ -15,6 +15,7 @@ bool State::begin() {
 
     isSuccess &= commanded.begin();
     isSuccess &= reported.begin();
+    isSuccess &= pid.begin();
 
     return isSuccess;
 }
@@ -38,8 +39,8 @@ bool State::loopTick() {
 void State::printState() {
     reported.printState();
     commanded.printState();
-    if ( commanded.pid.isOn() ) {
-        float spC = commanded.pid.getSetPoint();
+    if ( pid.isOn() ) {
+        float spC = pid.getSetPoint();
         Serial.println(
             cfg.isMetric ? spC : CONVERT_C_TO_F( spC )
         );

@@ -42,7 +42,6 @@ bool StateCommanded::begin()
     isSuccess &= this->drum.begin();
     isSuccess &= this->cool.begin();
     isSuccess &= this->filter.begin();
-    isSuccess &= this->pid.begin();
     return isSuccess;
 }
 

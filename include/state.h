@@ -64,8 +64,15 @@ class State {
     public:
         State( EepromSettings *nvmSettings ):
             commanded(StateCommanded(nvmSettings)),
+            pid(
+                PID_Control(nvmSettings,
+                            &(commanded.heat),
+                            &(commanded.vent)
+                )
+            ),
             nvmSettings(nvmSettings) {};
         StateCommanded  commanded;
+        PID_Control     pid;
         Reported        reported = Reported(&cfg);
         Config          cfg;
         Status          status;

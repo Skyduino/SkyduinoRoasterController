@@ -153,7 +153,6 @@ class StateCommanded {
             drum(ControlPWM(PIN_DRUM, nvm->settings.pwmDrumHz)),
 #endif // USE_STEPPER_DRUM
             cool(ControlOnOff(PIN_COOL)),
-            pid( PID_Control(nvm, &heat, &vent) ),
             _nvmSettings(nvm) {};
         ControlHeat heat;
         ControlPWM vent;
@@ -164,7 +163,6 @@ class StateCommanded {
 #endif // USE_STEPPER_DRUM
         ControlOnOff cool;
         ControlBasic filter;
-        PID_Control pid;
 
         void abort();
         bool begin();

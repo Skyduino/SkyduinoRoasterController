@@ -74,7 +74,7 @@ void cmndPid::_handleCT(CmndParser *pars) {
         if ( ctms > 100 ) {
             DEBUG(millis()); DEBUG(F(" Setting PID cycle time MS: "));
             DEBUGLN( ctms );
-            this->state->commanded.pid.updateCycleTimeMs( ctms );
+            this->state->pid.updateCycleTimeMs( ctms );
         }
     }
 }
@@ -93,7 +93,7 @@ void cmndPid::_handleDMode(CmndParser *pars) {
  */
 void cmndPid::_handleOff(CmndParser *pars) {
     DEBUG(millis()); DEBUGLN(F("Turning the PID controller Off"));
-    this->state->commanded.pid.turnOff();
+    this->state->pid.turnOff();
 }
 
 
@@ -102,7 +102,7 @@ void cmndPid::_handleOff(CmndParser *pars) {
  */
 void cmndPid::_handleOn(CmndParser *pars) {
     DEBUG(millis()); DEBUGLN(F("Turning the PID controller On"));
-    this->state->commanded.pid.turnOn();
+    this->state->pid.turnOn();
 }
 
 
@@ -126,7 +126,7 @@ void cmndPid::_handleSV(CmndParser *pars) {
 
         // Sanity Check
         if ( newSetPointC > 30 && newSetPointC < (state->nvmSettings->settings.maxSafeTempC) ) {
-            this->state->commanded.pid.updateSetPointC( newSetPointC );
+            this->state->pid.updateSetPointC( newSetPointC );
             Serial.print(F("# PID setpoint = ")); Serial.println( newSetPointC );
         }
     }
@@ -141,7 +141,7 @@ void cmndPid::_handleT(CmndParser *pars) {
         float kP = atof( pars->paramStr(3) );
         float kI = atof( pars->paramStr(4) );
         float kD = atof( pars->paramStr(5) );
-        this->state->commanded.pid.updateTuning( kP, kI, kD );
+        this->state->pid.updateTuning( kP, kI, kD );
         Serial.print(F("# PID Tunings set.  Kp = "));
         Serial.print( kP );
         Serial.print(F(",  Ki = "));
