@@ -8,6 +8,7 @@
 #include <roaster.h>
 #include "eeprom_settings.h"
 #include "state_commanded.h"
+#include "state_pid.h"
 #include "state_statistics.h"
 #include "ntc.h"
 
