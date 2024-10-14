@@ -522,9 +522,23 @@ void PID_Control::updateTuning(float kP, float kI, float kD) {
  * @brief Do the PID calculation here
  */
 void PID_Control::_compute() {
-    if ( this->_pid.Compute() ) {
-        DEBUG(millis()); DEBUG(F(" PID compute settings output to: "));
-        DEBUGLN(this->output);
-        this->_heat->set((uint8_t) this->output);
+    if ( !getLogicalChanTemp ) {
+        ERRORLN(F("No callback for getLogicalChanTemp"));
+        return;
+    }
+    uint8_t profileNum = this->_nvm->settings.pidCurrentProfile;
+    uint8_t chan = this->_nvm->settings.pidProfiles[ profileNum ].chan;
+    float tempC = this->getLogicalChanTemp( chan );
+
+    DEBUG(millis()); DEBUG(F("PID Profile chan: ")); DEBUG(chan);
+    DEBUG(F(" tempC: ")); DEBUGLN(tempC);
+
+    if ( !isnan( tempC )) {
+        this->input = tempC;
+        if ( this->_pid.Compute() ) {
+            DEBUG(millis()); DEBUG(F(" PID compute settings output to: "));
+            DEBUGLN(this->output);
+            this->_heat->set((uint8_t) this->output);
+        }
     }
 }
