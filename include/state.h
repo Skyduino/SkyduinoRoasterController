@@ -67,7 +67,12 @@ class State {
             pid(
                 PID_Control(nvmSettings,
                             &(commanded.heat),
-                            &(commanded.vent)
+                            &(commanded.vent),
+                            std::bind(
+                                &Reported::getLogicalChanTemp,
+                                &reported,
+                                std::placeholders::_1
+                            )
                 )
             ),
             nvmSettings(nvmSettings) {};

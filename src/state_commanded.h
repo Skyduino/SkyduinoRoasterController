@@ -110,10 +110,11 @@ class ControlDrum : public ControlPWM {
 
 class PID_Control {
     public:
-        PID_Control(EepromSettings *nvm, ControlHeat *heat, ControlPWM *vent):
+        PID_Control(EepromSettings *nvm, ControlHeat *heat, ControlPWM *vent, std::function<float(uint8_t)> getLogicalChT):
             _nvm(nvm),
             _heat(heat),
-            _vent(vent) {};
+            _vent(vent),
+            getLogicalChanTemp(getLogicalChT) {};
         bool begin();
         void loadProfile( uint8_t profileNum );
         bool isOn();
@@ -128,6 +129,7 @@ class PID_Control {
         EepromSettings      *_nvm;
         ControlHeat         *_heat;
         ControlPWM          *_vent;
+        std::function<float(uint8_t)> getLogicalChanTemp;
         HardwareTimer       *_timer;
         bool                isInitialized = false;
         float               input = 0;
