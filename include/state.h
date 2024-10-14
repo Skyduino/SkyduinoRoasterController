@@ -33,6 +33,7 @@ class Reported {
         uint8_t getChanMapping(uint8_t idx);
         void setChanMapping(uint8_t idx, uint8_t mapping);
         float getChanTemp(uint8_t chan);
+        float getLogicalChanTemp(uint8_t lch);
         uint32_t getSkywalkerADC();
     
     private:

@@ -149,6 +149,22 @@ float Reported::getChanTemp(uint8_t chan) {
     return this->chanTemp[ chan ];
 }
 
+/**
+ * @brief return the temperature of a logical channel. The logical channels
+ *        could be mapped to a different physical channels with the CHAN command
+ * @param lch -- logical channgel to query
+ * @return float -- the temperature of a logical channel, or NaN if the channel
+ *         is not mapped to a physical channel
+ */
+float Reported::getLogicalChanTemp(uint8_t lch) {
+    if ( lch >= TEMPERATURE_CHANNELS_MAX ) return NAN;
+    
+    uint8_t mapping = this->_chanMapping[ lch ];
+    if ( 0 == mapping ) return NAN;
+
+    return this->chanTemp[ mapping-1 ];
+}
+
 void Reported::_readNTC() {
     float ntcTemp = ntc.AdcToTempC( analogRead(PIN_NTC) );
     if ( !isnan(ntcTemp) ) {
