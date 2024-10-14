@@ -92,7 +92,7 @@ void cmndPid::_handleDMode(CmndParser *pars) {
  * @brief Handle PID;OFF command to deactivate the PID
  */
 void cmndPid::_handleOff(CmndParser *pars) {
-    DEBUG(millis()); DEBUGLN(F("Turning the PID controller Off"));
+    DEBUG(millis()); DEBUGLN(F(" Turning the PID controller Off"));
     this->state->pid.turnOff();
 }
 
@@ -101,7 +101,7 @@ void cmndPid::_handleOff(CmndParser *pars) {
  * @brief Handle PID;ON command to activate the PID
  */
 void cmndPid::_handleOn(CmndParser *pars) {
-    DEBUG(millis()); DEBUGLN(F("Turning the PID controller On"));
+    DEBUG(millis()); DEBUGLN(F(" Turning the PID controller On"));
     this->state->pid.turnOn();
 }
 

@@ -528,7 +528,7 @@ void PID_Control::_compute() {
     uint8_t chan = this->_nvm->settings.pidProfiles[ profileNum ].chan;
     float tempC = this->getLogicalChanTemp( chan );
 
-    DEBUG(millis()); DEBUG(F("PID Profile chan: ")); DEBUG(chan);
+    DEBUG(millis()); DEBUG(F(" PID Profile chan: ")); DEBUG(chan);
     DEBUG(F(" tempC: ")); DEBUGLN(tempC);
 
     if ( !isnan( tempC )) {
