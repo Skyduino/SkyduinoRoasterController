@@ -69,13 +69,13 @@ void cmndPid::_handleChan(CmndParser *pars) {
  * @brief Handle PID;CT;ssss command, to change the PID cycle time in MS
  */
 void cmndPid::_handleCT(CmndParser *pars) {
-    if ( 3 != pars->nTokens() ) {
-        uint32_t ctms = atoi( pars->paramStr(3) );
-        if ( ctms > 100 ) {
-            DEBUG(millis()); DEBUG(F(" Setting PID cycle time MS: "));
-            DEBUGLN( ctms );
-            this->state->pid.updateCycleTimeMs( ctms );
-        }
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t ctms = atoi( pars->paramStr(2) );
+    if ( ctms > 100 ) {
+        DEBUG(millis()); DEBUG(F(" Setting PID cycle time MS: "));
+        DEBUGLN( ctms );
+        this->state->pid.updateCycleTimeMs( ctms );
     }
 }
 
@@ -120,15 +120,15 @@ void cmndPid::_handlePMode(CmndParser *pars) {
  *        is in the current units of measurement
  */
 void cmndPid::_handleSV(CmndParser *pars) {
-    if ( 3 != pars->nTokens() ) {
-        float f = atof( pars->paramStr(3) );
-        float newSetPointC = state->cfg.isMetric ? f : CONVERT_F_TO_C( f );
+    if ( 3 != pars->nTokens() ) return;
 
-        // Sanity Check
-        if ( newSetPointC > 30 && newSetPointC < (state->nvmSettings->settings.maxSafeTempC) ) {
-            this->state->pid.updateSetPointC( newSetPointC );
-            Serial.print(F("# PID setpoint = ")); Serial.println( newSetPointC );
-        }
+    float f = atof( pars->paramStr(2) );
+    float newSetPointC = state->cfg.isMetric ? f : CONVERT_F_TO_C( f );
+
+    // Sanity Check
+    if ( newSetPointC > 30 && newSetPointC < (state->nvmSettings->settings.maxSafeTempC) ) {
+        this->state->pid.updateSetPointC( newSetPointC );
+        Serial.print(F("# PID setpoint = ")); Serial.println( newSetPointC );
     }
 }
 
@@ -137,16 +137,16 @@ void cmndPid::_handleSV(CmndParser *pars) {
  * @brief Handle PID;T;ppp;iii;ddd command to change PID tuning parameters
  */
 void cmndPid::_handleT(CmndParser *pars) {
-    if ( 5 != pars->nTokens() ) {
-        float kP = atof( pars->paramStr(3) );
-        float kI = atof( pars->paramStr(4) );
-        float kD = atof( pars->paramStr(5) );
-        this->state->pid.updateTuning( kP, kI, kD );
-        Serial.print(F("# PID Tunings set.  Kp = "));
-        Serial.print( kP );
-        Serial.print(F(",  Ki = "));
-        Serial.print( kI );
-        Serial.print(F(",  Kd = "));
-        Serial.println( kD );
-    }
+    if ( 5 != pars->nTokens() ) return;
+
+    float kP = atof( pars->paramStr(2) );
+    float kI = atof( pars->paramStr(3) );
+    float kD = atof( pars->paramStr(4) );
+    this->state->pid.updateTuning( kP, kI, kD );
+    Serial.print(F("# PID Tunings set.  Kp = "));
+    Serial.print( kP );
+    Serial.print(F(",  Ki = "));
+    Serial.print( kI );
+    Serial.print(F(",  Kd = "));
+    Serial.println( kD );
 }
