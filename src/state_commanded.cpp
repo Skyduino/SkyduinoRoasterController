@@ -492,11 +492,9 @@ void PID_Control::turnOn() {
  * @brief Update loop cycle time: update PID & Timer
  */
 void PID_Control::updateCycleTimeMs(uint32_t ctMS) {
-    if ( !isInitialized ) this->begin();
-
     uint32_t ctus = ctMS * 1000;
     this->_pid.SetSampleTimeUs(ctus);
-    this->_timer->setOverflow(ctus, MICROSEC_FORMAT);
+    if ( this->_timer ) this->_timer->setOverflow(ctus, MICROSEC_FORMAT);
 }
 
 
