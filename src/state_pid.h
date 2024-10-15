@@ -4,6 +4,7 @@
 #include <HardwareTimer.h>
 
 #include "roaster.h"
+#include "eeprom_settings.h"
 #include "state_commanded.h"
 
 
@@ -32,6 +33,7 @@ class PID_Control {
         ControlPWM          *_vent;
         t_Cbk_getLogicalChanTempC getLogicalChanTempC = NULL;
         HardwareTimer       *_timer;
+        
         bool                isInitialized = false;
         float               input = 0;
         float               output = 0;

@@ -21,7 +21,7 @@ typedef struct {
     float   kD;
     QuickPID::pMode   pmode;
     QuickPID::dMode   dmode;
-    QuickPID::iAwMode  iAwMode;
+    QuickPID::iAwMode iAwMode;
     uint8_t chan;
     uint32_t cycleTimeMS;
 } t_NvmPIDSettings;

@@ -2,6 +2,8 @@
 
 #include "state_pid.h"
 
+#define _NVM_GETPIDPROF(x) (this->_nvm->settings.pidProfiles[ x ])
+#define _NVM_PIDPROFCURRENT _NVM_GETPIDPROF( this->_nvm->settings.pidCurrentProfile )
 
 /**
  * @brief Initializes the PID instance. Set up the timers etc
@@ -39,8 +41,7 @@ void PID_Control::loadProfile(uint8_t profileNum) {
         WARN(F("Profile ")); WARN(profileNum); WARNLN(F(" is not valid"));
         return;
     }
-    const t_NvmPIDSettings *profile =
-        &(this->_nvm->settings.pidProfiles[profileNum]);
+    const t_NvmPIDSettings *profile = &_NVM_GETPIDPROF( profileNum );
     this->_pid.SetTunings(
         profile->kP,
         profile->kI,
@@ -119,11 +120,8 @@ void PID_Control::_compute() {
         ERRORLN(F("No callback for getLogicalChanTempC"));
         return;
     }
-    uint8_t profileNum = this->_nvm->settings.pidCurrentProfile;
-    uint8_t chan = this->_nvm->settings.pidProfiles[ profileNum ].chan;
-    float tempC = this->getLogicalChanTempC( chan );
+    float tempC = this->getLogicalChanTempC( _NVM_PIDPROFCURRENT.chan );
 
-    DEBUG(millis()); DEBUG(F(" PID Profile chan: ")); DEBUG(chan);
     DEBUG(F(" tempC: ")); DEBUGLN(tempC);
 
     if ( !isnan( tempC )) {
