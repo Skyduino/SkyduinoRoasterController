@@ -78,6 +78,15 @@ void PID_Control::turnOn() {
 
 
 /**
+ * @brief use a different channel for PID's input
+ */
+void PID_Control::updateChan(uint8_t chan) {
+    _NVM_PIDPROFCURRENT.chan = chan;
+    this->_nvm->markDirty();
+}
+
+
+/**
  * @brief Update loop cycle time: update PID & Timer
  */
 void PID_Control::updateCycleTimeMs(uint32_t ctMS) {

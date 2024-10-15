@@ -62,6 +62,15 @@ void cmndPid::_handleAwMode(CmndParser *pars) {
  * @brief Handle PID;CHAN;i command to update the input channel
  */
 void cmndPid::_handleChan(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t chan = atoi( pars->paramStr(2) );
+    if ( chan > TEMPERATURE_CHANNELS_MAX || 0 == chan) {
+        WARNLN(F("Wrong channel"));
+        return;
+    }
+    DEBUG(micros()); DEBUG(F(" Setting PID input channel: ")); DEBUGLN( chan );
+    this->state->pid.updateChan( chan );
 }
 
 

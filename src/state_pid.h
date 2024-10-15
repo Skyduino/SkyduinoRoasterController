@@ -21,6 +21,7 @@ class PID_Control {
         bool isOn();
         void turnOff();
         void turnOn();
+        void updateChan( uint8_t chan );
         void updateCycleTimeMs( uint32_t ct );
         void updateSetPointC( float setPointC );
         float getSetPoint() { return this->setp; };
