@@ -17,7 +17,7 @@ class PID_Control {
             _heat(heat),
             _vent(vent) {};
         bool begin();
-        void loadProfile( uint8_t profileNum );
+        void activateProfile( uint8_t profileNum );
         bool isOn();
         void turnOff();
         void turnOn();
@@ -33,7 +33,7 @@ class PID_Control {
         ControlPWM          *_vent;
         t_Cbk_getLogicalChanTempC getLogicalChanTempC = NULL;
         HardwareTimer       *_timer;
-        
+
         bool                isInitialized = false;
         float               input = 0;
         float               output = 0;
@@ -41,6 +41,7 @@ class PID_Control {
         QuickPID::Control   _action = QuickPID::Control::manual;
         QuickPID            _pid = QuickPID(&input, &output, &setp);
         void _compute();
+        void _syncPidSettings();
 };
 
 #endif // _SW_STATE_PID_H

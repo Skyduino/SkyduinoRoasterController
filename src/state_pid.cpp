@@ -19,8 +19,8 @@ bool PID_Control::begin() {
 
     // Update PID settings
     this->turnOff();
-    this->loadProfile( this->_nvm->settings.pidCurrentProfile );
     this->_pid.SetOutputLimits(0, 100);
+    this->_syncPidSettings();
 
     this->_timer->attachInterrupt(
         std::bind(&PID_Control::_compute, this)
@@ -33,24 +33,17 @@ bool PID_Control::begin() {
 
 
 /**
- * @brief load a profile from NVM settings
- * @param profileNum -- index of the loaded profile
+ * @brief change and make current a new PID profile
+ * @param profileNum -- index of the PID profile to activate
  */
-void PID_Control::loadProfile(uint8_t profileNum) {
+void PID_Control::activateProfile(uint8_t profileNum) {
     if ( profileNum >= PID_NUM_PROFILES ) {
         WARN(F("Profile ")); WARN(profileNum); WARNLN(F(" is not valid"));
         return;
     }
-    const t_NvmPIDSettings *profile = &_NVM_GETPIDPROF( profileNum );
-    this->_pid.SetTunings(
-        profile->kP,
-        profile->kI,
-        profile->kD,
-        profile->pmode,
-        profile->dmode,
-        profile->iAwMode
-    );
-    this->updateCycleTimeMs( profile->cycleTimeMS );
+    this->_nvm->settings.pidCurrentProfile = profileNum;
+    this->_nvm->markDirty();
+    this->_syncPidSettings();
 }
 
 
@@ -88,9 +81,9 @@ void PID_Control::turnOn() {
  * @brief Update loop cycle time: update PID & Timer
  */
 void PID_Control::updateCycleTimeMs(uint32_t ctMS) {
-    uint32_t ctus = ctMS * 1000;
-    this->_pid.SetSampleTimeUs(ctus);
-    if ( this->_timer ) this->_timer->setOverflow(ctus, MICROSEC_FORMAT);
+    _NVM_PIDPROFCURRENT.cycleTimeMS = ctMS;
+    this->_nvm->markDirty();
+    this->_syncPidSettings();
 }
 
 
@@ -108,7 +101,11 @@ void PID_Control::updateSetPointC(float setPointC) {
  * @brief update PID tuning parameters
  */
 void PID_Control::updateTuning(float kP, float kI, float kD) {
-    this->_pid.SetTunings(kP, kI, kD);
+    _NVM_PIDPROFCURRENT.kP = kP;
+    _NVM_PIDPROFCURRENT.kI = kI;
+    _NVM_PIDPROFCURRENT.kD = kD;
+    this->_nvm->markDirty();
+    this->_syncPidSettings();
 }
 
 
@@ -132,4 +129,25 @@ void PID_Control::_compute() {
             this->_heat->set((uint8_t) this->output);
         }
     }
+}
+
+
+/**
+ * @brief Set PID settings to match the current NVM PID profile
+ */
+void PID_Control::_syncPidSettings() {
+    const t_NvmPIDSettings *profile = &_NVM_PIDPROFCURRENT;
+    this->_pid.SetTunings(
+        profile->kP,
+        profile->kI,
+        profile->kD,
+        profile->pmode,
+        profile->dmode,
+        profile->iAwMode
+    );
+
+    uint32_t ctus = 1000 * profile->cycleTimeMS;
+    this->_pid.SetSampleTimeUs(ctus);
+    if ( this->_timer ) this->_timer->setOverflow(ctus, MICROSEC_FORMAT);
+
 }
