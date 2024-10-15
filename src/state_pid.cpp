@@ -35,15 +35,18 @@ bool PID_Control::begin() {
 /**
  * @brief change and make current a new PID profile
  * @param profileNum -- index of the PID profile to activate
+ * @return true -- if a correct profile was selected
  */
-void PID_Control::activateProfile(uint8_t profileNum) {
+ bool PID_Control::activateProfile(uint8_t profileNum) {
     if ( profileNum >= PID_NUM_PROFILES ) {
         WARN(F("Profile ")); WARN(profileNum); WARNLN(F(" is not valid"));
-        return;
+        return false;
     }
     this->_nvm->settings.pidCurrentProfile = profileNum;
     this->_nvm->markDirty();
     this->_syncPidSettings();
+
+    return true;
 }
 
 

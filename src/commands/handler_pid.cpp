@@ -6,6 +6,7 @@
 #define CMD_PID "PID"
 #define SUBCMD_AWMODE "AWMODE"
 #define SUBCMD_CHAN   "CHAN"
+#define SUBCMD_CHGPRF "CHGPRF"
 #define SUBCMD_CT     "CT"
 #define SUBCMD_DMODE  "DMODE"
 #define SUBCMD_OFF    "OFF"
@@ -29,6 +30,7 @@ void cmndPid::_doCommand(CmndParser *pars) {
     t_SubCommand cmds[] = {
         { SUBCMD_AWMODE, &cmndPid::_handleAwMode },
         { SUBCMD_CHAN, &cmndPid::_handleChan },
+        { SUBCMD_CHGPRF, &cmndPid::_handleChngPrfl },
         { SUBCMD_CT, &cmndPid::_handleCT },
         { SUBCMD_DMODE, &cmndPid::_handleDMode },
         { SUBCMD_OFF, &cmndPid::_handleOff },
@@ -72,6 +74,21 @@ void cmndPid::_handleChan(CmndParser *pars) {
     uint32_t chan = atoi( pars->paramStr(2) );
     if ( this->state->pid.updateChan( chan ) ) {
         Serial.print(F("# PID channel = ")); Serial.println( chan );
+    }
+}
+
+
+/**
+ * @brief Handle PID;CHGPRF;p command to activate/change a new PID profile
+ *        all subsequent changes to the PID settings will be applied to this
+ *        profile
+ */
+void cmndPid::_handleChngPrfl(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t profile = atoi( pars->paramStr(2) );
+    if ( this->state->pid.activateProfile( profile ) ) {
+        Serial.print(F("# PID profile = ")); Serial.println( profile );
     }
 }
 

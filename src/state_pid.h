@@ -17,7 +17,7 @@ class PID_Control {
             _heat(heat),
             _vent(vent) {};
         bool begin();
-        void activateProfile( uint8_t profileNum );
+        bool activateProfile( uint8_t profileNum );
         bool isOn();
         void turnOff();
         void turnOn();
