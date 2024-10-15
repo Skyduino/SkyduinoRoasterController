@@ -13,9 +13,11 @@
 #endif // CMD_DFU_TIMEOUT_MS
 
 
-class cmndDFU : public Command {
+class cmndChallenge : public Command {
     public:
-        cmndDFU();
+        cmndChallenge(const char *cmdName): Command(cmdName) {};
+        cmndChallenge(const char *cmdName, State *state):
+            Command(cmdName, state) {};
     protected:
         void _doCommand( CmndParser* pars);
 
@@ -23,8 +25,38 @@ class cmndDFU : public Command {
         TimerMS timer = TimerMS(CMD_DFU_TIMEOUT_MS);
         int challenge = 0;
 
-        void enterDFU();
         void processChallenge(int response);
+
+    protected:
+        virtual void executeCommand() =0;
 };
+
+
+class cmndDFU : public cmndChallenge {
+    public:
+        cmndDFU();
+    
+    protected:
+        void executeCommand();
+};
+
+
+class cmndReset : public cmndChallenge {
+    public:
+        cmndReset();
+    
+    protected:
+        void executeCommand();
+};
+
+
+class cmndDflts: public cmndChallenge {
+    public:
+        cmndDflts(State *state);
+    
+    protected:
+        void executeCommand();
+};
+
 
 #endif // __CMD_DFU_H

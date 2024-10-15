@@ -33,6 +33,15 @@ controlled through **J13 Disp** header, using the following pins:
 
 The firmware was tested with TMC2209 driver board. You may need to hardwire the direction pin, as this is not controlled at the moment.
 
+Depending on the stepper motor and configured micro-step resolution of the stepper
+driver, you need to configure how many steps are needed for the full revolution.
+The firmware default is 1600 steps: 200 motor steps * 8 microstep configuration of TMC2209, when MS0 & MS1 pins are left floating.
+You can configure the number of steps with `STPR=1600` Serial command.
+The setting is persistent, unless the device is fully erased or there are
+incompatible firmware change.
+
+Beside steps per revolution, you can change the max RPM for the drum with `MXRPM=60` command. This corresponds to 60 RPMs when drum speed is set to 100%
+
 
 ## DFU Mode
 
@@ -95,12 +104,17 @@ The following symbols are used for the `Separator` value:
 | DFU | DFU;{num} | DFU;2345 | Answers the DFU challenge. The number is obtained just by the `DFU` command, which gives you the challenge, which you should repeat as `DFU;{challenge}` command within the 5s. If it matches, the MCU enters the DFU mode and the new firmware can be uploaded |
 | DRUM | DRUM;pp | DRUM;90 | Set the drum speed to `pp`%
 | FILT | FILT;ppp;ppp;ppp;ppp | FILT;5;5;5;5 | where ppp = percent filtering on phisical channels 1 to 4. For example `5` indicates how much weight the old value has, so the filtered value = 95% of the new value + 5% of the old value|
+| NVMRST | NVMRST | NVMRST | Resets non-volatile memory settings to defaults. Generates a challenge, which has to be answered within the 5s. This commands works similarly to the `DFU` command |
+| NVMRST | NVMRST;{num} | NVMRST;4523 | Answers the `NVMRST` challenge. See the `DFU` commands for more details |
 | OFF | OFF | OFF | Turns everything off. Turns off: cooling, exhaust fan, heater, drum |
 | OT1 | OT1;pp | OT1;50 | where `pp` is the % duty cycle for the heater |
 | OT2 | OT2;pp | OT2;50 | where `pp` is the % duty cycle for the exhause air fan |
+| PWM | PWM;{CTL};{FREQ_HZ} | PWM;SSR;2 | Set PWM frequency for `{CTL}`, where `{CTL}` is: <br>`DRUM` -- Drum driver PWM frequency <br>`EXHAUST` -- Exhaust fan PWM frequency <br>`SSR` -- SSR PWM frequency. <br>The new PWM frequency is applied upon next reboot
 | READ | READ | READ | Requests current temperature readings on all active channels. Response from the device is the ambient temperature followed by a comma separated list of temperatures in current active units in logical channel order: ambient,chan1,chan2,chan3,chan4, followed up by Heater cyty cycle (0 - 100%) and Exhaust Fan duty cycle |
+| RESET | RESET | RESET | Generate the RESET challenge. Software resets the board. The command prompts you a challenge and works similarly to the DFU command |
 | STAT | STAT | STAT | This is an undocumented command. It should print the internal statistics, but currently does not work as expected |
 | STPR | STPR;{NUM} | STPR;1000 | Set the steps per revolutio to {NUM}. This command is only supported for the "Stepper" firmware. |
+| MAXTEMP | MAXTEMP;{NUM} | MAXTEMP;250 | Set the safety temperature threshold in °C The new threshold is activated upon next reboot: Power Off and USB-C disconnect |
 | MXRPM | MXRPM;{NUM} | MXRPM;60 | Set the maximum number of RPMs for drum at 100% speed. Min 10, Max: 120. This command is only supported for the "Stepper" firmware. |
 | UNIT | UNIT;U | UNIT;C<br>UNIT;F | Change the temperature unit of measurement to C or F |
 | VERSION | VERSION | VERSION | Print the controller firmware version |

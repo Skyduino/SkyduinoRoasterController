@@ -3,10 +3,10 @@
 #include "safemon.h"
 
 #define IS_EXCEEDING(x, t) ( (!isnan(x)) && (x >= t) )
-#define IS_EXCEEDING_MAX (_isTempExceedingC(MAX_SAFE_TEMP_C))
+#define IS_EXCEEDING_MAX (_isTempExceedingC(this->_maxTemp))
 #define IS_EXCEEDING_LOW_MAX ( \
         _isTempExceedingC( \
-            MAX_SAFE_TEMP_C - SAFE_TEMP_HISTERESIS_C \
+            (this->_maxTemp) - SAFE_TEMP_HISTERESIS_C \
         ))
 
 
@@ -171,6 +171,7 @@ void SafetyMonitor::_handleArmed() {
  */
 void SafetyMonitor::_transitionToTriggered() {
     DEBUG(micros()); DEBUGLN(F(" Transitioning to Triggered state"));
+    if ( incCounter ) incCounter();
     _monitorState = TRIGGERED;
     _handleTriggered();
 }

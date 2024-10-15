@@ -3,6 +3,8 @@
 #include "handler_dfu.h"
 
 #define CMD_DFU "DFU"
+#define CMD_RESET "RESET"
+#define CMD_NVMRST "NVMRST"
 
 typedef struct {
     uint32_t Initial_SP;
@@ -11,11 +13,7 @@ typedef struct {
 
 
 // ----------------------------
-cmndDFU::cmndDFU() :
-    Command( CMD_DFU ) {
-}
-
-void cmndDFU::_doCommand(CmndParser *pars) {
+void cmndChallenge::_doCommand(CmndParser *pars) {
     if ( 1 == (pars->nTokens()) ) {
         processChallenge(0);
     } else {
@@ -24,24 +22,28 @@ void cmndDFU::_doCommand(CmndParser *pars) {
     }
 }
 
-void cmndDFU::processChallenge(int response) {
+void cmndChallenge::processChallenge(int response) {
     if ( response == 0 || challenge == 0) {
         // challenge bootloader trigger command
         challenge = micros() & 0x0FFF;
-        Serial.print(F("DFU challenge: "));
+        Serial.print(this->keyword); Serial.print(F(" challenge: "));
         Serial.println(challenge);
         timer.reset();
     } else {
         if ( (!timer.hasTicked()) && response == challenge) {
             // got challenge respone before the timeout
-            enterDFU();
+            executeCommand();
         } else {
             challenge = 0;
         }
     }
 }
 
-void cmndDFU::enterDFU() {
+cmndDFU::cmndDFU():
+    cmndChallenge( CMD_DFU ) {
+}
+
+void cmndDFU::executeCommand() {
     t_bootVecTable *_bootVec = (t_bootVecTable*) BOOTLOADER_ADDR;
 
 	/**
@@ -112,4 +114,22 @@ void cmndDFU::enterDFU() {
 	 * Step: Connect USB<->UART converter to dedicated USART pins and test
 	 *       and test with bootloader works with STM32 Flash Loader Demonstrator software
 	 */
+}
+
+// ----------------------------
+cmndReset::cmndReset() :
+    cmndChallenge ( CMD_RESET ) {
+}
+
+void cmndReset::executeCommand() {
+    HAL_NVIC_SystemReset();
+}
+
+cmndDflts::cmndDflts(State *state):
+    cmndChallenge( CMD_NVMRST, state ) {
+}
+
+void cmndDflts::executeCommand() {
+    this->state->nvmSettings->loadDefaults();
+    Serial.println(F("Reset NVM settings to defaults"));
 }

@@ -22,6 +22,7 @@ bool State::begin() {
 bool State::loopTick() {
     bool isSuccess = true;
 
+    isSuccess &= nvmSettings->loopTick();
     isSuccess &= commanded.loopTick();
     isSuccess &= reported.loopTick();
 
@@ -43,6 +44,7 @@ void State::printState() {
  * @brief print all the available statistics
  */
 void State::printStatistics() {
+    this->nvmSettings->print();
     this->reported.printStatistics();
     this->stats.print();
 }

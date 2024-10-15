@@ -35,4 +35,13 @@ class cmndAbort: public Command {
         void _doCommand( CmndParser* pars);
 };
 
+class cmndMaxTemp : public ControlCommand {
+    public:
+        cmndMaxTemp(State *state);
+
+    protected:
+        void _handleValue(int32_t value);
+};
+
+
 #endif // __CMD_SKYWALKER_H

@@ -7,6 +7,7 @@
 #include "commands/handler_dfu.h"
 #include "commands/handler_filt.h"
 #include "commands/handler_ot.h"
+#include "commands/handler_pwm.h"
 #include "commands/handler_read.h"
 #include "commands/handler_stat.h"
 #include "commands/handler_skywalker.h"
@@ -30,15 +31,19 @@ cmndCool    cmnd_handler_cool = cmndCool( &state );
 cmndDrum    cmnd_handler_drum = cmndDrum( &state );
 cmndDFU     cmnd_handler_dfu;
 cmndFilt    cmnd_handler_filt = cmndFilt( &state );
+cmndDflts   cmnd_handler_dflt = cmndDflts( &state );
 cmndOff     cmnd_handler_off  = cmndOff( &state );
 cmndOT1     cmnd_handler_ot1  = cmndOT1( &state );
 cmndOT2     cmnd_handler_ot2  = cmndOT2( &state );
+cmndPwm     cmnd_handler_pwm  = cmndPwm( &state );
 cmndRead    cmnd_handler_read = cmndRead( &state );
+cmndReset   cmnd_handler_reset;
 cmndStat    cmnd_handler_stat = cmndStat( &state );
 #ifdef USE_STEPPER_DRUM
 cmndSteps   cmnd_handler_steps= cmndSteps( &state );
 cmndMaxRPM  cmnd_handler_rpm  = cmndMaxRPM( &state ); 
 #endif // USE_STEPPER_DRUM
+cmndMaxTemp cmnd_handler_maxt = cmndMaxTemp( &state );
 cmndUnit    cmnd_handler_unit = cmndUnit( &state );
 cmndVersion cmnd_handler_version;
 
@@ -50,6 +55,10 @@ void setupCommandHandlers(void) {
         &cmnd_handler_steps,
         &cmnd_handler_rpm,
 #endif // USE_STEPPER_DRUM
+        &cmnd_handler_dflt,
+        &cmnd_handler_pwm,
+        &cmnd_handler_reset,
+        &cmnd_handler_maxt,
         &cmnd_handler_abrt,
         &cmnd_handler_version,
         &cmnd_handler_dfu,

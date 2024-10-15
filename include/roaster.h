@@ -38,7 +38,7 @@
 #define PIN_STEPPER_EN   PB7
 #endif  // PIN_STEPPER_EN
 
-#define STEPPER_STEPS_PER_REV 1500
+#define STEPPER_STEPS_PER_REV 1600
 #define STEPPER_MAX_RPM       60
 
 #endif  // USE_STEPPER_DRUM
@@ -51,4 +51,7 @@
 #define PWM_FREQ_HEAT       1
 #define PWM_FREQ_LED        120
 
+#define EEPROM_SETTINGS_MAGIC 0xbeefbeef
+#define EEPROM_SAVE_TIME_MS   5000
+#define EEPROM_SETTINGS_ADDR  0
 #endif  // __ROASTER_H
