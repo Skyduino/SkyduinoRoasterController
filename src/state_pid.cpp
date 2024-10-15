@@ -97,19 +97,29 @@ bool PID_Control::updateAWMode(uint8_t mode) {
 /**
  * @brief use a different channel for PID's input
  */
-void PID_Control::updateChan(uint8_t chan) {
+bool PID_Control::updateChan(uint8_t chan) {
+    if ( chan > TEMPERATURE_CHANNELS_MAX || 0 == chan) {
+        WARNLN(F("Wrong channel"));
+        return false;
+    }
     _NVM_PIDPROFCURRENT.chan = chan;
     this->_nvm->markDirty();
+
+    return true;
 }
 
 
 /**
  * @brief Update loop cycle time: update PID & Timer
  */
-void PID_Control::updateCycleTimeMs(uint32_t ctMS) {
+bool PID_Control::updateCycleTimeMs(uint32_t ctMS) {
+    if ( ctMS < 100 ) return false;
+
     _NVM_PIDPROFCURRENT.cycleTimeMS = ctMS;
     this->_nvm->markDirty();
     this->_syncPidSettings();
+
+    return true;
 }
 
 

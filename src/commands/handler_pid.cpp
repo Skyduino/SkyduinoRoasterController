@@ -70,12 +70,9 @@ void cmndPid::_handleChan(CmndParser *pars) {
     if ( 3 != pars->nTokens() ) return;
 
     uint32_t chan = atoi( pars->paramStr(2) );
-    if ( chan > TEMPERATURE_CHANNELS_MAX || 0 == chan) {
-        WARNLN(F("Wrong channel"));
-        return;
+    if ( this->state->pid.updateChan( chan ) ) {
+        Serial.print(F("# PID channel = ")); Serial.println( chan );
     }
-    DEBUG(micros()); DEBUG(F(" Setting PID input channel: ")); DEBUGLN( chan );
-    this->state->pid.updateChan( chan );
 }
 
 
@@ -86,10 +83,8 @@ void cmndPid::_handleCT(CmndParser *pars) {
     if ( 3 != pars->nTokens() ) return;
 
     uint32_t ctms = atoi( pars->paramStr(2) );
-    if ( ctms > 100 ) {
-        DEBUG(millis()); DEBUG(F(" Setting PID cycle time MS: "));
-        DEBUGLN( ctms );
-        this->state->pid.updateCycleTimeMs( ctms );
+    if ( this->state->pid.updateCycleTimeMs( ctms ) ) {
+        Serial.print(F("# PID cycle (ms) = ")); Serial.println( ctms );
     }
 }
 
@@ -112,8 +107,8 @@ void cmndPid::_handleDMode(CmndParser *pars) {
  * @brief Handle PID;OFF command to deactivate the PID
  */
 void cmndPid::_handleOff(CmndParser *pars) {
-    DEBUG(millis()); DEBUGLN(F(" Turning the PID controller Off"));
     this->state->pid.turnOff();
+    Serial.println(F("# PID turned OFF"));
 }
 
 
@@ -121,8 +116,8 @@ void cmndPid::_handleOff(CmndParser *pars) {
  * @brief Handle PID;ON command to activate the PID
  */
 void cmndPid::_handleOn(CmndParser *pars) {
-    DEBUG(millis()); DEBUGLN(F(" Turning the PID controller On"));
     this->state->pid.turnOn();
+    Serial.println(F("# PID turned On"));
 }
 
 

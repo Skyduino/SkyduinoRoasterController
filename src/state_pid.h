@@ -22,8 +22,8 @@ class PID_Control {
         void turnOff();
         void turnOn();
         bool updateAWMode( uint8_t mode );
-        void updateChan( uint8_t chan );
-        void updateCycleTimeMs( uint32_t ct );
+        bool updateChan( uint8_t chan );
+        bool updateCycleTimeMs( uint32_t ct );
         bool updateDMode( uint8_t mode );
         bool updatePMode( uint8_t mode );
         void updateSetPointC( float setPointC );
