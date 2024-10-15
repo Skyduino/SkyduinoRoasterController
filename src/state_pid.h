@@ -7,13 +7,14 @@
 #include "state_commanded.h"
 
 
+using t_Cbk_getLogicalChanTempC = std::function< float( uint8_t ) >;
+
 class PID_Control {
     public:
-        PID_Control(EepromSettings *nvm, ControlHeat *heat, ControlPWM *vent, std::function<float(uint8_t)> getLogicalChT):
+        PID_Control(EepromSettings *nvm, ControlHeat *heat, ControlPWM *vent):
             _nvm(nvm),
             _heat(heat),
-            _vent(vent),
-            getLogicalChanTemp(getLogicalChT) {};
+            _vent(vent) {};
         bool begin();
         void loadProfile( uint8_t profileNum );
         bool isOn();
@@ -23,12 +24,13 @@ class PID_Control {
         void updateSetPointC( float setPointC );
         float getSetPoint() { return this->setp; };
         void updateTuning( float kP, float kI, float kD );
+        void addGetLogicalChantTempC( t_Cbk_getLogicalChanTempC cbk) { getLogicalChanTempC = cbk; };
     
     protected:
         EepromSettings      *_nvm;
         ControlHeat         *_heat;
         ControlPWM          *_vent;
-        std::function<float(uint8_t)> getLogicalChanTemp;
+        t_Cbk_getLogicalChanTempC getLogicalChanTempC = NULL;
         HardwareTimer       *_timer;
         bool                isInitialized = false;
         float               input = 0;

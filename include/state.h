@@ -66,15 +66,7 @@ class State {
         State( EepromSettings *nvmSettings ):
             commanded(StateCommanded(nvmSettings)),
             pid(
-                PID_Control(nvmSettings,
-                            &(commanded.heat),
-                            &(commanded.vent),
-                            std::bind(
-                                &Reported::getLogicalChanTemp,
-                                &reported,
-                                std::placeholders::_1
-                            )
-                )
+                PID_Control(nvmSettings, &(commanded.heat), &(commanded.vent))
             ),
             nvmSettings(nvmSettings) {};
         StateCommanded  commanded;
