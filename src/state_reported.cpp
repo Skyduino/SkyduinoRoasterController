@@ -159,7 +159,7 @@ float Reported::getChanTemp(uint8_t chan) {
 float Reported::getLogicalChanTemp(uint8_t lch) {
     if ( lch >= TEMPERATURE_CHANNELS_MAX ) return NAN;
     
-    uint8_t mapping = this->_chanMapping[ lch ];
+    uint8_t mapping = this->_chanMapping[ lch-1 ];
     if ( 0 == mapping ) return NAN;
 
     return this->chanTemp[ mapping-1 ];
