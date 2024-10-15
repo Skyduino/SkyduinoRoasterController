@@ -78,6 +78,23 @@ void PID_Control::turnOn() {
 
 
 /**
+ * @brief update the I-Anti-Windup mode
+ * @param mode -- 0 - AwCondition, 1 - iAwClamp, 2 - iAwOff 
+ */
+bool PID_Control::updateAWMode(uint8_t mode) {
+    if ( mode > (uint8_t) QuickPID::iAwMode::iAwOff ) {
+        DEBUGLN(F("Wrong I anti-windup mode"));
+        return false;
+    }
+    DEBUG(micros()); DEBUG(F(" Setting I anti-windup: ")); DEBUGLN( mode );
+    _NVM_PIDPROFCURRENT.iAwMode = (QuickPID::iAwMode) mode;
+    this->_nvm->markDirty();
+    this->_syncPidSettings();
+
+    return true;
+}
+
+/**
  * @brief use a different channel for PID's input
  */
 void PID_Control::updateChan(uint8_t chan) {
@@ -93,6 +110,41 @@ void PID_Control::updateCycleTimeMs(uint32_t ctMS) {
     _NVM_PIDPROFCURRENT.cycleTimeMS = ctMS;
     this->_nvm->markDirty();
     this->_syncPidSettings();
+}
+
+
+/**
+ * @brief update the D-Mode
+ * @param mode -- 0 - D on error, 1 - D on measurement
+ */
+bool PID_Control::updateDMode(uint8_t mode) {
+    if ( mode > (uint8_t) QuickPID::dMode::dOnMeas ) {
+        DEBUGLN(F("Wrong D-mode"));
+        return false;
+    }
+    _NVM_PIDPROFCURRENT.dMode = (QuickPID::dMode) mode;
+    this->_nvm->markDirty();
+    this->_syncPidSettings();
+
+    return true;
+}
+
+
+/**
+ * @brief update the P-Mode
+ * @param mode -- 0 - D on error, 1 - P on measurement, 2 - P on both error
+ *             and measurement
+ */
+bool PID_Control::updatePMode(uint8_t mode) {
+    if ( mode > (uint8_t) QuickPID::pMode::pOnErrorMeas ) {
+        DEBUGLN(F("Wrong P-mode"));
+        return false;
+    }
+    _NVM_PIDPROFCURRENT.pMode = (QuickPID::pMode) mode;
+    this->_nvm->markDirty();
+    this->_syncPidSettings();
+
+    return true;
 }
 
 
@@ -150,8 +202,8 @@ void PID_Control::_syncPidSettings() {
         profile->kP,
         profile->kI,
         profile->kD,
-        profile->pmode,
-        profile->dmode,
+        profile->pMode,
+        profile->dMode,
         profile->iAwMode
     );
 

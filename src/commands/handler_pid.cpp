@@ -54,7 +54,12 @@ void cmndPid::_doCommand(CmndParser *pars) {
  *        2 - turn off the anti windup
  */
 void cmndPid::_handleAwMode(CmndParser *pars) {
-    Serial.println(F("handling AW Mode"));
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t mode = atoi( pars->paramStr(2) );
+    if ( this->state->pid.updateAWMode( mode ) ) {
+        Serial.print(F("# PID I anti-windup = ")); Serial.println( mode );
+    }
 }
 
 
@@ -94,6 +99,12 @@ void cmndPid::_handleCT(CmndParser *pars) {
  *        where i is 0 -- dterm on error, 1 -- dterm on measurement
  */
 void cmndPid::_handleDMode(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t mode = atoi( pars->paramStr(2) );
+    if ( this->state->pid.updateDMode( mode ) ) {
+        Serial.print(F("# PID D-Mode = ")); Serial.println( mode );
+    }
 }
 
 
@@ -121,6 +132,12 @@ void cmndPid::_handleOn(CmndParser *pars) {
  *        2 -- pterm on both error & measurement
  */
 void cmndPid::_handlePMode(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t mode = atoi( pars->paramStr(2) );
+    if ( this->state->pid.updatePMode( mode ) ) {
+        Serial.print(F("# PID P-Mode = ")); Serial.println( mode );
+    }
 }
 
 

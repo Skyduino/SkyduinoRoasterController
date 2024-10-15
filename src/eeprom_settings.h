@@ -19,8 +19,8 @@ typedef struct {
     float   kP;
     float   kI;
     float   kD;
-    QuickPID::pMode   pmode;
-    QuickPID::dMode   dmode;
+    QuickPID::pMode   pMode;
+    QuickPID::dMode   dMode;
     QuickPID::iAwMode iAwMode;
     uint8_t chan;
     uint32_t cycleTimeMS;
