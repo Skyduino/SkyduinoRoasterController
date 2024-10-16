@@ -11,8 +11,8 @@
 Reported::Reported(Config *config) {
     this->config = config;
 
-    _chanMapping[0] = TEMPERATURE_CHANNEL_ROASTER+1;
-    _chanMapping[1] = TEMPERATURE_CHANNEL_THERMOCOUPLE+1;
+    _chanMapping[0] = TEMPERATURE_CHANNEL_THERMOCOUPLE+1;
+    _chanMapping[1] = TEMPERATURE_CHANNEL_ROASTER+1;
     _chanMapping[2] = 0;
     _chanMapping[3] = 0;
 
