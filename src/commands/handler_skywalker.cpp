@@ -38,6 +38,8 @@ cmndOff::cmndOff(State *state):
 
 
 void cmndOff::_doCommand(CmndParser *pars) {
+    state->pid.turnOff();
+    state->pid.updateSetPointC(0);
     state->commanded.off();
     state->commanded.setControlToArtisan(false);
 }
