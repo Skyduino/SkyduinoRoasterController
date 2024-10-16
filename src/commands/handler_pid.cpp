@@ -14,6 +14,7 @@
 #define SUBCMD_PMODE  "PMODE"
 #define SUBCMD_SV     "SV"
 #define SUBCMD_T      "T"
+#define SUBCMD_TPOM   "T_POM"
 
 
 typedef struct {
@@ -38,6 +39,7 @@ void cmndPid::_doCommand(CmndParser *pars) {
         { SUBCMD_PMODE, &cmndPid::_handlePMode },
         { SUBCMD_SV, &cmndPid::_handleSV },
         { SUBCMD_T, &cmndPid::_handleT },
+        { SUBCMD_TPOM, &cmndPid::_handleTPOM },
         { NULL, NULL }
     };
 
@@ -175,12 +177,30 @@ void cmndPid::_handleSV(CmndParser *pars) {
  * @brief Handle PID;T;ppp;iii;ddd command to change PID tuning parameters
  */
 void cmndPid::_handleT(CmndParser *pars) {
+    this->__handlePidTune( pars, QuickPID::pMode::pOnError );
+}
+
+
+/**
+ * @brief Handle PID;T_POM;ppp;iii;ddd command to change PID tuning parameters
+ *        for P on Measurement
+ */
+void cmndPid::_handleTPOM(CmndParser *pars) {
+    this->__handlePidTune( pars, QuickPID::pMode::pOnMeas );
+}
+
+
+/**
+ * @brief Common helper to handle PID tuning commands T & T_POM
+ */
+void cmndPid::__handlePidTune(CmndParser *pars, QuickPID::pMode pMode) {
     if ( 5 != pars->nTokens() ) return;
 
     float kP = atof( pars->paramStr(2) );
     float kI = atof( pars->paramStr(3) );
     float kD = atof( pars->paramStr(4) );
     this->state->pid.updateTuning( kP, kI, kD );
+    this->state->pid.updatePMode( (uint8_t) pMode );
     Serial.print(F("# PID Tunings set.  Kp = "));
     Serial.print( kP );
     Serial.print(F(",  Ki = "));

@@ -19,6 +19,8 @@ class cmndPid : public Command {
         void _handlePMode( CmndParser *pars );
         void _handleSV( CmndParser *pars );
         void _handleT( CmndParser *pars );
+        void _handleTPOM( CmndParser *pars );
+        void __handlePidTune( CmndParser *pars, QuickPID::pMode pMode );
 };
 
 #endif // __CMD_PID_H
