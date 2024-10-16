@@ -49,7 +49,7 @@ cmndAbort::cmndAbort(State *state):
 
 
 void cmndAbort::_doCommand(CmndParser *pars) {
-    state->commanded.abort();
+    state->abort();
 }
 
 

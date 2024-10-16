@@ -77,6 +77,7 @@ class State {
         Stats           stats;
         EepromSettings  *nvmSettings;
 
+        void    abort();
         bool    begin();
         bool    loopTick();
         void    printState();

@@ -10,7 +10,18 @@ Status::Status() {
     tcStatus = 1;
 }
 
-bool State::begin() {
+
+/**
+ * @brief emergency shutdown and control lockout
+ */
+void State::abort() {
+    this->pid.abort();
+    this->commanded.abort();
+}
+
+
+bool State::begin()
+{
     bool isSuccess = true;
 
     isSuccess &= commanded.begin();

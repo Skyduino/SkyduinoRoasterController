@@ -5,6 +5,19 @@
 #define _NVM_GETPIDPROF(x) (this->_nvm->settings.pidProfiles[ x ])
 #define _NVM_PIDPROFCURRENT _NVM_GETPIDPROF( this->_nvm->settings.pidCurrentProfile )
 
+
+/**
+ * @brief Emergency PID shutdown. Turn off and clean up
+ */
+void PID_Control::abort() {
+    this->turnOff();
+    this->setp = 20;
+    this->output = 0;
+    this->_timer->detachInterrupt();
+    this->_isAborted = true;
+}
+
+
 /**
  * @brief Initializes the PID instance. Set up the timers etc
  * @returns true if initialization is a success
@@ -74,6 +87,8 @@ void PID_Control::turnOff() {
  * @brief Turn on the PID controller
  */
 void PID_Control::turnOn() {
+    if ( this->_isAborted ) return;
+
     this->_pid.Initialize();
     this->_pid.SetMode(QuickPID::Control::timer);
     this->_timer->resume();

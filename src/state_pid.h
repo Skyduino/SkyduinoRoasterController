@@ -16,6 +16,7 @@ class PID_Control {
             _nvm(nvm),
             _heat(heat),
             _vent(vent) {};
+        void abort();
         bool begin();
         bool activateProfile( uint8_t profileNum );
         bool isOn();
@@ -39,6 +40,7 @@ class PID_Control {
         HardwareTimer       *_timer;
 
         bool                isInitialized = false;
+        bool                _isAborted = false;
         float               input = 0;
         float               output = 0;
         float               setp = 0;
