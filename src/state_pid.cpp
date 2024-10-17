@@ -96,6 +96,20 @@ void PID_Control::turnOn() {
 
 
 /**
+ * @brief start auto tune process
+ */
+void PID_Control::startAutotune() {
+}
+
+
+/**
+ * @brief stop auto tune process
+ */
+void PID_Control::stopAutotune() {
+}
+
+
+/**
  * @brief update the I-Anti-Windup mode
  * @param mode -- 0 - AwCondition, 1 - iAwClamp, 2 - iAwOff 
  */

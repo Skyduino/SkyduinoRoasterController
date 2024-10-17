@@ -11,6 +11,7 @@
 #include "commands/handler_pwm.h"
 #include "commands/handler_read.h"
 #include "commands/handler_stat.h"
+#include "commands/handler_stune.h"
 #include "commands/handler_skywalker.h"
 #ifdef USE_STEPPER_DRUM
 #include "commands/handler_stepper_drum.h"
@@ -41,6 +42,7 @@ cmndPwm     cmnd_handler_pwm  = cmndPwm( &state );
 cmndRead    cmnd_handler_read = cmndRead( &state );
 cmndReset   cmnd_handler_reset;
 cmndStat    cmnd_handler_stat = cmndStat( &state );
+cmndSTune   cmnd_handler_stun = cmndSTune( &state );
 #ifdef USE_STEPPER_DRUM
 cmndSteps   cmnd_handler_steps= cmndSteps( &state );
 cmndMaxRPM  cmnd_handler_rpm  = cmndMaxRPM( &state ); 
@@ -59,6 +61,7 @@ void setupCommandHandlers(void) {
 #endif // USE_STEPPER_DRUM
         &cmnd_handler_dflt,
         &cmnd_handler_pwm,
+        &cmnd_handler_stun,
         &cmnd_handler_reset,
         &cmnd_handler_maxt,
         &cmnd_handler_abrt,

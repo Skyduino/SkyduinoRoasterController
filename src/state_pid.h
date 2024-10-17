@@ -22,6 +22,8 @@ class PID_Control {
         bool isOn();
         void turnOff();
         void turnOn();
+        void startAutotune();
+        void stopAutotune();
         bool updateAWMode( uint8_t mode );
         bool updateChan( uint8_t chan );
         bool updateCycleTimeMs( uint32_t ct );
