@@ -71,7 +71,7 @@ class PID_Control {
 
 class Autotuner {
     public:
-        enum class State: uint8_t { idle, running };
+        enum class State: uint8_t { idle, running, done };
 
         Autotuner(
             EepromSettings *nvm,

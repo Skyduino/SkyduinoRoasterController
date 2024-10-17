@@ -276,6 +276,7 @@ void Autotuner::begin() {
     this->_state = State::idle;
 
     this->_timer->setOverflow(PID_CYCLE_TIME_MS*1000, MICROSEC_FORMAT);
+    this->_timer->detachInterrupt();
 }
 
 
@@ -283,6 +284,10 @@ void Autotuner::begin() {
  * @brief Start the auto tuner
  */
 void Autotuner::start() {
+    this->_state = Autotuner::State::running;
+    this->_timer->attachInterrupt( std::bind( &Autotuner::_tuneLoop, this ) );
+    this->_timer->reload();
+    this->_timer->resume();
 }
 
 
@@ -290,6 +295,10 @@ void Autotuner::start() {
  * @brief Stop the auto tuner
  */
 void Autotuner::stop() {
+    DEBUG(micors()); DEBUGLN("Stoping autotuner and Detaching the interrupt");
+    this->_timer->pause();
+    this->_timer->detachInterrupt();
+    degitalWrite( PIN_HEAT, LOW );
 }
 
 
@@ -310,6 +319,10 @@ float Autotuner::getTempReadingC() {
  * @brief interrupt handler, auto tuner 
  */
 void Autotuner::_tuneLoop() {
+    if ( Autotuner::State::running != this->getState() ) {
+        DEBUGLN( "Ignoring tuner loop, not running");
+        return;
+    }
     optimumOutput = tuner.softPwm( PIN_HEAT & 0xFF, input, output, setp, stnStngs.outputSpan, stnStngs.debounce);
  
     switch (tuner.Run()) {
@@ -338,6 +351,7 @@ void Autotuner::_tuneLoop() {
                 _NVM_PIDPROFCURRENT.kI,
                 _NVM_PIDPROFCURRENT.kD
             ); // update PID with the new tunings
+            this->_state = Autotuner::State::done;
             break;
  
         case tuner.runPid: // active once per sample after tunings
