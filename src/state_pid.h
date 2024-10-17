@@ -84,6 +84,7 @@ class Autotuner {
         void begin();
         void start();
         void stop();
+        float getTempReadingC();
 
         State getState() { return this->_state; };
 
@@ -95,6 +96,7 @@ class Autotuner {
 
         float               input = 0;
         float               output = 0;
+        float               optimumOutput = 0;
         float               setp = 0;
         t_STuneSettings     stnStngs = {
             10,  // settleTimeSec
@@ -104,16 +106,15 @@ class Autotuner {
             100, // outputSpan
             0,   // outputStart
             50,  // outputStep
-            150, // tempLimit
-            1,   // debounce
+            250, // tempLimit
+            0,   // debounce
             true // startup
         };
 
         sTune               tuner = sTune( &input, &output, tuner.ZN_PID, tuner.directIP, tuner.printOFF);
         QuickPID            _pid = QuickPID(&input, &output, &setp);
 
-        void _compute();
-        void _syncPidSettings();
+        void _tuneLoop();
 };
 
 #endif // _SW_STATE_PID_H

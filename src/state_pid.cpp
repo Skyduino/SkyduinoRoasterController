@@ -260,7 +260,8 @@ void PID_Control::_syncPidSettings() {
  * @brief prepare auto tuner
  */
 void Autotuner::begin() {
-    pinMode(PIN_HEAT, OUTPUT);
+    pinMode( PIN_HEAT, OUTPUT );
+    digitalWrite( PIN_HEAT, LOW );
     this->output = 0;
     tuner.Configure(
         stnStngs.inputSpan,
@@ -271,5 +272,84 @@ void Autotuner::begin() {
         stnStngs.settleTimeSec,
         stnStngs.samples
     );
-    tuner.SetEmergencyStop( _nvm->settings.maxSafeTempC );
+    tuner.SetEmergencyStop( stnStngs.tempLimit );
+    this->_state = State::idle;
+
+    this->_timer->setOverflow(PID_CYCLE_TIME_MS*1000, MICROSEC_FORMAT);
+}
+
+
+/**
+ * @brief Start the auto tuner
+ */
+void Autotuner::start() {
+}
+
+
+/**
+ * @brief Stop the auto tuner
+ */
+void Autotuner::stop() {
+}
+
+
+/**
+ * @brief Get current logical channel temperature
+ * @return temperature C
+ */
+float Autotuner::getTempReadingC() {
+    if ( NULL == getLogicalChanTempC ) {
+        ERRORLN(F("No callback for getLogicalChanTempC"));
+        return NAN;
+    }
+    return this->getLogicalChanTempC( _NVM_PIDPROFCURRENT.chan );
+}
+
+
+/**
+ * @brief interrupt handler, auto tuner 
+ */
+void Autotuner::_tuneLoop() {
+    optimumOutput = tuner.softPwm( PIN_HEAT & 0xFF, input, output, setp, stnStngs.outputSpan, stnStngs.debounce);
+ 
+    switch (tuner.Run()) {
+        case tuner.sample: // active once per sample during test
+            input = this->getTempReadingC();
+            tuner.plotter(input, output, setp, 0.5f, 3); // output scale 0.5, plot every 3rd sample
+            break;
+ 
+        case tuner.tunings: // active just once when sTune is done
+            tuner.printTunings();
+            tuner.GetAutoTunings(
+                &_NVM_PIDPROFCURRENT.kP,
+                &_NVM_PIDPROFCURRENT.kI,
+                &_NVM_PIDPROFCURRENT.kD
+            ); // sketch variables updated by sTune
+            this->_nvm->markDirty();
+            _pid.SetOutputLimits(0, stnStngs.outputSpan * 0.1);
+            _pid.SetSampleTimeUs((stnStngs.outputSpan - 1) * 1000);
+            stnStngs.debounce = 0; // ssr mode
+            output = stnStngs.outputStep;
+            _pid.SetMode(_pid.Control::automatic); // the PID is turned on
+            _pid.SetProportionalMode(_pid.pMode::pOnMeas);
+            _pid.SetAntiWindupMode(_pid.iAwMode::iAwClamp);
+            _pid.SetTunings(
+                _NVM_PIDPROFCURRENT.kP,
+                _NVM_PIDPROFCURRENT.kI,
+                _NVM_PIDPROFCURRENT.kD
+            ); // update PID with the new tunings
+            break;
+ 
+        case tuner.runPid: // active once per sample after tunings
+            if (stnStngs.startup && input > setp - 5) { // reduce overshoot
+                stnStngs.startup = false;
+                output -= 9;
+                _pid.SetMode(_pid.Control::manual);
+                _pid.SetMode(_pid.Control::automatic);
+            }
+            input = this->getTempReadingC();
+            _pid.Compute();
+            tuner.plotter(input, optimumOutput, setp, 0.5f, 3);
+            break;
+   }
 }
