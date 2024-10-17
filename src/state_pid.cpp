@@ -254,3 +254,22 @@ void PID_Control::_syncPidSettings() {
     if ( this->_timer ) this->_timer->setOverflow(ctus, MICROSEC_FORMAT);
 
 }
+
+
+/**
+ * @brief prepare auto tuner
+ */
+void Autotuner::begin() {
+    pinMode(PIN_HEAT, OUTPUT);
+    this->output = 0;
+    tuner.Configure(
+        stnStngs.inputSpan,
+        stnStngs.outputSpan,
+        stnStngs.outputStart,
+        stnStngs.outputStep,
+        stnStngs.testTimeSec,
+        stnStngs.settleTimeSec,
+        stnStngs.samples
+    );
+    tuner.SetEmergencyStop( _nvm->settings.maxSafeTempC );
+}

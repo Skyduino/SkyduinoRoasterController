@@ -2,6 +2,8 @@
 #define _SW_STATE_PID_H
 
 #include <HardwareTimer.h>
+#include <QuickPID.h>
+#include <sTune.h>
 
 #include "roaster.h"
 #include "eeprom_settings.h"
@@ -9,6 +11,20 @@
 
 
 using t_Cbk_getLogicalChanTempC = std::function< float( uint8_t ) >;
+
+typedef struct {
+    uint32_t settleTimeSec = 10;
+    uint32_t testTimeSec = 500;  // runPid interval = testTimeSec / samples
+    const uint16_t samples = 500;
+    const float inputSpan = 200;
+    const float outputSpan = 1000;
+    float outputStart = 0;
+    float outputStep = 50;
+    float tempLimit = 150;
+    uint8_t debounce = 1;
+    bool startup = true;
+} t_STuneSettings;
+
 
 class PID_Control {
     public:
@@ -48,6 +64,54 @@ class PID_Control {
         float               setp = 0;
         QuickPID::Control   _action = QuickPID::Control::manual;
         QuickPID            _pid = QuickPID(&input, &output, &setp);
+        void _compute();
+        void _syncPidSettings();
+};
+
+
+class Autotuner {
+    public:
+        enum class State: uint8_t { idle, running };
+
+        Autotuner(
+            EepromSettings *nvm,
+            HardwareTimer *timer,
+            t_Cbk_getLogicalChanTempC getTempC
+        ):
+            _nvm( nvm ),
+            _timer( timer ),
+            getLogicalChanTempC( getTempC ) {};
+        void begin();
+        void start();
+        void stop();
+
+        State getState() { return this->_state; };
+
+    protected:
+        State               _state = State::idle;
+        EepromSettings      *_nvm;
+        HardwareTimer       *_timer;
+        t_Cbk_getLogicalChanTempC getLogicalChanTempC = NULL;
+
+        float               input = 0;
+        float               output = 0;
+        float               setp = 0;
+        t_STuneSettings     stnStngs = {
+            10,  // settleTimeSec
+            500, // testTimeSec, runPid interval = testTimeSec / samples
+            500, // samples
+            200, // inputSpan
+            100, // outputSpan
+            0,   // outputStart
+            50,  // outputStep
+            150, // tempLimit
+            1,   // debounce
+            true // startup
+        };
+
+        sTune               tuner = sTune( &input, &output, tuner.ZN_PID, tuner.directIP, tuner.printOFF);
+        QuickPID            _pid = QuickPID(&input, &output, &setp);
+
         void _compute();
         void _syncPidSettings();
 };
