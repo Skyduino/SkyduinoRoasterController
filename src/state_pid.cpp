@@ -14,7 +14,7 @@ void PID_Control::abort() {
     this->setp = 20;
     this->output = 0;
     this->_timer->detachInterrupt();
-    this->_isAborted = true;
+    this->_state = this->State::aborted;
 }
 
 
@@ -23,7 +23,7 @@ void PID_Control::abort() {
  * @returns true if initialization is a success
  */
 bool PID_Control::begin() {
-    if ( this->isInitialized ) return true;
+    if ( this->getState() != this->State::needsInit ) return true;
 
     // Configure the timer and attach interrupt
     TIM_TypeDef  *instance = TIM6;
@@ -40,7 +40,7 @@ bool PID_Control::begin() {
     );
     this->_timer->pause();
 
-    this->isInitialized = true;
+    this->_state = this->State::off;
     return true;
 }
 
@@ -93,8 +93,11 @@ bool PID_Control::loopTick() {
  * @brief Turn off the PID controller
  */
 void PID_Control::turnOff() {
+    if ( getState() == this->State::needsInit
+         || getState() == this->State::autotune ) return;
     this->_pid.SetMode(QuickPID::Control::manual);
     this->_timer->pause();
+    this->_state = this->State::off;
 }
 
 
@@ -102,11 +105,14 @@ void PID_Control::turnOff() {
  * @brief Turn on the PID controller
  */
 void PID_Control::turnOn() {
-    if ( this->_isAborted ) return;
+    if ( this->getState() == this->State::needsInit
+         || this->getState() == this->State::autotune
+         || this->getState() == this->State::aborted ) return;
 
     this->_pid.Initialize();
     this->_pid.SetMode(QuickPID::Control::timer);
     this->_timer->resume();
+    this->_state = this->State::on;
 }
 
 
@@ -114,6 +120,15 @@ void PID_Control::turnOn() {
  * @brief start auto tune process
  */
 void PID_Control::startAutotune() {
+    if ( this->getState() == this->State::needsInit
+         || this->getState() == this->State::autotune
+         || this->getState() == this->State::aborted ) return;
+
+    this->turnOff();
+    this->_tuner = new Autotuner( this->_nvm, this->_timer, this->getLogicalChanTempC );
+    this->_tuner->begin();
+    this->_tuner->start();
+    this->_state = this->State::autotune;
 }
 
 
@@ -121,6 +136,12 @@ void PID_Control::startAutotune() {
  * @brief stop auto tune process
  */
 void PID_Control::stopAutotune() {
+    if ( getState() == this->State::autotune ) {
+        this->_tuner->stop();
+        delete this->_tuner;
+        this->_tuner = NULL;
+        this->_state = this->State::off;
+    }
 }
 
 
