@@ -14,7 +14,7 @@ void PID_Control::abort() {
     this->setp = 20;
     this->output = 0;
     this->_timer->detachInterrupt();
-    this->_isAborted = true;
+    this->_state = this->State::aborted;
 }
 
 
@@ -23,7 +23,7 @@ void PID_Control::abort() {
  * @returns true if initialization is a success
  */
 bool PID_Control::begin() {
-    if ( this->isInitialized ) return true;
+    if ( this->getState() != this->State::needsInit ) return true;
 
     // Configure the timer and attach interrupt
     TIM_TypeDef  *instance = TIM6;
@@ -40,7 +40,7 @@ bool PID_Control::begin() {
     );
     this->_timer->pause();
 
-    this->isInitialized = true;
+    this->_state = this->State::off;
     return true;
 }
 
@@ -78,8 +78,11 @@ bool PID_Control::isOn() {
  * @brief Turn off the PID controller
  */
 void PID_Control::turnOff() {
+    if ( getState() == this->State::needsInit
+         || getState() == this->State::autotune ) return;
     this->_pid.SetMode(QuickPID::Control::manual);
     this->_timer->pause();
+    this->_state = this->State::off;
 }
 
 
@@ -87,11 +90,14 @@ void PID_Control::turnOff() {
  * @brief Turn on the PID controller
  */
 void PID_Control::turnOn() {
-    if ( this->_isAborted ) return;
+    if ( this->getState() == this->State::needsInit
+         || this->getState() == this->State::autotune
+         || this->getState() == this->State::aborted ) return;
 
     this->_pid.Initialize();
     this->_pid.SetMode(QuickPID::Control::timer);
     this->_timer->resume();
+    this->_state = this->State::on;
 }
 
 

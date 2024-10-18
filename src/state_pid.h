@@ -12,6 +12,7 @@ using t_Cbk_getLogicalChanTempC = std::function< float( uint8_t ) >;
 
 class PID_Control {
     public:
+        enum class State: uint8_t { needsInit, off, on, autotune, aborted };
         PID_Control(EepromSettings *nvm, ControlHeat *heat, ControlPWM *vent):
             _nvm(nvm),
             _heat(heat),
@@ -19,6 +20,7 @@ class PID_Control {
         void abort();
         bool begin();
         bool activateProfile( uint8_t profileNum );
+        State getState() { return this->_state; };
         bool isOn();
         void turnOff();
         void turnOn();
@@ -38,9 +40,7 @@ class PID_Control {
         ControlPWM          *_vent;
         t_Cbk_getLogicalChanTempC getLogicalChanTempC = NULL;
         HardwareTimer       *_timer;
-
-        bool                isInitialized = false;
-        bool                _isAborted = false;
+        State               _state = State::needsInit;
         float               input = 0;
         float               output = 0;
         float               setp = 0;
