@@ -320,6 +320,12 @@ void Autotuner::begin() {
  * @brief Start the auto tuner
  */
 void Autotuner::start() {
+    float curTemp = getTempReadingC();
+    if ( curTemp < ( this->_nvm->settings.maxSafeTempC - 60 - 5 ) ) {
+        this->setp = curTemp + 60.0f;
+    };
+    DEBUG(millis()); DEBUG(F("Starting Autotune with setpoint C: "));
+    DEBUGLN( this->setp );
     this->_state = Autotuner::State::running;
     this->_timer->refresh();
     this->_timer->attachInterrupt( std::bind( &Autotuner::_tuneLoop, this ) );
@@ -331,7 +337,7 @@ void Autotuner::start() {
  * @brief Stop the auto tuner
  */
 void Autotuner::stop() {
-    DEBUG(micors()); DEBUGLN("Stoping autotuner and Detaching the interrupt");
+    DEBUG(millis()); DEBUGLN("Stoping autotuner and Detaching the interrupt");
     this->_timer->pause();
     this->_timer->detachInterrupt();
     digitalWrite( PIN_HEAT, LOW );
