@@ -75,6 +75,21 @@ bool PID_Control::isOn() {
 
 
 /**
+ * @brief loop process
+ */
+bool PID_Control::loopTick() {
+    if ( NULL != this->_tuner ) {
+        if ( this->_tuner->getState() != Autotuner::State::running ) {
+            // Cleanup the tuner.
+            this->_tuner->stop();
+            this->stopAutotune();
+        }
+    }
+    return true;
+}
+
+
+/**
  * @brief Turn off the PID controller
  */
 void PID_Control::turnOff() {
@@ -285,8 +300,8 @@ void Autotuner::begin() {
  */
 void Autotuner::start() {
     this->_state = Autotuner::State::running;
+    this->_timer->refresh();
     this->_timer->attachInterrupt( std::bind( &Autotuner::_tuneLoop, this ) );
-    this->_timer->reload();
     this->_timer->resume();
 }
 
@@ -298,7 +313,7 @@ void Autotuner::stop() {
     DEBUG(micors()); DEBUGLN("Stoping autotuner and Detaching the interrupt");
     this->_timer->pause();
     this->_timer->detachInterrupt();
-    degitalWrite( PIN_HEAT, LOW );
+    digitalWrite( PIN_HEAT, LOW );
 }
 
 
@@ -327,11 +342,13 @@ void Autotuner::_tuneLoop() {
  
     switch (tuner.Run()) {
         case tuner.sample: // active once per sample during test
+            DEBUG(millis()); DEBUGLN(F("Autotune sample"));
             input = this->getTempReadingC();
             tuner.plotter(input, output, setp, 0.5f, 3); // output scale 0.5, plot every 3rd sample
             break;
  
         case tuner.tunings: // active just once when sTune is done
+            DEBUG(millis()); DEBUGLN(F("Autotune complete"));
             tuner.printTunings();
             tuner.GetAutoTunings(
                 &_NVM_PIDPROFCURRENT.kP,

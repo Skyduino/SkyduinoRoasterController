@@ -44,6 +44,7 @@ bool State::loopTick() {
     isSuccess &= nvmSettings->loopTick();
     isSuccess &= commanded.loopTick();
     isSuccess &= reported.loopTick();
+    isSuccess &= pid.loopTick();
 
     return true;
     return isSuccess;

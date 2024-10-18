@@ -25,6 +25,7 @@ typedef struct {
     bool startup = true;
 } t_STuneSettings;
 
+class Autotuner;
 
 class PID_Control {
     public:
@@ -36,6 +37,7 @@ class PID_Control {
         bool begin();
         bool activateProfile( uint8_t profileNum );
         bool isOn();
+        bool loopTick();
         void turnOff();
         void turnOn();
         void startAutotune();
@@ -56,6 +58,7 @@ class PID_Control {
         ControlPWM          *_vent;
         t_Cbk_getLogicalChanTempC getLogicalChanTempC = NULL;
         HardwareTimer       *_timer;
+        Autotuner           *_tuner = NULL;
 
         bool                isInitialized = false;
         bool                _isAborted = false;
