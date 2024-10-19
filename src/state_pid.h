@@ -38,12 +38,14 @@ class PID_Control {
         bool begin();
         bool activateProfile( uint8_t profileNum );
         State getState() { return this->_state; };
+        float getTempReadingC();
         bool isOn();
         bool loopTick();
         void turnOff();
         void turnOn();
         void startAutotune();
         void stopAutotune();
+        void print();
         bool updateAWMode( uint8_t mode );
         bool updateChan( uint8_t chan );
         bool updateCycleTimeMs( uint32_t ct );
