@@ -74,4 +74,5 @@ void State::printStatistics() {
     this->nvmSettings->print();
     this->reported.printStatistics();
     this->stats.print();
+    this->pid.print();
 }

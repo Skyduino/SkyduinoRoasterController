@@ -64,6 +64,19 @@ bool PID_Control::begin() {
 
 
 /**
+ * @brief Get current logical channel temperature
+ * @return temperature C
+ */
+float PID_Control::getTempReadingC() {
+    if ( NULL == getLogicalChanTempC ) {
+        ERRORLN(F("No callback for getLogicalChanTempC"));
+        return NAN;
+    }
+    return this->getLogicalChanTempC( _NVM_PIDPROFCURRENT.chan );
+}
+
+
+/**
  * @brief query current PID controller mode
  * @return true if the PID controller is actively controlling the output
  */
@@ -102,10 +115,51 @@ void PID_Control::turnOn() {
 
 
 /**
+ * @brief print PIDs state
+ */
+void PID_Control::print() {
+    Serial.print(F( "[PID] State: " ));
+    switch ( getState() ) {
+        case this->State::needsInit:
+            Serial.print(F( "'Needs Initialization" ));
+            break;
+
+        case this->State::off:
+            Serial.print(F( "'Off' " ));
+            break;
+
+        case this->State::on:
+            Serial.print(F( "'On' " ));
+            break;
+
+        case this->State::autotune:
+            Serial.print(F( "'Auto Tuning' " ));
+            break;
+
+        case this->State::aborted:
+            Serial.print(F( "'Aborted' " ));
+            break;
+    };
+    const char tmplt[] PROGMEM = "Setpoint=%f, P-term=%f, I-term=%f, D-term=%f, Error=%f";
+    char buf[sizeof(tmplt) * 2];
+    buf[sizeof(buf)-1] = 0;
+    snprintf_P(buf, sizeof(buf)-1, tmplt,
+        setp,
+        _pid.GetPterm(),
+        _pid.GetIterm(),
+        _pid.GetDterm(),
+        setp - getTempReadingC()
+    );
+    Serial.println( buf );
+}
+
+
+/**
  * @brief update the I-Anti-Windup mode
  * @param mode -- 0 - AwCondition, 1 - iAwClamp, 2 - iAwOff 
  */
-bool PID_Control::updateAWMode(uint8_t mode) {
+bool PID_Control::updateAWMode(uint8_t mode)
+{
     if ( mode > (uint8_t) QuickPID::iAwMode::iAwOff ) {
         DEBUGLN(F("Wrong I anti-windup mode"));
         return false;
@@ -208,11 +262,7 @@ void PID_Control::updateTuning(float kP, float kI, float kD) {
  * @brief Do the PID calculation here
  */
 void PID_Control::_compute() {
-    if ( NULL == getLogicalChanTempC ) {
-        ERRORLN(F("No callback for getLogicalChanTempC"));
-        return;
-    }
-    float tempC = this->getLogicalChanTempC( _NVM_PIDPROFCURRENT.chan );
+    float tempC = this->getTempReadingC();
 
     DEBUG(F(" tempC: ")); DEBUGLN(tempC);
 
