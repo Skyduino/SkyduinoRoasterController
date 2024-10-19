@@ -141,6 +141,10 @@ void PID_Control::stopAutotune() {
         delete this->_tuner;
         this->_tuner = NULL;
         this->_state = this->State::off;
+        this->_timer->detachInterrupt();
+        this->_timer->attachInterrupt(
+            std::bind(&PID_Control::_compute, this)
+        );
         this->_syncPidSettings();
     }
 }
