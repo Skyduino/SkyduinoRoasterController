@@ -317,6 +317,12 @@ void PID_Control::_compute() {
 
     if ( !isnan( tempC )) {
         this->input = tempC;
+        // if error is under 60C, then limit output to 80%
+        if ( abs( setp - input ) < 60 ) {
+            _pid.SetOutputLimits( 0, 80 );
+        } else {
+            _pid.SetOutputLimits( 0, 100 );
+        }
         if ( this->_pid.Compute() ) {
             DEBUG(millis()); DEBUG(F(" PID compute settings output to: "));
             DEBUGLN(this->output);
