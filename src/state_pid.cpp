@@ -141,6 +141,7 @@ void PID_Control::stopAutotune() {
         delete this->_tuner;
         this->_tuner = NULL;
         this->_state = this->State::off;
+        this->_syncPidSettings();
     }
 }
 
@@ -311,7 +312,8 @@ void Autotuner::begin() {
     tuner.SetEmergencyStop( stnStngs.tempLimit );
     this->_state = State::idle;
 
-    this->_timer->setOverflow(PID_CYCLE_TIME_MS*1000, MICROSEC_FORMAT);
+    uint32_t ctus = _NVM_PIDPROFCURRENT.cycleTimeMS * 100;
+    this->_timer->setOverflow(ctus, MICROSEC_FORMAT);
     this->_timer->detachInterrupt();
 }
 
