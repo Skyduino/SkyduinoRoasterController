@@ -43,6 +43,7 @@ class PID_Control {
         t_Cbk_getLogicalChanTempC getLogicalChanTempC = NULL;
         HardwareTimer       *_timer;
         State               _state = State::needsInit;
+        bool                _isConservTuning = false;
         float               input = 0;
         float               output = 0;
         float               setp = 0;
@@ -50,6 +51,7 @@ class PID_Control {
         QuickPID            _pid = QuickPID(&input, &output, &setp);
         void _compute();
         void _syncPidSettings();
+        void _switchProfilesIfNeeded();
 };
 
 #endif // _SW_STATE_PID_H

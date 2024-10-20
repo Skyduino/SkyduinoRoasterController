@@ -4,6 +4,7 @@
 
 #define _NVM_GETPIDPROF(x) (this->_nvm->settings.pidProfiles[ x ])
 #define _NVM_PIDPROFCURRENT _NVM_GETPIDPROF( this->_nvm->settings.pidCurrentProfile )
+#define _NVM_PIDPROFCONSERV _NVM_GETPIDPROF( this->_nvm->settings.pidConservProfile )
 
 
 /**
@@ -268,6 +269,7 @@ void PID_Control::_compute() {
 
     if ( !isnan( tempC )) {
         this->input = tempC;
+        this->_switchProfilesIfNeeded();
         // if error is under 60C, then limit output to 80%
         if ( abs( setp - input ) < 60 ) {
             _pid.SetOutputLimits( 0, 80 );
@@ -296,9 +298,46 @@ void PID_Control::_syncPidSettings() {
         profile->dMode,
         profile->iAwMode
     );
+    this->_isConservTuning = false;
 
     uint32_t ctus = 1000 * profile->cycleTimeMS;
     this->_pid.SetSampleTimeUs(ctus);
     if ( this->_timer ) this->_timer->setOverflow(ctus, MICROSEC_FORMAT);
+}
 
+
+/**
+ * @brief Switch to conservative profile/tuning if needed
+ */
+void PID_Control::_switchProfilesIfNeeded() {
+    float gap = abs( this->setp - this->input );
+    if ( gap < PID_CONSERV_ERR ) {
+        // Use Conserv tuning profile
+        if ( !(this->_isConservTuning) ) {
+            _pid.SetTunings(
+                _NVM_PIDPROFCONSERV.kP,
+                _NVM_PIDPROFCONSERV.kI,
+                _NVM_PIDPROFCONSERV.kD,
+                _NVM_PIDPROFCONSERV.pMode,
+                _NVM_PIDPROFCONSERV.dMode,
+                _NVM_PIDPROFCONSERV.iAwMode
+            );
+            this->_isConservTuning = true;
+            DEBUG(millis()); DEBUGLN(F(" Using conservative tuning"));
+        }
+    } else {
+        // Use regular tuning profile
+        if ( this->_isConservTuning ) {
+            _pid.SetTunings(
+                _NVM_PIDPROFCURRENT.kP,
+                _NVM_PIDPROFCURRENT.kI,
+                _NVM_PIDPROFCURRENT.kD,
+                _NVM_PIDPROFCURRENT.pMode,
+                _NVM_PIDPROFCURRENT.dMode,
+                _NVM_PIDPROFCURRENT.iAwMode
+            );
+            this->_isConservTuning = false;
+            DEBUG(millis()); DEBUGLN(F(" Using regular tuning"));
+        }
+    }
 }
