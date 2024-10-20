@@ -49,14 +49,24 @@ bool PID_Control::begin() {
 /**
  * @brief change and make current a new PID profile
  * @param profileNum -- index of the PID profile to activate
+ * @param isConservative -- false (default) if this is a regular tuning
+ *        profile. true -- if this is a conservative tunine profile
  * @return true -- if a correct profile was selected
  */
- bool PID_Control::activateProfile(uint8_t profileNum) {
+ bool PID_Control::activateProfile(uint8_t profileNum, bool isConservative) {
     if ( profileNum >= PID_NUM_PROFILES ) {
         WARN(F("Profile ")); WARN(profileNum); WARNLN(F(" is not valid"));
         return false;
     }
-    this->_nvm->settings.pidCurrentProfile = profileNum;
+    if ( isConservative ) {
+        this->_nvm->settings.pidConservProfile = profileNum;
+    } else {
+        // check if we're using conservative profiles, if not, update both
+        if ( _nvm->settings.pidConservProfile
+             == _nvm->settings.pidCurrentProfile )
+                this->_nvm->settings.pidConservProfile = profileNum;
+        this->_nvm->settings.pidCurrentProfile = profileNum;
+    }
     this->_nvm->markDirty();
     this->_syncPidSettings();
 

@@ -19,7 +19,7 @@ class PID_Control {
             _vent(vent) {};
         void abort();
         bool begin();
-        bool activateProfile( uint8_t profileNum );
+        bool activateProfile( uint8_t profileNum, bool isConservative=false);
         State getState() { return this->_state; };
         float getTempReadingC();
         bool isOn();
