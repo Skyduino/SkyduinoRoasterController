@@ -30,6 +30,8 @@ PROGMEM const static t_Settings nvmSettingsStorage = {
         0  // safetyTriggers
     },
     0, // pidCurrentProfile
+    0, // pidConservProfile
+    4, // pidFanProfile
     // pidProfiles: kP, kI, kD, pmode, dmode, iAwMode, chan
     {
         {PID_KP, PID_KI, PID_KD, PID_PMODE, PID_DMODE, PID_AWMODE, PID_CHAN, PID_CYCLE_TIME_MS},

@@ -59,9 +59,11 @@ void EepromSettings::print() {
     Serial.println(this->settings.pwmExhaustHz);
     Serial.print(F("NVM PWM frequency SSR Hz: "));
     Serial.println(this->settings.pwmSSRHz);
-    Serial.print(F("[NVM PID]"));
-    Serial.println(F("NVM Current PID profile #"));
+    Serial.println(F("[NVM PID]"));
+    Serial.print(F("NVM Current PID profile # "));
     Serial.println(this->settings.pidCurrentProfile);
+    Serial.print(F("NVM Conservative PID profile # "));
+    Serial.println(this->settings.pidConservProfile);
 
     const char pidTmplt[] PROGMEM = "NVM PID profile #%d kP=%f, kI=%f, kD=%f, P-mode=%d, D-mode=%d, I-Aw-mode=%d, Chan=%d; Cycle Time=%lu(ms)";
     char buf[sizeof(pidTmplt) * 2];

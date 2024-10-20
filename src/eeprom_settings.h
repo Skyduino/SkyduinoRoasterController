@@ -41,6 +41,8 @@ typedef struct {
     uint16_t   pwmLedHz;
     t_Counters counters;
     uint8_t    pidCurrentProfile;
+    uint8_t    pidConservProfile;
+    uint8_t    pidFanProfile;
     t_NvmPIDSettings pidProfiles[PID_NUM_PROFILES];
 
     uint32_t   eepromMagic;
