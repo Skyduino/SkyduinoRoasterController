@@ -7,6 +7,7 @@
 #define SUBCMD_AWMODE "AWMODE"
 #define SUBCMD_CHAN   "CHAN"
 #define SUBCMD_CHGPRF "CHGPRF"
+#define SUBCMD_CNSPRF "CNSPRF"
 #define SUBCMD_CT     "CT"
 #define SUBCMD_DMODE  "DMODE"
 #define SUBCMD_OFF    "OFF"
@@ -32,6 +33,7 @@ void cmndPid::_doCommand(CmndParser *pars) {
         { SUBCMD_AWMODE, &cmndPid::_handleAwMode },
         { SUBCMD_CHAN, &cmndPid::_handleChan },
         { SUBCMD_CHGPRF, &cmndPid::_handleChngPrfl },
+        { SUBCMD_CNSPRF, &cmndPid::_handleConsrvPrfl },
         { SUBCMD_CT, &cmndPid::_handleCT },
         { SUBCMD_DMODE, &cmndPid::_handleDMode },
         { SUBCMD_OFF, &cmndPid::_handleOff },
@@ -91,6 +93,19 @@ void cmndPid::_handleChngPrfl(CmndParser *pars) {
     uint32_t profile = atoi( pars->paramStr(2) );
     if ( this->state->pid.activateProfile( profile ) ) {
         Serial.print(F("# PID profile = ")); Serial.println( profile );
+    }
+}
+
+
+/**
+ * @brief Handle PID;CNSPRF;p command to designate a conservative tuning profile
+ */
+void cmndPid::_handleConsrvPrfl(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t profile = atoi( pars->paramStr(2) );
+    if ( this->state->pid.activateProfile( profile, true) ) {
+        Serial.print(F("# PID conservative profile = ")); Serial.println( profile );
     }
 }
 
