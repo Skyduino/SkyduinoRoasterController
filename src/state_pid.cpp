@@ -5,7 +5,14 @@
 #define _NVM_GETPIDPROF(x) (this->_nvm->settings.pidProfiles[ x ])
 #define _NVM_PIDPROFCURRENT _NVM_GETPIDPROF( this->_nvm->settings.pidCurrentProfile )
 #define _NVM_PIDPROFCONSERV _NVM_GETPIDPROF( this->_nvm->settings.pidConservProfile )
+#define _NVM_PIDPROFFAN     _NVM_GETPIDPROF( this->_nvm->settings.pidFanProfile )
 
+
+PID_Control::PID_Control(EepromSettings *nvm, ControlHeat *heat, ControlPWM *vent):
+    _nvm(nvm), _heat(heat), _vent(vent)
+{
+    this->_pidFan.SetControllerDirection( QuickPID::Action::reverse );
+};
 
 /**
  * @brief Emergency PID shutdown. Turn off and clean up
@@ -34,6 +41,8 @@ bool PID_Control::begin() {
     // Update PID settings
     this->turnOff();
     this->_pid.SetOutputLimits(0, 100);
+    this->_pidFan.SetOutputLimits(0, 100);
+    this->_isFanPidActive = false;
     this->_syncPidSettings();
 
     this->_timer->attachInterrupt(
@@ -105,6 +114,8 @@ void PID_Control::turnOff() {
     if ( getState() == this->State::needsInit
          || getState() == this->State::autotune ) return;
     this->_pid.SetMode(QuickPID::Control::manual);
+    this->_pidFan.SetMode(QuickPID::Control::manual);
+    this->_isFanPidActive = false;
     this->_timer->pause();
     this->_state = this->State::off;
 }
@@ -118,8 +129,23 @@ void PID_Control::turnOn() {
          || this->getState() == this->State::autotune
          || this->getState() == this->State::aborted ) return;
 
+    this->input = this->getTempReadingC();
+
     this->_pid.Initialize();
     this->_pid.SetMode(QuickPID::Control::timer);
+    if ( FanMode::automatic == this->getFanMode() ) {
+        this->_pidFan.Initialize();
+        this->_fanMin = this->_vent->get();
+        this->_pidFan.SetOutputLimits( this->_fanMin, 100 );
+        if ( setp <= input ) {
+            // Temp overshoot, turn on the fan
+            this->_pidFan.SetMode( QuickPID::Control::timer );
+            this->_isFanPidActive = true;
+        } else {
+            this->_pidFan.SetMode( QuickPID::Control::manual );
+            this->_isFanPidActive = false;
+        }
+    }
     this->_timer->resume();
     this->_state = this->State::on;
 }
@@ -291,6 +317,30 @@ void PID_Control::_compute() {
             DEBUGLN(this->output);
             this->_heat->set((uint8_t) this->output);
         }
+
+        // fan pid calc
+        if ( FanMode::automatic == this->getFanMode() ) {
+            bool overshot = ( input >= setp );
+            if ( overshot ^ (this->_isFanPidActive) ) {
+                // Transitioning from active -> idle or vice versa
+                if ( overshot ) {
+                    this->_pidFan.Initialize();
+                    this->_fanMin = this->_vent->get();
+                    this->_pidFan.SetOutputLimits( this->_fanMin, 100 );
+                    this->_pidFan.SetMode( QuickPID::Control::timer );
+                    this->_isFanPidActive = true;
+                } else {
+                    this->_pidFan.SetMode( QuickPID::Control::manual );
+                    this->_isFanPidActive = false;
+                    this->_vent->set( this->_fanMin );
+                }
+            }
+            if ( this->_pidFan.Compute() ) {
+                DEBUG(millis()); DEBUG(F(" FAN Pid output: "));
+                DEBUGLN(this->exhaustOutp);
+                this->_vent->set( (uint8_t) this->exhaustOutp );
+            }
+        }
     }
 }
 
@@ -309,6 +359,14 @@ void PID_Control::_syncPidSettings() {
         profile->iAwMode
     );
     this->_isConservTuning = false;
+    this->_pidFan.SetTunings(
+        _NVM_PIDPROFFAN.kP,
+        _NVM_PIDPROFFAN.kI,
+        _NVM_PIDPROFFAN.kD,
+        _NVM_PIDPROFFAN.pMode,
+        _NVM_PIDPROFFAN.dMode,
+        _NVM_PIDPROFFAN.iAwMode
+    );
 
     uint32_t ctus = 1000 * profile->cycleTimeMS;
     this->_pid.SetSampleTimeUs(ctus);
