@@ -40,7 +40,7 @@ bool PID_Control::begin() {
 
     // Update PID settings
     this->turnOff();
-    this->_pid.SetOutputLimits(0, 100);
+    this->_pid.SetOutputLimits(1, 100);
     this->_pidFan.SetOutputLimits(0, 100);
     this->_syncPidSettings();
 
@@ -337,9 +337,9 @@ void PID_Control::_compute() {
         this->_switchProfilesIfNeeded();
         // if error is under 60C, then limit output to 80%
         if ( abs( setp - input ) < 60 ) {
-            _pid.SetOutputLimits( 0, 80 );
+            _pid.SetOutputLimits( 1, 80 );
         } else {
-            _pid.SetOutputLimits( 0, 100 );
+            _pid.SetOutputLimits( 1, 100 );
         }
         if ( this->_pid.Compute() ) {
             DEBUG(millis()); DEBUG(F(" PID compute settings output to: "));
