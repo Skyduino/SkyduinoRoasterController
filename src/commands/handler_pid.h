@@ -21,6 +21,7 @@ class cmndPid : public Command {
         void _handleOff( CmndParser *pars );
         void _handleOn( CmndParser *pars );
         void _handlePMode( CmndParser *pars );
+        void _handlePlot( CmndParser *pars );
         void _handleSV( CmndParser *pars );
         void _handleT( CmndParser *pars );
         void _handleTPOM( CmndParser *pars );

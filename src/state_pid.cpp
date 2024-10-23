@@ -139,6 +139,7 @@ void PID_Control::turnOn() {
     }
     this->_timer->resume();
     this->_state = this->State::on;
+    this->_plotStart = millis();
 }
 
 
@@ -356,6 +357,8 @@ void PID_Control::_compute() {
             }
         }
     }
+
+    if ( this->_plotPid ) _plotPidTuner();
 }
 
 
@@ -421,4 +424,24 @@ void PID_Control::_switchProfilesIfNeeded() {
             DEBUG(millis()); DEBUGLN(F(" Using regular tuning"));
         }
     }
+}
+
+
+/**
+ * @brief Plot PID data for tunning
+ */
+void PID_Control::_plotPidTuner() {
+    uint32_t now = millis() - this->_plotStart;
+
+    const char tmplt[] PROGMEM = "# PID us: %f, setpoint: %f, input: %f, heat: %f, fan: %f";
+    char buf[sizeof(tmplt) * 2];
+    buf[sizeof(buf)-1] = 0;
+    snprintf_P(buf, sizeof(buf)-1, tmplt,
+        now / 1000.0f,
+        setp,
+        input,
+        output,
+        exhaustOutp
+    );
+    Serial.println( buf );
 }
