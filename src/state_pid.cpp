@@ -296,6 +296,16 @@ void PID_Control::updateTuning(float kP, float kI, float kD) {
 
 
 /**
+ * @brief Set minimum fan duty. Regardless of what FAN PID is calling
+ *        the lower duty cycle is set by the OT2 command
+ */
+void PID_Control::setFanMin(uint8_t value) {
+    this->_fanMin = value;
+    this->_pidFan.SetOutputLimits( _fanMin, 100 );
+}
+
+
+/**
  * @brief Do the PID calculation here
  */
 void PID_Control::_compute() {
