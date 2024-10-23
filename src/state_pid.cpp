@@ -433,7 +433,7 @@ void PID_Control::_switchProfilesIfNeeded() {
 void PID_Control::_plotPidTuner() {
     uint32_t now = millis() - this->_plotStart;
 
-    const char tmplt[] PROGMEM = "# PID us: %f, setpoint: %f, input: %f, heat: %f, fan: %f";
+    const char tmplt[] PROGMEM = "# PID us: %f, setpoint: %f, input: %f, heat: %f, fan: %f, heat-pid: %f, %f, %f, fan-pid: %f, %f, %f";
     char buf[sizeof(tmplt) * 2];
     buf[sizeof(buf)-1] = 0;
     snprintf_P(buf, sizeof(buf)-1, tmplt,
@@ -441,7 +441,9 @@ void PID_Control::_plotPidTuner() {
         setp,
         input,
         output,
-        exhaustOutp
+        exhaustOutp,
+        _pid.GetPterm(), _pid.GetIterm(), _pid.GetDterm(),
+        _pidFan.GetPterm(), _pidFan.GetIterm(), _pidFan.GetDterm()
     );
     Serial.println( buf );
 }
