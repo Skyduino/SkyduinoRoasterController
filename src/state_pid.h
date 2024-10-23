@@ -38,6 +38,7 @@ class PID_Control {
         void setFanMode( uint8_t mode ) { this->_fanMode = (FanMode) mode; }
         void setFanMode( FanMode mode ) { this->_fanMode = mode; }
         void setFanMin( uint8_t value );
+        void enablePlot( bool value ) { this->_plotPid = value; }
     
     protected:
         EepromSettings      *_nvm;
@@ -53,12 +54,15 @@ class PID_Control {
         float               output = 0;
         float               exhaustOutp = 0.0;
         float               setp = 0;
+        uint32_t            _plotStart = 0;
+        bool                _plotPid = false;
         QuickPID::Control   _action = QuickPID::Control::manual;
         QuickPID            _pid = QuickPID(&input, &output, &setp);
         QuickPID            _pidFan = QuickPID(&input, &exhaustOutp, &setp);
         void _compute();
         void _syncPidSettings();
         void _switchProfilesIfNeeded();
+        void _plotPidTuner();
 };
 
 #endif // _SW_STATE_PID_H

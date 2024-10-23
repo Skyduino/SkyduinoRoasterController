@@ -14,6 +14,7 @@
 #define SUBCMD_FANMOD "FANMODE"
 #define SUBCMD_OFF    "OFF"
 #define SUBCMD_ON     "ON"
+#define SUBCMD_PLOT   "PLOT"
 #define SUBCMD_PMODE  "PMODE"
 #define SUBCMD_SV     "SV"
 #define SUBCMD_T      "T"
@@ -42,6 +43,7 @@ void cmndPid::_doCommand(CmndParser *pars) {
         { SUBCMD_FANMOD, &cmndPid::_handleFanMode },
         { SUBCMD_OFF, &cmndPid::_handleOff },
         { SUBCMD_ON, &cmndPid::_handleOn },
+        { SUBCMD_PLOT, &cmndPid::_handlePlot },
         { SUBCMD_PMODE, &cmndPid::_handlePMode },
         { SUBCMD_SV, &cmndPid::_handleSV },
         { SUBCMD_T, &cmndPid::_handleT },
@@ -202,6 +204,19 @@ void cmndPid::_handlePMode(CmndParser *pars) {
     if ( this->state->pid.updatePMode( mode ) ) {
         Serial.print(F("# PID P-Mode = ")); Serial.println( mode );
     }
+}
+
+
+/**
+ * @brief Handle PID;PLOT;p command where p = 1 -- enables PID plotting
+ *        p = 0 -- disable plotting
+ */
+void cmndPid::_handlePlot(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t mode = atoi( pars->paramStr(2) );
+    this->state->pid.enablePlot( (mode > 0) );
+    Serial.print(F("# PID Plot mode = ")); Serial.println( mode );
 }
 
 
