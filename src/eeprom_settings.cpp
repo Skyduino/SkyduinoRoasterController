@@ -64,6 +64,8 @@ void EepromSettings::print() {
     Serial.println(this->settings.pidCurrentProfile);
     Serial.print(F("NVM Conservative PID profile # "));
     Serial.println(this->settings.pidConservProfile);
+    Serial.print(F("NVM FAN PID profile # "));
+    Serial.println(this->settings.pidFanProfile);
 
     const char pidTmplt[] PROGMEM = "NVM PID profile #%d kP=%f, kI=%f, kD=%f, P-mode=%d, D-mode=%d, I-Aw-mode=%d, Chan=%d; Cycle Time=%lu(ms)";
     char buf[sizeof(pidTmplt) * 2];

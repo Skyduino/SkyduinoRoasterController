@@ -5,7 +5,14 @@
 #define _NVM_GETPIDPROF(x) (this->_nvm->settings.pidProfiles[ x ])
 #define _NVM_PIDPROFCURRENT _NVM_GETPIDPROF( this->_nvm->settings.pidCurrentProfile )
 #define _NVM_PIDPROFCONSERV _NVM_GETPIDPROF( this->_nvm->settings.pidConservProfile )
+#define _NVM_PIDPROFFAN     _NVM_GETPIDPROF( this->_nvm->settings.pidFanProfile )
 
+
+PID_Control::PID_Control(EepromSettings *nvm, ControlHeat *heat, ControlPWM *vent):
+    _nvm(nvm), _heat(heat), _vent(vent)
+{
+    this->_pidFan.SetControllerDirection( QuickPID::Action::reverse );
+};
 
 /**
  * @brief Emergency PID shutdown. Turn off and clean up
@@ -34,6 +41,7 @@ bool PID_Control::begin() {
     // Update PID settings
     this->turnOff();
     this->_pid.SetOutputLimits(0, 100);
+    this->_pidFan.SetOutputLimits(0, 100);
     this->_syncPidSettings();
 
     this->_timer->attachInterrupt(
@@ -53,7 +61,7 @@ bool PID_Control::begin() {
  *        profile. true -- if this is a conservative tunine profile
  * @return true -- if a correct profile was selected
  */
- bool PID_Control::activateProfile(uint8_t profileNum, bool isConservative) {
+bool PID_Control::activateProfile(uint8_t profileNum, bool isConservative) {
     if ( profileNum >= PID_NUM_PROFILES ) {
         WARN(F("Profile ")); WARN(profileNum); WARNLN(F(" is not valid"));
         return false;
@@ -105,6 +113,7 @@ void PID_Control::turnOff() {
     if ( getState() == this->State::needsInit
          || getState() == this->State::autotune ) return;
     this->_pid.SetMode(QuickPID::Control::manual);
+    this->_pidFan.SetMode(QuickPID::Control::manual);
     this->_timer->pause();
     this->_state = this->State::off;
 }
@@ -118,8 +127,16 @@ void PID_Control::turnOn() {
          || this->getState() == this->State::autotune
          || this->getState() == this->State::aborted ) return;
 
+    this->input = this->getTempReadingC();
+
     this->_pid.Initialize();
     this->_pid.SetMode(QuickPID::Control::timer);
+    if ( FanMode::automatic == this->getFanMode() ) {
+        this->_pidFan.Initialize();
+        this->_fanMin = this->_vent->get();
+        this->_pidFan.SetOutputLimits( this->_fanMin, 100 );
+        this->_pidFan.SetMode( QuickPID::Control::timer );
+    }
     this->_timer->resume();
     this->_state = this->State::on;
 }
@@ -159,6 +176,17 @@ void PID_Control::print() {
         _pid.GetPterm(),
         _pid.GetIterm(),
         _pid.GetDterm(),
+        setp - getTempReadingC()
+    );
+    Serial.println( buf );
+
+    Serial.print(F( "[FAN PID] State: " ));
+    Serial.print( getFanMode() == FanMode::manual ? F("'Manual' ") : F("'Automatic' "));
+    snprintf_P(buf, sizeof(buf)-1, tmplt,
+        setp,
+        _pidFan.GetPterm(),
+        _pidFan.GetIterm(),
+        _pidFan.GetDterm(),
         setp - getTempReadingC()
     );
     Serial.println( buf );
@@ -270,6 +298,33 @@ void PID_Control::updateTuning(float kP, float kI, float kD) {
 
 
 /**
+ * @brief select FAN PID profile
+ */
+bool PID_Control::selectFanProfile(uint8_t profileNum) {
+    if ( profileNum >= PID_NUM_PROFILES ) {
+        WARN(F("Profile ")); WARN(profileNum); WARNLN(F(" is not valid"));
+        return false;
+    }
+
+    this->_nvm->settings.pidFanProfile = profileNum;
+    this->_nvm->markDirty();
+    this->_syncPidSettings();
+
+    return true;
+}
+
+
+/**
+ * @brief Set minimum fan duty. Regardless of what FAN PID is calling
+ *        the lower duty cycle is set by the OT2 command
+ */
+void PID_Control::setFanMin(uint8_t value) {
+    this->_fanMin = value;
+    this->_pidFan.SetOutputLimits( _fanMin, 100 );
+}
+
+
+/**
  * @brief Do the PID calculation here
  */
 void PID_Control::_compute() {
@@ -291,6 +346,15 @@ void PID_Control::_compute() {
             DEBUGLN(this->output);
             this->_heat->set((uint8_t) this->output);
         }
+
+        // fan pid calc
+        if ( FanMode::automatic == this->getFanMode() ) {
+            if ( this->_pidFan.Compute() ) {
+                DEBUG(millis()); DEBUG(F(" FAN Pid output: "));
+                DEBUGLN(this->exhaustOutp);
+                this->_vent->set( (uint8_t) this->exhaustOutp );
+            }
+        }
     }
 }
 
@@ -309,7 +373,14 @@ void PID_Control::_syncPidSettings() {
         profile->iAwMode
     );
     this->_isConservTuning = false;
-
+    this->_pidFan.SetTunings(
+        _NVM_PIDPROFFAN.kP,
+        _NVM_PIDPROFFAN.kI,
+        _NVM_PIDPROFFAN.kD,
+        _NVM_PIDPROFFAN.pMode,
+        _NVM_PIDPROFFAN.dMode,
+        _NVM_PIDPROFFAN.iAwMode
+    );
     uint32_t ctus = 1000 * profile->cycleTimeMS;
     this->_pid.SetSampleTimeUs(ctus);
     if ( this->_timer ) this->_timer->setOverflow(ctus, MICROSEC_FORMAT);

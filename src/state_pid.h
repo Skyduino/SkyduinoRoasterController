@@ -13,13 +13,11 @@ using t_Cbk_getLogicalChanTempC = std::function< float( uint8_t ) >;
 class PID_Control {
     public:
         enum class State: uint8_t { needsInit, off, on, autotune, aborted };
-        PID_Control(EepromSettings *nvm, ControlHeat *heat, ControlPWM *vent):
-            _nvm(nvm),
-            _heat(heat),
-            _vent(vent) {};
+        enum class FanMode: uint8_t { manual, automatic };
+        PID_Control(EepromSettings *nvm, ControlHeat *heat, ControlPWM *vent);
         void abort();
         bool begin();
-        bool activateProfile( uint8_t profileNum, bool isConservative=false);
+        bool activateProfile( uint8_t profileNum, bool isConservative=false );
         State getState() { return this->_state; };
         float getTempReadingC();
         bool isOn();
@@ -35,6 +33,11 @@ class PID_Control {
         float getSetPoint() { return this->setp; };
         void updateTuning( float kP, float kI, float kD );
         void addGetLogicalChantTempC( t_Cbk_getLogicalChanTempC cbk) { getLogicalChanTempC = cbk; };
+        bool selectFanProfile( uint8_t profileNum );
+        FanMode getFanMode() { return this->_fanMode; }
+        void setFanMode( uint8_t mode ) { this->_fanMode = (FanMode) mode; }
+        void setFanMode( FanMode mode ) { this->_fanMode = mode; }
+        void setFanMin( uint8_t value );
     
     protected:
         EepromSettings      *_nvm;
@@ -43,12 +46,16 @@ class PID_Control {
         t_Cbk_getLogicalChanTempC getLogicalChanTempC = NULL;
         HardwareTimer       *_timer;
         State               _state = State::needsInit;
+        FanMode             _fanMode = FanMode::manual;
+        uint8_t             _fanMin = 0;
         bool                _isConservTuning = false;
         float               input = 0;
         float               output = 0;
+        float               exhaustOutp = 0.0;
         float               setp = 0;
         QuickPID::Control   _action = QuickPID::Control::manual;
         QuickPID            _pid = QuickPID(&input, &output, &setp);
+        QuickPID            _pidFan = QuickPID(&input, &exhaustOutp, &setp);
         void _compute();
         void _syncPidSettings();
         void _switchProfilesIfNeeded();
