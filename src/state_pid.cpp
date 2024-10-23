@@ -188,6 +188,17 @@ void PID_Control::print() {
         setp - getTempReadingC()
     );
     Serial.println( buf );
+
+    Serial.print(F( "[FAN PID] State: " ));
+    Serial.print( getFanMode() == FanMode::manual ? F("'Manual' ") : F("'Automatic' "));
+    snprintf_P(buf, sizeof(buf)-1, tmplt,
+        setp,
+        _pidFan.GetPterm(),
+        _pidFan.GetIterm(),
+        _pidFan.GetDterm(),
+        setp - getTempReadingC()
+    );
+    Serial.println( buf );
 }
 
 
