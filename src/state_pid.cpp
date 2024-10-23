@@ -287,14 +287,27 @@ void PID_Control::updateSetPointC(float setPointC) {
 
 
 /**
- * @brief update PID tuning parameters
+ * @brief update PID tuning parameters for the current profile
  */
 void PID_Control::updateTuning(float kP, float kI, float kD) {
-    _NVM_PIDPROFCURRENT.kP = kP;
-    _NVM_PIDPROFCURRENT.kI = kI;
-    _NVM_PIDPROFCURRENT.kD = kD;
+    this->updateProfileNTuning( _nvm->settings.pidCurrentProfile, kP, kI, kD);
+}
+
+
+/**
+ * @brief update PID tuning parameters for the Nth profile
+ * @param profile -- profile number to update
+ */
+bool PID_Control::updateProfileNTuning(uint8_t profile, float kP, float kI, float kD) {
+    if ( profile > PID_NUM_PROFILES ) return false;
+
+    _NVM_GETPIDPROF(profile).kP = kP;
+    _NVM_GETPIDPROF(profile).kI = kI;
+    _NVM_GETPIDPROF(profile).kD = kD;
     this->_nvm->markDirty();
     this->_syncPidSettings();
+
+    return true;
 }
 
 

@@ -32,6 +32,7 @@ class PID_Control {
         void updateSetPointC( float setPointC );
         float getSetPoint() { return this->setp; };
         void updateTuning( float kP, float kI, float kD );
+        bool updateProfileNTuning( uint8_t profile, float kP, float kI, float kD );
         void addGetLogicalChantTempC( t_Cbk_getLogicalChanTempC cbk) { getLogicalChanTempC = cbk; };
         bool selectFanProfile( uint8_t profileNum );
         FanMode getFanMode() { return this->_fanMode; }
