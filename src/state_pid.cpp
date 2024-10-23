@@ -42,7 +42,6 @@ bool PID_Control::begin() {
     this->turnOff();
     this->_pid.SetOutputLimits(0, 100);
     this->_pidFan.SetOutputLimits(0, 100);
-    this->_isFanPidActive = false;
     this->_syncPidSettings();
 
     this->_timer->attachInterrupt(
@@ -115,7 +114,6 @@ void PID_Control::turnOff() {
          || getState() == this->State::autotune ) return;
     this->_pid.SetMode(QuickPID::Control::manual);
     this->_pidFan.SetMode(QuickPID::Control::manual);
-    this->_isFanPidActive = false;
     this->_timer->pause();
     this->_state = this->State::off;
 }
@@ -137,14 +135,7 @@ void PID_Control::turnOn() {
         this->_pidFan.Initialize();
         this->_fanMin = this->_vent->get();
         this->_pidFan.SetOutputLimits( this->_fanMin, 100 );
-        if ( setp <= input ) {
-            // Temp overshoot, turn on the fan
-            this->_pidFan.SetMode( QuickPID::Control::timer );
-            this->_isFanPidActive = true;
-        } else {
-            this->_pidFan.SetMode( QuickPID::Control::manual );
-            this->_isFanPidActive = false;
-        }
+        this->_pidFan.SetMode( QuickPID::Control::timer );
     }
     this->_timer->resume();
     this->_state = this->State::on;
@@ -358,21 +349,6 @@ void PID_Control::_compute() {
 
         // fan pid calc
         if ( FanMode::automatic == this->getFanMode() ) {
-            bool overshot = ( input >= setp );
-            if ( overshot ^ (this->_isFanPidActive) ) {
-                // Transitioning from active -> idle or vice versa
-                if ( overshot ) {
-                    this->_pidFan.Initialize();
-                    this->_fanMin = this->_vent->get();
-                    this->_pidFan.SetOutputLimits( this->_fanMin, 100 );
-                    this->_pidFan.SetMode( QuickPID::Control::timer );
-                    this->_isFanPidActive = true;
-                } else {
-                    this->_pidFan.SetMode( QuickPID::Control::manual );
-                    this->_isFanPidActive = false;
-                    this->_vent->set( this->_fanMin );
-                }
-            }
             if ( this->_pidFan.Compute() ) {
                 DEBUG(millis()); DEBUG(F(" FAN Pid output: "));
                 DEBUGLN(this->exhaustOutp);
@@ -405,7 +381,6 @@ void PID_Control::_syncPidSettings() {
         _NVM_PIDPROFFAN.dMode,
         _NVM_PIDPROFFAN.iAwMode
     );
-
     uint32_t ctus = 1000 * profile->cycleTimeMS;
     this->_pid.SetSampleTimeUs(ctus);
     if ( this->_timer ) this->_timer->setOverflow(ctus, MICROSEC_FORMAT);
