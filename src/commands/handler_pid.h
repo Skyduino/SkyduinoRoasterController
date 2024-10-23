@@ -2,6 +2,7 @@
 #define __CMD_PID_H
 
 #include "base.h"
+#include "state_pid.h"
 
 class cmndPid : public Command {
     public:
@@ -15,6 +16,8 @@ class cmndPid : public Command {
         void _handleConsrvPrfl( CmndParser *pars );
         void _handleCT( CmndParser *pars );
         void _handleDMode( CmndParser *pars );
+        void _handleFanPrfl( CmndParser *pars );
+        void _handleFanMode( CmndParser *pars );
         void _handleOff( CmndParser *pars );
         void _handleOn( CmndParser *pars );
         void _handlePMode( CmndParser *pars );

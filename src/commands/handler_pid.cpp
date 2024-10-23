@@ -10,6 +10,8 @@
 #define SUBCMD_CNSPRF "CNSPRF"
 #define SUBCMD_CT     "CT"
 #define SUBCMD_DMODE  "DMODE"
+#define SUBCMD_FANPRF "FANPRF"
+#define SUBCMD_FANMOD "FANMODE"
 #define SUBCMD_OFF    "OFF"
 #define SUBCMD_ON     "ON"
 #define SUBCMD_PMODE  "PMODE"
@@ -36,6 +38,8 @@ void cmndPid::_doCommand(CmndParser *pars) {
         { SUBCMD_CNSPRF, &cmndPid::_handleConsrvPrfl },
         { SUBCMD_CT, &cmndPid::_handleCT },
         { SUBCMD_DMODE, &cmndPid::_handleDMode },
+        { SUBCMD_FANPRF, &cmndPid::_handleFanPrfl },
+        { SUBCMD_FANMOD, &cmndPid::_handleFanMode },
         { SUBCMD_OFF, &cmndPid::_handleOff },
         { SUBCMD_ON, &cmndPid::_handleOn },
         { SUBCMD_PMODE, &cmndPid::_handlePMode },
@@ -134,6 +138,37 @@ void cmndPid::_handleDMode(CmndParser *pars) {
     if ( this->state->pid.updateDMode( mode ) ) {
         Serial.print(F("# PID D-Mode = ")); Serial.println( mode );
     }
+}
+
+
+/**
+ * @brief Handle PID;FANPRF;p command, where p is the pid profile index to
+ *        use for FAN control
+ */
+void cmndPid::_handleFanPrfl(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t profile = atoi( pars->paramStr(2) );
+    if ( this->state->pid.selectFanProfile( profile ) ) {
+        Serial.print(F("# Fan PID profile = ")); Serial.println( profile );
+    }
+}
+
+
+/**
+ * @brief Handle PID;FANMODE;m command, where m is the Fan mode:
+ *        0 -- Fan is controlled manually
+ *        1 -- Fan is controlled automatically by PID on the
+ *        Temperature overshoot
+ */
+void cmndPid::_handleFanMode(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t mode = atoi( pars->paramStr(2) );
+    if ( mode > 1 ) return;
+    this->state->pid.setFanMode( (PID_Control::FanMode) mode );
+    Serial.print(F("# Exhaust Fan mode = "));
+    Serial.println( mode == 0 ? F("Manual") : F("Automatic"));
 }
 
 

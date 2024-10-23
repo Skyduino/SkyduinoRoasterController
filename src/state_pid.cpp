@@ -62,7 +62,7 @@ bool PID_Control::begin() {
  *        profile. true -- if this is a conservative tunine profile
  * @return true -- if a correct profile was selected
  */
- bool PID_Control::activateProfile(uint8_t profileNum, bool isConservative) {
+bool PID_Control::activateProfile(uint8_t profileNum, bool isConservative) {
     if ( profileNum >= PID_NUM_PROFILES ) {
         WARN(F("Profile ")); WARN(profileNum); WARNLN(F(" is not valid"));
         return false;
@@ -292,6 +292,23 @@ void PID_Control::updateTuning(float kP, float kI, float kD) {
     _NVM_PIDPROFCURRENT.kD = kD;
     this->_nvm->markDirty();
     this->_syncPidSettings();
+}
+
+
+/**
+ * @brief select FAN PID profile
+ */
+bool PID_Control::selectFanProfile(uint8_t profileNum) {
+    if ( profileNum >= PID_NUM_PROFILES ) {
+        WARN(F("Profile ")); WARN(profileNum); WARNLN(F(" is not valid"));
+        return false;
+    }
+
+    this->_nvm->settings.pidFanProfile = profileNum;
+    this->_nvm->markDirty();
+    this->_syncPidSettings();
+
+    return true;
 }
 
 
