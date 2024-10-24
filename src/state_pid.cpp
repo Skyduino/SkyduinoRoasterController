@@ -159,7 +159,7 @@ void PID_Control::print() {
     Serial.print(F( "[PID] State: " ));
     switch ( getState() ) {
         case this->State::needsInit:
-            Serial.print(F( "'Needs Initialization" ));
+            Serial.print(F( "'Needs Initialization' " ));
             break;
 
         case this->State::off:
@@ -178,10 +178,11 @@ void PID_Control::print() {
             Serial.print(F( "'Aborted' " ));
             break;
     };
-    const char tmplt[] PROGMEM = "Setpoint=%f, P-term=%f, I-term=%f, D-term=%f, Error=%f";
+    const char tmplt[] PROGMEM = "Mode=%d, Setpoint=%f, P-term=%f, I-term=%f, D-term=%f, Error=%f";
     char buf[sizeof(tmplt) * 2];
     buf[sizeof(buf)-1] = 0;
     snprintf_P(buf, sizeof(buf)-1, tmplt,
+        _pid.GetMode(),
         setp,
         _pid.GetPterm(),
         _pid.GetIterm(),
@@ -193,6 +194,7 @@ void PID_Control::print() {
     Serial.print(F( "[FAN PID] State: " ));
     Serial.print( getFanMode() == FanMode::manual ? F("'Manual' ") : F("'Automatic' "));
     snprintf_P(buf, sizeof(buf)-1, tmplt,
+        _pidFan.GetMode(),
         setp,
         _pidFan.GetPterm(),
         _pidFan.GetIterm(),
