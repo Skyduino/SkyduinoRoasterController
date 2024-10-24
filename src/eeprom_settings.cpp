@@ -67,7 +67,7 @@ void EepromSettings::print() {
     Serial.print(F("NVM FAN PID profile # "));
     Serial.println(this->settings.pidFanProfile);
 
-    const char pidTmplt[] PROGMEM = "NVM PID profile #%d kP=%f, kI=%f, kD=%f, P-mode=%d, D-mode=%d, I-Aw-mode=%d, Chan=%d; Cycle Time=%lu(ms)";
+    const char pidTmplt[] PROGMEM = "NVM PID profile #%d kP=%f, kI=%f, kD=%f, P-mode=%d, D-mode=%d, I-Aw-mode=%d, Chan=%d; Fan PID SetPoint error=%f, Cycle Time=%lu(ms)";
     char buf[sizeof(pidTmplt) * 2];
     t_NvmPIDSettings *prf;
 
@@ -79,7 +79,7 @@ void EepromSettings::print() {
             (uint8_t) prf->pMode,
             (uint8_t) prf->dMode,
             (uint8_t) prf->iAwMode,
-            prf->chan, prf->cycleTimeMS);
+            prf->chan, prf->fanSPErrorC, prf->cycleTimeMS);
         Serial.println(buf);
     }
     Serial.println(F("---"));

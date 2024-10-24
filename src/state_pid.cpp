@@ -372,10 +372,10 @@ void PID_Control::_compute() {
 
         // fan pid calc
         if ( FanMode::automatic == this->getFanMode() ) {
-            bool overshot = ( input >= setp );
-            if ( overshot ^ (this->_isFanPidActive) ) {
+            bool threshold = ( input >= setp + _NVM_PIDPROFFAN.fanSPErrorC );
+            if ( threshold ^ (this->_isFanPidActive) ) {
                 // Transitioning from active -> idle or vice versa
-                if ( overshot ) {
+                if ( threshold ) {
                     this->_pidFan.Initialize();
                     this->_fanMin = this->_vent->get();
                     this->_pidFan.SetOutputLimits( this->_fanMin, 100 );
