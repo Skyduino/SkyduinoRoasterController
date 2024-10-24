@@ -51,6 +51,7 @@ class PID_Control {
         FanMode             _fanMode = FanMode::manual;
         uint8_t             _fanMin = 0;
         bool                _isConservTuning = false;
+        bool                _isFanPidActive = false;
         float               input = 0;
         float               output = 0;
         float               exhaustOutp = 0.0;
