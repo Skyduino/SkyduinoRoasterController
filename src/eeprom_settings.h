@@ -23,6 +23,7 @@ typedef struct {
     QuickPID::dMode   dMode;
     QuickPID::iAwMode iAwMode;
     uint8_t chan;
+    float   fanSPErrorC;
     uint32_t cycleTimeMS;
 } t_NvmPIDSettings;
 

@@ -12,6 +12,7 @@
 #define SUBCMD_DMODE  "DMODE"
 #define SUBCMD_FANPRF "FANPRF"
 #define SUBCMD_FANMOD "FANMODE"
+#define SUBCMD_FANGAP "FANGAPC"
 #define SUBCMD_OFF    "OFF"
 #define SUBCMD_ON     "ON"
 #define SUBCMD_PLOT   "PLOT"
@@ -33,12 +34,14 @@ cmndPid::cmndPid(State *state):
 }
 
 void cmndPid::_doCommand(CmndParser *pars) {
+    // Order of the commands does matter, shorter commands are checked last
     t_SubCommand cmds[] = {
+        { SUBCMD_FANMOD, &cmndPid::_handleFanMode },
+        { SUBCMD_FANGAP, &cmndPid::_handleFanGapC },
         { SUBCMD_AWMODE, &cmndPid::_handleAwMode },
         { SUBCMD_CHGPRF, &cmndPid::_handleChngPrfl },
         { SUBCMD_CNSPRF, &cmndPid::_handleConsrvPrfl },
         { SUBCMD_FANPRF, &cmndPid::_handleFanPrfl },
-        { SUBCMD_FANMOD, &cmndPid::_handleFanMode },
         { SUBCMD_DMODE, &cmndPid::_handleDMode },
         { SUBCMD_PMODE, &cmndPid::_handlePMode },
         { SUBCMD_TUNEX, &cmndPid::_handleTuneX },
@@ -173,6 +176,19 @@ void cmndPid::_handleFanMode(CmndParser *pars) {
     this->state->pid.setFanMode( (PID_Control::FanMode) mode );
     Serial.print(F("# Exhaust Fan mode = "));
     Serial.println( mode == 0 ? F("Manual") : F("Automatic"));
+}
+
+
+/**
+ * @brief Handle PID;FANGAPC;cc
+ */
+void cmndPid::_handleFanGapC(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    float gap = atof( pars->paramStr(2) );
+    if ( this->state->pid.setFanTempGapC( gap ) ) {
+        Serial.print(F("# PID FAN setpoint temp gap = ")); Serial.println( gap );
+    }
 }
 
 

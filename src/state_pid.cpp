@@ -42,6 +42,7 @@ bool PID_Control::begin() {
     this->turnOff();
     this->_pid.SetOutputLimits(1, 100);
     this->_pidFan.SetOutputLimits(0, 100);
+    this->_isFanPidActive = false;
     this->_syncPidSettings();
 
     this->_timer->attachInterrupt(
@@ -114,6 +115,7 @@ void PID_Control::turnOff() {
          || getState() == this->State::autotune ) return;
     this->_pid.SetMode(QuickPID::Control::manual);
     this->_pidFan.SetMode(QuickPID::Control::manual);
+    this->_isFanPidActive = false;
     this->_timer->pause();
     this->_state = this->State::off;
 }
@@ -135,7 +137,14 @@ void PID_Control::turnOn() {
         this->_pidFan.Initialize();
         this->_fanMin = this->_vent->get();
         this->_pidFan.SetOutputLimits( this->_fanMin, 100 );
-        this->_pidFan.SetMode( QuickPID::Control::timer );
+        if ( setp <= input ) {
+            // Temp overshoot, turn on the fan
+            this->_pidFan.SetMode( QuickPID::Control::timer );
+            this->_isFanPidActive = true;
+        } else {
+            this->_pidFan.SetMode( QuickPID::Control::manual );
+            this->_isFanPidActive = false;
+        }
     }
     this->_timer->resume();
     this->_state = this->State::on;
@@ -150,7 +159,7 @@ void PID_Control::print() {
     Serial.print(F( "[PID] State: " ));
     switch ( getState() ) {
         case this->State::needsInit:
-            Serial.print(F( "'Needs Initialization" ));
+            Serial.print(F( "'Needs Initialization' " ));
             break;
 
         case this->State::off:
@@ -169,10 +178,11 @@ void PID_Control::print() {
             Serial.print(F( "'Aborted' " ));
             break;
     };
-    const char tmplt[] PROGMEM = "Setpoint=%f, P-term=%f, I-term=%f, D-term=%f, Error=%f";
+    const char tmplt[] PROGMEM = "Mode=%d, Setpoint=%f, P-term=%f, I-term=%f, D-term=%f, Error=%f";
     char buf[sizeof(tmplt) * 2];
     buf[sizeof(buf)-1] = 0;
     snprintf_P(buf, sizeof(buf)-1, tmplt,
+        _pid.GetMode(),
         setp,
         _pid.GetPterm(),
         _pid.GetIterm(),
@@ -184,6 +194,7 @@ void PID_Control::print() {
     Serial.print(F( "[FAN PID] State: " ));
     Serial.print( getFanMode() == FanMode::manual ? F("'Manual' ") : F("'Automatic' "));
     snprintf_P(buf, sizeof(buf)-1, tmplt,
+        _pidFan.GetMode(),
         setp,
         _pidFan.GetPterm(),
         _pidFan.GetIterm(),
@@ -329,6 +340,20 @@ bool PID_Control::selectFanProfile(uint8_t profileNum) {
 
 
 /**
+ * @brief Set Fan Temperature gap -- the error between the temperature and
+ *        PID setpoint, when to turn on the FAN PID, if in auto fan mode
+ * @param gap -- temperature offset = setpoint + gap
+ */
+bool PID_Control::setFanTempGapC(float gap) {
+    if ( abs( gap ) > PID_FAN_ERR_C_MAX ) return false;
+
+    _NVM_PIDPROFFAN.fanSPErrorC = gap;
+    this->_nvm->markDirty();
+    return true;
+}
+
+
+/**
  * @brief Set minimum fan duty. Regardless of what FAN PID is calling
  *        the lower duty cycle is set by the OT2 command
  */
@@ -363,6 +388,21 @@ void PID_Control::_compute() {
 
         // fan pid calc
         if ( FanMode::automatic == this->getFanMode() ) {
+            bool threshold = ( input >= setp + _NVM_PIDPROFFAN.fanSPErrorC );
+            if ( threshold ^ (this->_isFanPidActive) ) {
+                // Transitioning from active -> idle or vice versa
+                if ( threshold ) {
+                    this->_pidFan.Initialize();
+                    this->_fanMin = this->_vent->get();
+                    this->_pidFan.SetOutputLimits( this->_fanMin, 100 );
+                    this->_pidFan.SetMode( QuickPID::Control::timer );
+                    this->_isFanPidActive = true;
+                } else {
+                    this->_pidFan.SetMode( QuickPID::Control::manual );
+                    this->_isFanPidActive = false;
+                    this->_vent->set( this->_fanMin );
+                }
+            }
             if ( this->_pidFan.Compute() ) {
                 DEBUG(millis()); DEBUG(F(" FAN Pid output: "));
                 DEBUGLN(this->exhaustOutp);
@@ -397,6 +437,7 @@ void PID_Control::_syncPidSettings() {
         _NVM_PIDPROFFAN.dMode,
         _NVM_PIDPROFFAN.iAwMode
     );
+
     uint32_t ctus = 1000 * profile->cycleTimeMS;
     this->_pid.SetSampleTimeUs(ctus);
     if ( this->_timer ) this->_timer->setOverflow(ctus, MICROSEC_FORMAT);

@@ -62,6 +62,9 @@
 #define PID_KI              0.15f
 #define PID_KD              0.00f
 #define PID_CHAN            2
+// Gap when to activate FAN PID. Threshold = PID SetPoint + PID_FAN_ERR_C
+#define PID_FAN_ERR_C       -10.0f
+#define PID_FAN_ERR_C_MAX   40.0f
 #define PID_CYCLE_TIME_MS   1000U
 #define PID_PMODE           QuickPID::pMode::pOnError
 #define PID_DMODE           QuickPID::dMode::dOnMeas
