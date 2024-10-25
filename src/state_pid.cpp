@@ -340,6 +340,20 @@ bool PID_Control::selectFanProfile(uint8_t profileNum) {
 
 
 /**
+ * @brief Set Fan Temperature gap -- the error between the temperature and
+ *        PID setpoint, when to turn on the FAN PID, if in auto fan mode
+ * @param gap -- temperature offset = setpoint + gap
+ */
+bool PID_Control::setFanTempGapC(float gap) {
+    if ( abs( gap ) > PID_FAN_ERR_C_MAX ) return false;
+
+    _NVM_PIDPROFFAN.fanSPErrorC = gap;
+    this->_nvm->markDirty();
+    return true;
+}
+
+
+/**
  * @brief Set minimum fan duty. Regardless of what FAN PID is calling
  *        the lower duty cycle is set by the OT2 command
  */

@@ -36,6 +36,7 @@ class PID_Control {
         void addGetLogicalChantTempC( t_Cbk_getLogicalChanTempC cbk) { getLogicalChanTempC = cbk; };
         bool selectFanProfile( uint8_t profileNum );
         FanMode getFanMode() { return this->_fanMode; }
+        bool setFanTempGapC( float gap );
         void setFanMode( uint8_t mode ) { this->_fanMode = (FanMode) mode; }
         void setFanMode( FanMode mode ) { this->_fanMode = mode; }
         void setFanMin( uint8_t value );
