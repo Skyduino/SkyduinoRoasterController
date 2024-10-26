@@ -178,7 +178,7 @@ void PID_Control::print() {
             Serial.print(F( "'Aborted' " ));
             break;
     };
-    const char tmplt[] PROGMEM = "Mode=%d, Setpoint=%f, P-term=%f, I-term=%f, D-term=%f, Error=%f";
+    const char tmplt[] PROGMEM = "Mode=%d, Setpoint=%f, P-term=%f, I-term=%f, D-term=%f, sum=%f, Error=%f";
     char buf[sizeof(tmplt) * 2];
     buf[sizeof(buf)-1] = 0;
     snprintf_P(buf, sizeof(buf)-1, tmplt,
@@ -187,6 +187,7 @@ void PID_Control::print() {
         _pid.GetPterm(),
         _pid.GetIterm(),
         _pid.GetDterm(),
+        _pid.GetOutputSum(),
         setp - getTempReadingC()
     );
     Serial.println( buf );
@@ -199,6 +200,7 @@ void PID_Control::print() {
         _pidFan.GetPterm(),
         _pidFan.GetIterm(),
         _pidFan.GetDterm(),
+        _pidFan.GetOutputSum(),
         setp - getTempReadingC()
     );
     Serial.println( buf );
@@ -487,7 +489,7 @@ void PID_Control::_switchProfilesIfNeeded() {
 void PID_Control::_plotPidTuner() {
     uint32_t now = millis() - this->_plotStart;
 
-    const char tmplt[] PROGMEM = "# PID us: %f, setpoint: %f, input: %f, heat: %f, fan: %f, heat-pid: %f, %f, %f, fan-pid: %f, %f, %f";
+    const char tmplt[] PROGMEM = "# PID us: %f, setpoint: %f, input: %f, heat: %f, fan: %f, heat-pid: %f, %f, %f, sum: %f, fan-pid: %f, %f, %f, sum: %f";
     char buf[sizeof(tmplt) * 2];
     buf[sizeof(buf)-1] = 0;
     snprintf_P(buf, sizeof(buf)-1, tmplt,
@@ -496,8 +498,8 @@ void PID_Control::_plotPidTuner() {
         input,
         output,
         exhaustOutp,
-        _pid.GetPterm(), _pid.GetIterm(), _pid.GetDterm(),
-        _pidFan.GetPterm(), _pidFan.GetIterm(), _pidFan.GetDterm()
+        _pid.GetPterm(), _pid.GetIterm(), _pid.GetDterm(), _pid.GetOutputSum(),
+        _pidFan.GetPterm(), _pidFan.GetIterm(), _pidFan.GetDterm(), _pidFan.GetOutputSum()
     );
     Serial.println( buf );
 }
