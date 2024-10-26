@@ -130,12 +130,12 @@ void PID_Control::turnOn() {
          || this->getState() == this->State::aborted ) return;
 
     this->input = this->getTempReadingC();
+    this->output = this->_heat->get();
 
     this->_pid.Initialize();
     this->_pid.SetMode(QuickPID::Control::timer);
     if ( FanMode::automatic == this->getFanMode() ) {
-        this->_pidFan.Initialize();
-        this->_fanMin = this->_vent->get();
+        this->exhaustOutp = this->_fanMin = this->_vent->get();
         this->_pidFan.SetOutputLimits( this->_fanMin, 100 );
         if ( setp <= input ) {
             // Temp overshoot, turn on the fan
@@ -394,8 +394,7 @@ void PID_Control::_compute() {
             if ( threshold ^ (this->_isFanPidActive) ) {
                 // Transitioning from active -> idle or vice versa
                 if ( threshold ) {
-                    this->_pidFan.Initialize();
-                    this->_fanMin = this->_vent->get();
+                    this->exhaustOutp = this->_fanMin = this->_vent->get();
                     this->_pidFan.SetOutputLimits( this->_fanMin, 100 );
                     this->_pidFan.SetMode( QuickPID::Control::timer );
                     this->_isFanPidActive = true;
