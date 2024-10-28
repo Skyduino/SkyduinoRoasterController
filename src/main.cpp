@@ -9,6 +9,8 @@
 #include "safemon.h"
 #include "skywalker_remote_comms.h"
 
+// pidProfiles: kP, kI, kD, pmode, dmode, iAwMode, chan, fanSetpointError, CycleTimeMS
+#define DEFAULT_PID_PROFILE {PID_KP, PID_KI, PID_KD, PID_PMODE, PID_DMODE, PID_AWMODE, PID_CHAN, PID_FAN_ERR_C, PID_CYCLE_TIME_MS}
 
 // NVM container & default settings
 PROGMEM const static t_Settings nvmSettingsStorage = {
@@ -31,13 +33,15 @@ PROGMEM const static t_Settings nvmSettingsStorage = {
     },
     0, // pidCurrentProfile
     0, // pidConservProfile
-    3, // pidFanProfile
-    // pidProfiles: kP, kI, kD, pmode, dmode, iAwMode, chan
+    2, // pidFanProfile
+    // pidProfiles: kP, kI, kD, pmode, dmode, iAwMode, chan, fanSetpointError, CycleTimeMS
     {
-        {PID_KP, PID_KI, PID_KD, PID_PMODE, PID_DMODE, PID_AWMODE, PID_CHAN, PID_FAN_ERR_C, PID_CYCLE_TIME_MS},
-        {PID_KP, PID_KI, PID_KD, PID_PMODE, PID_DMODE, PID_AWMODE, PID_CHAN, PID_FAN_ERR_C, PID_CYCLE_TIME_MS},
-        {PID_KP, PID_KI, PID_KD, PID_PMODE, PID_DMODE, PID_AWMODE, PID_CHAN, PID_FAN_ERR_C, PID_CYCLE_TIME_MS},
-        {PID_KP, PID_KI, PID_KD, PID_PMODE, PID_DMODE, PID_AWMODE, PID_CHAN, PID_FAN_ERR_C, PID_CYCLE_TIME_MS},
+        DEFAULT_PID_PROFILE,
+        DEFAULT_PID_PROFILE,
+        DEFAULT_PID_PROFILE,
+        DEFAULT_PID_PROFILE,
+        DEFAULT_PID_PROFILE,
+        DEFAULT_PID_PROFILE
     },
     EEPROM_SETTINGS_MAGIC, // EEPROM MAGIC number
     0 // CRC

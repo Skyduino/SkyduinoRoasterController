@@ -69,7 +69,7 @@
 #define PID_PMODE           QuickPID::pMode::pOnError
 #define PID_DMODE           QuickPID::dMode::dOnMeas
 #define PID_AWMODE          QuickPID::iAwMode::iAwCondition
-#define PID_NUM_PROFILES    4
+#define PID_NUM_PROFILES    6
 // GAP/Error when to switch to a conservative profile
 #define PID_CONSERV_ERR     8
 #endif  // __ROASTER_H
