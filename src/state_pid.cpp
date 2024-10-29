@@ -219,7 +219,6 @@ bool PID_Control::updateAWMode(uint8_t mode)
     }
     DEBUG(micros()); DEBUG(F(" Setting I anti-windup: ")); DEBUGLN( mode );
     _NVM_PIDPROFCURRENT.iAwMode = (QuickPID::iAwMode) mode;
-    this->_nvm->markDirty();
     this->_syncPidSettings();
 
     return true;
@@ -234,7 +233,6 @@ bool PID_Control::updateChan(uint8_t chan) {
         return false;
     }
     _NVM_PIDPROFCURRENT.chan = chan;
-    this->_nvm->markDirty();
 
     return true;
 }
@@ -247,7 +245,6 @@ bool PID_Control::updateCycleTimeMs(uint32_t ctMS) {
     if ( ctMS < 100 ) return false;
 
     _NVM_PIDPROFCURRENT.cycleTimeMS = ctMS;
-    this->_nvm->markDirty();
     this->_syncPidSettings();
 
     return true;
@@ -264,7 +261,6 @@ bool PID_Control::updateDMode(uint8_t mode) {
         return false;
     }
     _NVM_PIDPROFCURRENT.dMode = (QuickPID::dMode) mode;
-    this->_nvm->markDirty();
     this->_syncPidSettings();
 
     return true;
@@ -282,7 +278,6 @@ bool PID_Control::updatePMode(uint8_t mode) {
         return false;
     }
     _NVM_PIDPROFCURRENT.pMode = (QuickPID::pMode) mode;
-    this->_nvm->markDirty();
     this->_syncPidSettings();
 
     return true;
@@ -317,7 +312,7 @@ bool PID_Control::updateProfileNTuning(uint8_t profile, float kP, float kI, floa
     _NVM_GETPIDPROF(profile).kP = kP;
     _NVM_GETPIDPROF(profile).kI = kI;
     _NVM_GETPIDPROF(profile).kD = kD;
-    this->_nvm->markDirty();
+    if ( profile != _nvm->settings.pidCurrentProfile ) this->_nvm->markDirty();
     this->_syncPidSettings();
 
     return true;
