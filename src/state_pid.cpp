@@ -76,7 +76,6 @@ bool PID_Control::activateProfile(uint8_t profileNum, bool isConservative) {
                 this->_nvm->settings.pidConservProfile = profileNum;
         this->_nvm->settings.pidCurrentProfile = profileNum;
     }
-    this->_nvm->markDirty();
     this->_syncPidSettings();
 
     return true;
@@ -312,7 +311,6 @@ bool PID_Control::updateProfileNTuning(uint8_t profile, float kP, float kI, floa
     _NVM_GETPIDPROF(profile).kP = kP;
     _NVM_GETPIDPROF(profile).kI = kI;
     _NVM_GETPIDPROF(profile).kD = kD;
-    if ( profile != _nvm->settings.pidCurrentProfile ) this->_nvm->markDirty();
     this->_syncPidSettings();
 
     return true;
@@ -329,7 +327,6 @@ bool PID_Control::selectFanProfile(uint8_t profileNum) {
     }
 
     this->_nvm->settings.pidFanProfile = profileNum;
-    this->_nvm->markDirty();
     this->_syncPidSettings();
 
     return true;
@@ -345,7 +342,6 @@ bool PID_Control::setFanTempGapC(float gap) {
     if ( abs( gap ) > PID_FAN_ERR_C_MAX ) return false;
 
     _NVM_PIDPROFFAN.fanSPErrorC = gap;
-    this->_nvm->markDirty();
     return true;
 }
 

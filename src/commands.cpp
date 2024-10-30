@@ -6,6 +6,7 @@
 #include "commands/handler_chan.h"
 #include "commands/handler_dfu.h"
 #include "commands/handler_filt.h"
+#include "commands/handler_nvm.h"
 #include "commands/handler_ot.h"
 #include "commands/handler_pid.h"
 #include "commands/handler_pwm.h"
@@ -33,6 +34,7 @@ cmndDrum    cmnd_handler_drum = cmndDrum( &state );
 cmndDFU     cmnd_handler_dfu;
 cmndFilt    cmnd_handler_filt = cmndFilt( &state );
 cmndDflts   cmnd_handler_dflt = cmndDflts( &state );
+cmndNvm     cmnd_handler_nvm  = cmndNvm( &state );
 cmndOff     cmnd_handler_off  = cmndOff( &state );
 cmndOT1     cmnd_handler_ot1  = cmndOT1( &state );
 cmndOT2     cmnd_handler_ot2  = cmndOT2( &state );
@@ -57,6 +59,7 @@ void setupCommandHandlers(void) {
         &cmnd_handler_steps,
         &cmnd_handler_rpm,
 #endif // USE_STEPPER_DRUM
+        &cmnd_handler_nvm,
         &cmnd_handler_dflt,
         &cmnd_handler_pwm,
         &cmnd_handler_reset,

@@ -61,13 +61,12 @@ class EepromSettings {
         void print();
         void incSafetyCounter();
         void loadDefaults();
+        void save();
 
     private:
         TimerMS          timer = TimerMS(EEPROM_SAVE_TIME_MS); 
         bool             isDirty = false;
         const t_Settings *defaultSettings;
-
-        void save();
 };
 
 #endif  // __SW_EEPROM_SETTINGS_H
