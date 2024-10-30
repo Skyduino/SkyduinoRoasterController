@@ -50,6 +50,7 @@ class PID_Control {
         HardwareTimer       *_timer;
         State               _state = State::needsInit;
         FanMode             _fanMode = FanMode::manual;
+        uint8_t             _origHeat = 0;
         uint8_t             _fanMin = 0;
         bool                _isConservTuning = false;
         bool                _isFanPidActive = false;

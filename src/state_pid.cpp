@@ -114,6 +114,7 @@ void PID_Control::turnOff() {
          || getState() == this->State::autotune ) return;
     this->_pid.SetMode(QuickPID::Control::manual);
     this->_pidFan.SetMode(QuickPID::Control::manual);
+    this->_heat->set( this->_origHeat );
     this->_isFanPidActive = false;
     this->_timer->pause();
     this->_state = this->State::off;
@@ -129,7 +130,7 @@ void PID_Control::turnOn() {
          || this->getState() == this->State::aborted ) return;
 
     this->input = this->getTempReadingC();
-    this->output = this->_heat->get();
+    this->_origHeat = this->output = this->_heat->get();
 
     this->_pid.Initialize();
     this->_pid.SetMode(QuickPID::Control::timer);
