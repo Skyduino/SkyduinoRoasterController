@@ -18,6 +18,7 @@ class PID_Control {
         void abort();
         bool begin();
         bool activateProfile( uint8_t profileNum, bool isConservative=false );
+        bool setConservProfile( uint8_t profileNum, float setpointGapC );
         State getState() { return this->_state; };
         float getTempReadingC();
         bool isOn();

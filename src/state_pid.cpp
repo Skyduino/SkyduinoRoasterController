@@ -83,6 +83,22 @@ bool PID_Control::activateProfile(uint8_t profileNum, bool isConservative) {
 
 
 /**
+ * @brief Designate a selected profile as a conservative profile and sets the setpoint
+ *        error threshold gap for switching to the conservative profile
+ * @param profileNum (uint8_t) -- profile index
+ * @param setpointGapC (float) -- threshold in C for the setpoint gap
+ */
+bool PID_Control::setConservProfile(uint8_t profileNum, float setpointGapC) {
+    if ( this->activateProfile( profileNum, true )) {
+        _NVM_PIDPROFCURRENT.cnsPrfErrorC = setpointGapC;
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
  * @brief Get current logical channel temperature
  * @return temperature C
  */
@@ -442,7 +458,7 @@ void PID_Control::_syncPidSettings() {
  */
 void PID_Control::_switchProfilesIfNeeded() {
     float gap = abs( this->setp - this->input );
-    if ( gap < PID_CONSERV_ERR ) {
+    if ( gap < _NVM_PIDPROFCURRENT.cnsPrfErrorC ) {
         // Use Conserv tuning profile
         if ( !(this->_isConservTuning) ) {
             _pid.SetTunings(

@@ -9,8 +9,8 @@
 #include "safemon.h"
 #include "skywalker_remote_comms.h"
 
-// pidProfiles: kP, kI, kD, pmode, dmode, iAwMode, chan, fanSetpointError, CycleTimeMS
-#define DEFAULT_PID_PROFILE {PID_KP, PID_KI, PID_KD, PID_PMODE, PID_DMODE, PID_AWMODE, PID_CHAN, PID_FAN_ERR_C, PID_CYCLE_TIME_MS}
+// pidProfiles: kP, kI, kD, pmode, dmode, iAwMode, chan, fanSetpointError, ConservProfileSwitchingThresholdC, CycleTimeMS
+#define DEFAULT_PID_PROFILE {PID_KP, PID_KI, PID_KD, PID_PMODE, PID_DMODE, PID_AWMODE, PID_CHAN, PID_FAN_ERR_C, PID_CONSERV_ERR, PID_CYCLE_TIME_MS}
 
 // NVM container & default settings
 PROGMEM const static t_Settings nvmSettingsStorage = {

@@ -109,14 +109,20 @@ void cmndPid::_handleChngPrfl(CmndParser *pars) {
 
 
 /**
- * @brief Handle PID;CNSPRF;p command to designate a conservative tuning profile
+ * @brief Handle PID;CNSPRF;p;f.fff command to designate a conservative tuning profile
+ *        where p is the profile number and f.fff is the setpoint error threshold
+ *        for switching in current temperature unit of measurement
  */
 void cmndPid::_handleConsrvPrfl(CmndParser *pars) {
-    if ( 3 != pars->nTokens() ) return;
+    if ( 4 != pars->nTokens() ) return;
 
     uint32_t profile = atoi( pars->paramStr(2) );
-    if ( this->state->pid.activateProfile( profile, true) ) {
-        Serial.print(F("# PID conservative profile = ")); Serial.println( profile );
+    float f = atof( pars->paramStr(3) );
+    float setpointGapC = state->cfg.isMetric ? f : CONVERT_F_TO_C( f );
+
+    if ( this->state->pid.setConservProfile( profile, setpointGapC ) ) {
+        Serial.print(F("# PID conservative profile = ")); Serial.print( profile );
+        Serial.print(F(" threshold = ")); Serial.println( f );
     }
 }
 
