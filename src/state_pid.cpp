@@ -496,7 +496,7 @@ void PID_Control::_switchProfilesIfNeeded() {
 void PID_Control::_plotPidTuner() {
     uint32_t now = millis() - this->_plotStart;
 
-    const char tmplt[] PROGMEM = "# PID us: %f, setpoint: %f, input: %f, heat: %f, fan: %f, heat-pid: %f, %f, %f, sum: %f, fan-pid: %f, %f, %f, sum: %f";
+    const char tmplt[] PROGMEM = "# PID us: %f, sp: %f, in: %f, heat: %f, fan: %f, conserv: %c, heat-pid: %f, %f, %f, sum: %f, fan-pid: %f, %f, %f, sum: %f";
     char buf[sizeof(tmplt) * 2];
     buf[sizeof(buf)-1] = 0;
     snprintf_P(buf, sizeof(buf)-1, tmplt,
@@ -505,6 +505,7 @@ void PID_Control::_plotPidTuner() {
         input,
         output,
         exhaustOutp,
+        this->_isConservTuning ? 'Y' : 'N',
         _pid.GetPterm(), _pid.GetIterm(), _pid.GetDterm(), _pid.GetOutputSum(),
         _pidFan.GetPterm(), _pidFan.GetIterm(), _pidFan.GetDterm(), _pidFan.GetOutputSum()
     );
