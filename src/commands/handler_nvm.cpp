@@ -41,7 +41,7 @@ void cmndNvm::_handleSave(CmndParser *pars) {
 
     uint32_t start = millis();
     this->state->nvmSettings->save();
-    float durS = ( millis() - start ) / 1000;
+    float durS = ( millis() - start ) / 1000.0f;
     Serial.print(F("# Saved NVM in "));
     Serial.print( durS );
     Serial.println(F("s"));
