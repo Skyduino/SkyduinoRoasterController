@@ -385,10 +385,15 @@ void PID_Control::_compute() {
         this->input = tempC;
         this->_switchProfilesIfNeeded();
         // if error is under 60C, then limit output to 80%
-        if ( abs( setp - input ) < 60 ) {
-            _pid.SetOutputLimits( 1, 80 );
+        if ( input < setp ) {
+            if ( abs( setp - input ) > 50 ) {
+                _pid.SetOutputLimits( 15, 100 );
+            } else {
+                _pid.SetOutputLimits( 15, 80 );
+            }
         } else {
-            _pid.SetOutputLimits( 1, 100 );
+            // overshot
+            _pid.SetOutputLimits( 1, 60 );
         }
         if ( this->_pid.Compute() ) {
             DEBUG(millis()); DEBUG(F(" PID compute settings output to: "));
