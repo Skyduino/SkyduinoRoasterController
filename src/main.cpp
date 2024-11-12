@@ -40,7 +40,6 @@ PROGMEM const static t_Settings nvmSettingsStorage = {
         DEFAULT_PID_PROFILE,
         DEFAULT_PID_PROFILE,
         DEFAULT_PID_PROFILE,
-        DEFAULT_PID_PROFILE,
         DEFAULT_PID_PROFILE
     },
     EEPROM_SETTINGS_MAGIC, // EEPROM MAGIC number
