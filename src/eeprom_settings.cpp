@@ -59,6 +59,29 @@ void EepromSettings::print() {
     Serial.println(this->settings.pwmExhaustHz);
     Serial.print(F("NVM PWM frequency SSR Hz: "));
     Serial.println(this->settings.pwmSSRHz);
+    Serial.println(F("[NVM PID]"));
+    Serial.print(F("NVM Current PID profile # "));
+    Serial.println(this->settings.pidCurrentProfile);
+    Serial.print(F("NVM Conservative PID profile # "));
+    Serial.println(this->settings.pidConservProfile);
+    Serial.print(F("NVM FAN PID profile # "));
+    Serial.println(this->settings.pidFanProfile);
+
+    const char pidTmplt[] PROGMEM = "NVM PID profile #%d kP=%f, kI=%f, kD=%f, P-mode=%d, D-mode=%d, I-Aw-mode=%d, Chan=%d; Fan PID gap=%f, Conserv. Prof. Gap=%f, Cycle Time=%lu(ms)";
+    char buf[sizeof(pidTmplt) * 2];
+    t_NvmPIDSettings *prf;
+
+    for (uint8_t i=0; i < PID_NUM_PROFILES; i++) {
+        buf[sizeof(buf)-1] = 0;
+        prf = &(settings.pidProfiles[ i ]);
+        snprintf_P(buf, sizeof(buf)-1, pidTmplt, i,
+            prf->kP, prf->kI, prf->kD,
+            (uint8_t) prf->pMode,
+            (uint8_t) prf->dMode,
+            (uint8_t) prf->iAwMode,
+            prf->chan, prf->fanSPErrorC, prf->cnsPrfErrorC, prf->cycleTimeMS);
+        Serial.println(buf);
+    }
     Serial.println(F("---"));
 }
 

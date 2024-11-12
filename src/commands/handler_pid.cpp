@@ -1,0 +1,327 @@
+#include <cstdlib>
+#include <logging.h>
+
+#include "handler_pid.h"
+
+#define CMD_PID "PID"
+#define SUBCMD_AWMODE "AWMODE"
+#define SUBCMD_CHAN   "CHAN"
+#define SUBCMD_CHGPRF "CHGPRF"
+#define SUBCMD_CNSPRF "CNSPRF"
+#define SUBCMD_CT     "CT"
+#define SUBCMD_DMODE  "DMODE"
+#define SUBCMD_FANPRF "FANPRF"
+#define SUBCMD_FANMOD "FANMODE"
+#define SUBCMD_FANGAP "FANGAPC"
+#define SUBCMD_OFF    "OFF"
+#define SUBCMD_ON     "ON"
+#define SUBCMD_PLOT   "PLOT"
+#define SUBCMD_PMODE  "PMODE"
+#define SUBCMD_SV     "SV"
+#define SUBCMD_T      "T"
+#define SUBCMD_TUNEX  "TUNE"
+#define SUBCMD_TPOM   "T_POM"
+
+
+typedef struct {
+    const char *subCmdName;
+    void (cmndPid::*subCmdHandler) ( CmndParser *pars );
+} t_SubCommand;
+
+
+cmndPid::cmndPid(State *state):
+    Command( CMD_PID, state ) {
+}
+
+void cmndPid::_doCommand(CmndParser *pars) {
+    // Order of the commands does matter, shorter commands are checked last
+    t_SubCommand cmds[] = {
+        { SUBCMD_FANMOD, &cmndPid::_handleFanMode },
+        { SUBCMD_FANGAP, &cmndPid::_handleFanGapC },
+        { SUBCMD_AWMODE, &cmndPid::_handleAwMode },
+        { SUBCMD_CHGPRF, &cmndPid::_handleChngPrfl },
+        { SUBCMD_CNSPRF, &cmndPid::_handleConsrvPrfl },
+        { SUBCMD_FANPRF, &cmndPid::_handleFanPrfl },
+        { SUBCMD_DMODE, &cmndPid::_handleDMode },
+        { SUBCMD_PMODE, &cmndPid::_handlePMode },
+        { SUBCMD_TUNEX, &cmndPid::_handleTuneX },
+        { SUBCMD_CHAN, &cmndPid::_handleChan },
+        { SUBCMD_PLOT, &cmndPid::_handlePlot },
+        { SUBCMD_TPOM, &cmndPid::_handleTPOM },
+        { SUBCMD_OFF, &cmndPid::_handleOff },
+        { SUBCMD_CT, &cmndPid::_handleCT },
+        { SUBCMD_ON, &cmndPid::_handleOn },
+        { SUBCMD_SV, &cmndPid::_handleSV },
+        { SUBCMD_T, &cmndPid::_handleT },
+        { NULL, NULL }
+    };
+
+    for ( uint8_t i = 0; NULL != cmds[i].subCmdName; i++ ) {
+        if ( 0 == strncmp( pars->paramStr(1), cmds[i].subCmdName, strlen(cmds[i].subCmdName) ) ) {
+            (this->*cmds[i].subCmdHandler)( pars );
+            break;
+        }
+    }
+}
+
+
+/**
+ * @brief Handle PID;AWMOD;i command to update Anti Windup Mode,
+ *        where i is 0 -- set anti-windup to Condition, 1 -- set aw to Clamp,
+ *        2 - turn off the anti windup
+ */
+void cmndPid::_handleAwMode(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t mode = atoi( pars->paramStr(2) );
+    if ( this->state->pid.updateAWMode( mode ) ) {
+        Serial.print(F("# PID I anti-windup = ")); Serial.println( mode );
+    }
+}
+
+
+/**
+ * @brief Handle PID;CHAN;i command to update the input channel
+ */
+void cmndPid::_handleChan(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t chan = atoi( pars->paramStr(2) );
+    if ( this->state->pid.updateChan( chan ) ) {
+        Serial.print(F("# PID channel = ")); Serial.println( chan );
+    }
+}
+
+
+/**
+ * @brief Handle PID;CHGPRF;p command to activate/change a new PID profile
+ *        all subsequent changes to the PID settings will be applied to this
+ *        profile
+ */
+void cmndPid::_handleChngPrfl(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t profile = atoi( pars->paramStr(2) );
+    if ( this->state->pid.activateProfile( profile ) ) {
+        Serial.print(F("# PID profile = ")); Serial.println( profile );
+    }
+}
+
+
+/**
+ * @brief Handle PID;CNSPRF;p;f.fff command to designate a conservative tuning profile
+ *        where p is the profile number and f.fff is the setpoint error threshold
+ *        for switching in current temperature unit of measurement
+ */
+void cmndPid::_handleConsrvPrfl(CmndParser *pars) {
+    if ( 4 != pars->nTokens() ) return;
+
+    uint32_t profile = atoi( pars->paramStr(2) );
+    float f = atof( pars->paramStr(3) );
+    float setpointGapC = state->cfg.isMetric ? f : CONVERT_F_TO_C( f );
+
+    if ( this->state->pid.setConservProfile( profile, setpointGapC ) ) {
+        Serial.print(F("# PID conservative profile = ")); Serial.print( profile );
+        Serial.print(F(" threshold = ")); Serial.println( f );
+    }
+}
+
+
+/**
+ * @brief Handle PID;CT;ssss command, to change the PID cycle time in MS
+ */
+void cmndPid::_handleCT(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t ctms = atoi( pars->paramStr(2) );
+    if ( this->state->pid.updateCycleTimeMs( ctms ) ) {
+        Serial.print(F("# PID cycle (ms) = ")); Serial.println( ctms );
+    }
+}
+
+
+/**
+ * @brief Handle PID;DMOD;i command to update the D-term mode
+ *        where i is 0 -- dterm on error, 1 -- dterm on measurement
+ */
+void cmndPid::_handleDMode(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t mode = atoi( pars->paramStr(2) );
+    if ( this->state->pid.updateDMode( mode ) ) {
+        Serial.print(F("# PID D-Mode = ")); Serial.println( mode );
+    }
+}
+
+
+/**
+ * @brief Handle PID;FANPRF;p command, where p is the pid profile index to
+ *        use for FAN control
+ */
+void cmndPid::_handleFanPrfl(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t profile = atoi( pars->paramStr(2) );
+    if ( this->state->pid.selectFanProfile( profile ) ) {
+        Serial.print(F("# Fan PID profile = ")); Serial.println( profile );
+    }
+}
+
+
+/**
+ * @brief Handle PID;FANMODE;m command, where m is the Fan mode:
+ *        0 -- Fan is controlled manually
+ *        1 -- Fan is controlled automatically by PID on the
+ *        Temperature overshoot
+ */
+void cmndPid::_handleFanMode(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t mode = atoi( pars->paramStr(2) );
+    if ( mode > 1 ) return;
+    this->state->pid.setFanMode( (PID_Control::FanMode) mode );
+    Serial.print(F("# Exhaust Fan mode = "));
+    Serial.println( mode == 0 ? F("Manual") : F("Automatic"));
+}
+
+
+/**
+ * @brief Handle PID;FANGAPC;cc
+ */
+void cmndPid::_handleFanGapC(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    float gap = atof( pars->paramStr(2) );
+    if ( this->state->pid.setFanTempGapC( gap ) ) {
+        Serial.print(F("# PID FAN setpoint temp gap = ")); Serial.println( gap );
+    }
+}
+
+
+/**
+ * @brief Handle PID;OFF command to deactivate the PID
+ */
+void cmndPid::_handleOff(CmndParser *pars) {
+    this->state->pid.turnOff();
+    Serial.println(F("# PID turned OFF"));
+}
+
+
+/**
+ * @brief Handle PID;ON command to activate the PID
+ */
+void cmndPid::_handleOn(CmndParser *pars) {
+    this->state->pid.turnOn();
+    Serial.println(F("# PID turned On"));
+}
+
+
+/**
+ * @brief Handle PID;PMOD;i command to update the P-term mode
+ *        where i is 0 -- pterm on error, 1 -- pterm on measurement,
+ *        2 -- pterm on both error & measurement
+ */
+void cmndPid::_handlePMode(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t mode = atoi( pars->paramStr(2) );
+    if ( this->state->pid.updatePMode( mode ) ) {
+        Serial.print(F("# PID P-Mode = ")); Serial.println( mode );
+    }
+}
+
+
+/**
+ * @brief Handle PID;PLOT;p command where p = 1 -- enables PID plotting
+ *        p = 0 -- disable plotting
+ */
+void cmndPid::_handlePlot(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    uint32_t mode = atoi( pars->paramStr(2) );
+    this->state->pid.enablePlot( (mode > 0) );
+    Serial.print(F("# PID Plot mode = ")); Serial.println( mode );
+}
+
+
+/**
+ * @brief Handle PID;SV;xxx command to change the setpoint. The new setpoint
+ *        is in the current units of measurement
+ */
+void cmndPid::_handleSV(CmndParser *pars) {
+    if ( 3 != pars->nTokens() ) return;
+
+    float f = atof( pars->paramStr(2) );
+    float newSetPointC = state->cfg.isMetric ? f : CONVERT_F_TO_C( f );
+
+    // Sanity Check
+    if ( newSetPointC > 30 && newSetPointC < (state->nvmSettings->settings.maxSafeTempC) ) {
+        this->state->pid.updateSetPointC( newSetPointC );
+        Serial.print(F("# PID setpoint = ")); Serial.println( newSetPointC );
+    }
+}
+
+
+/**
+ * @brief Handle PID;T;ppp;iii;ddd command to change PID tuning parameters
+ */
+void cmndPid::_handleT(CmndParser *pars) {
+    this->__handlePidTune( pars, QuickPID::pMode::pOnError );
+}
+
+
+/**
+ * @brief Handle PID;TUNEx;ppp;iii;ddd command to change PID tuning parameter
+ *        for the PID profile #X
+ */
+void cmndPid::_handleTuneX(CmndParser *pars) {
+    if ( 5 != pars->nTokens() ) return;
+    // the Subcommand is TUNEx
+    if ( 5 != strnlen(pars->paramStr(1), MAX_TOKEN_LEN) ) return;
+    // the last symbol should be a digit
+    if ( pars->paramStr(1)[4] < '0' || pars->paramStr(1)[4] > '9' ) return;
+
+    uint32_t profile = atoi(pars->paramStr(1)+4);
+    float kP = atof( pars->paramStr(2) );
+    float kI = atof( pars->paramStr(3) );
+    float kD = atof( pars->paramStr(4) );
+    if ( this->state->pid.updateProfileNTuning( profile, kP, kI, kD ) ) {
+        Serial.print(F("# PID Tunings profile #"));
+        Serial.print(profile);
+        Serial.print(F(" set:  Kp = "));
+        Serial.print( kP );
+        Serial.print(F(",  Ki = "));
+        Serial.print( kI );
+        Serial.print(F(",  Kd = "));
+        Serial.println( kD );
+    }
+}
+
+
+/**
+ * @brief Handle PID;T_POM;ppp;iii;ddd command to change PID tuning parameters
+ *        for P on Measurement
+ */
+void cmndPid::_handleTPOM(CmndParser *pars) {
+    this->__handlePidTune( pars, QuickPID::pMode::pOnMeas );
+}
+
+
+/**
+ * @brief Common helper to handle PID tuning commands T & T_POM
+ */
+void cmndPid::__handlePidTune(CmndParser *pars, QuickPID::pMode pMode) {
+    if ( 5 != pars->nTokens() ) return;
+
+    float kP = atof( pars->paramStr(2) );
+    float kI = atof( pars->paramStr(3) );
+    float kD = atof( pars->paramStr(4) );
+    this->state->pid.updateTuning( kP, kI, kD );
+    this->state->pid.updatePMode( (uint8_t) pMode );
+    Serial.print(F("# PID Tunings set.  Kp = "));
+    Serial.print( kP );
+    Serial.print(F(",  Ki = "));
+    Serial.print( kI );
+    Serial.print(F(",  Kd = "));
+    Serial.println( kD );
+}

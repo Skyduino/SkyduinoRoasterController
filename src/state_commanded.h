@@ -5,6 +5,7 @@
 #include <tick-timer.h>
 
 #include "roaster.h"
+#include "eeprom_settings.h"
 
 // delay between SSR and heat relay transitions
 #define CONTROL_HEAT_SSR_RELAY_DELAY_MS 11U

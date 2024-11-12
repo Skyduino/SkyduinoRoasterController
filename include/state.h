@@ -8,6 +8,7 @@
 #include <roaster.h>
 #include "eeprom_settings.h"
 #include "state_commanded.h"
+#include "state_pid.h"
 #include "state_statistics.h"
 #include "ntc.h"
 
@@ -33,6 +34,7 @@ class Reported {
         uint8_t getChanMapping(uint8_t idx);
         void setChanMapping(uint8_t idx, uint8_t mapping);
         float getChanTemp(uint8_t chan);
+        float getLogicalChanTemp(uint8_t lch);
         uint32_t getSkywalkerADC();
     
     private:
@@ -63,14 +65,19 @@ class State {
     public:
         State( EepromSettings *nvmSettings ):
             commanded(StateCommanded(nvmSettings)),
+            pid(
+                PID_Control(nvmSettings, &(commanded.heat), &(commanded.vent))
+            ),
             nvmSettings(nvmSettings) {};
         StateCommanded  commanded;
+        PID_Control     pid;
         Reported        reported = Reported(&cfg);
         Config          cfg;
         Status          status;
         Stats           stats;
         EepromSettings  *nvmSettings;
 
+        void    abort();
         bool    begin();
         bool    loopTick();
         void    printState();

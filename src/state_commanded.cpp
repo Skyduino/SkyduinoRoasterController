@@ -67,7 +67,6 @@ void StateCommanded::printState() {
     Serial.print(',');
     Serial.print(vent.get());
     Serial.print(',');
-    Serial.println(F("0"));
 }
 
 

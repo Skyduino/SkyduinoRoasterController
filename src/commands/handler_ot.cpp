@@ -24,4 +24,5 @@ cmndOT2::cmndOT2(State *state):
 void cmndOT2::_handleValue(int32_t value) {
     state->commanded.vent.set(value);
     state->commanded.setControlToArtisan(true);
+    state->pid.setFanMin( value );
 }

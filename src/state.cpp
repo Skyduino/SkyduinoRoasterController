@@ -10,11 +10,30 @@ Status::Status() {
     tcStatus = 1;
 }
 
-bool State::begin() {
+
+/**
+ * @brief emergency shutdown and control lockout
+ */
+void State::abort() {
+    this->pid.abort();
+    this->commanded.abort();
+}
+
+
+bool State::begin()
+{
     bool isSuccess = true;
 
     isSuccess &= commanded.begin();
     isSuccess &= reported.begin();
+    isSuccess &= pid.begin();
+    pid.addGetLogicalChantTempC(
+        std::bind(
+            &Reported::getLogicalChanTemp,
+            &reported,
+            std::placeholders::_1
+        )
+    );
 
     return isSuccess;
 }
@@ -38,6 +57,14 @@ bool State::loopTick() {
 void State::printState() {
     reported.printState();
     commanded.printState();
+    if ( pid.isOn() ) {
+        float spC = pid.getSetPoint();
+        Serial.println(
+            cfg.isMetric ? spC : CONVERT_C_TO_F( spC )
+        );
+    } else {
+        Serial.println(0);
+    }
 }
 
 /**
@@ -47,4 +74,5 @@ void State::printStatistics() {
     this->nvmSettings->print();
     this->reported.printStatistics();
     this->stats.print();
+    this->pid.print();
 }
