@@ -410,7 +410,10 @@ void ControlDrum::_abortAction()
 
 ControlDrumRampup::ControlDrumRampup(t_Settings *settings):
 #ifdef USE_STEPPER_DRUM
-    ControlPWM( PIN_STEPPER_STEP, 200 ),
+    ControlDrum( settings->stepsPerRevolution,
+                 settings->stepsMaxRpm,
+                 settings->pwmDrumHz
+    ),
 #else  // USE_STEPPER_DRUM
     ControlPWM( PIN_DRUM, settings->pwmDrumHz ),
 #endif // USE_STEPPER_DRUM
@@ -459,7 +462,7 @@ void ControlDrumRampup::_rampUp() {
 
     DEBUG(millis()); DEBUG(F(" Drum ramping to ")); DEBUGLN( rampup );
 #ifdef USE_STEPPER_DRUM
-        ControlPWM::set( rampup );
+        ControlDrum::set( rampup );
 #else  // USE_STEPPER_DRUM
         ControlPWM::set( rampup );
 #endif // USE_STEPPER_DRUM
