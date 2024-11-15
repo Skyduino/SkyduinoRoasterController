@@ -76,6 +76,7 @@ class ControlHeat: public ControlPWM {
         void _abortAction();
 };
 
+
 #ifdef USE_STEPPER_DRUM
 class ControlDrum : public ControlPWM {
     public:
@@ -108,6 +109,23 @@ class ControlDrum : public ControlPWM {
 };
 #endif // USE_STEPPER_DRUM
 
+
+class ControlDrumRampup: public ControlPWM {
+    public:
+        ControlDrumRampup( t_Settings *settings );
+        bool loopTick();
+    
+    protected:
+        void _setAction( uint8_t value );
+        void _rampUp();
+
+    private:
+        t_Settings *_settings;
+        uint8_t _target = 0;
+        TimerMS _tickTimer = TimerMS( DRUM_RAMPUP_DT_MS );
+};
+
+
 class StateCommanded {
     public:
         StateCommanded(EepromSettings *nvm):
@@ -119,7 +137,7 @@ class StateCommanded {
                 nvm->settings.stepsMaxRpm,
                 nvm->settings.pwmDrumHz)),
 #else  // USE_STEPPER_DRUM
-            drum(ControlPWM(PIN_DRUM, nvm->settings.pwmDrumHz)),
+            drum(ControlDrumRampup(&(nvm->settings))),
 #endif // USE_STEPPER_DRUM
             cool(ControlOnOff(PIN_COOL)),
             _nvmSettings(nvm) {};
@@ -128,7 +146,7 @@ class StateCommanded {
 #ifdef USE_STEPPER_DRUM
         ControlDrum drum;
 #else  // USE_STEPPER_DRUM
-        ControlPWM drum;
+        ControlDrumRampup drum;
 #endif // USE_STEPPER_DRUM
         ControlOnOff cool;
         ControlBasic filter;
