@@ -406,3 +406,69 @@ void ControlDrum::_abortAction()
     this->_enable.abort();
 }
 #endif // USE_STEPPER_DRUM
+
+
+ControlDrumRampup::ControlDrumRampup(t_Settings *settings):
+#ifdef USE_STEPPER_DRUM
+    ControlDrum( settings->stepsPerRevolution,
+                 settings->stepsMaxRpm,
+                 settings->pwmDrumHz
+    ),
+#else  // USE_STEPPER_DRUM
+    ControlPWM( PIN_DRUM, settings->pwmDrumHz ),
+#endif // USE_STEPPER_DRUM
+    _settings(settings) {
+}
+
+
+/**
+ * @brief Loop tick for drum control. Rampup if needed
+ */
+bool ControlDrumRampup::loopTick() {
+    if ( this->_tickTimer.hasTicked() ) this->_rampUp();
+
+    return true;
+}
+
+
+/**
+ * @brief Handle value change
+ */
+void ControlDrumRampup::set(uint8_t value) {
+    this->_target = value;
+    this->_rampUp();
+}
+
+
+/**
+ * @brief do drum rotation ramp up if needed
+ */
+void ControlDrumRampup::_rampUp() {
+    uint8_t current = this->get();
+    int8_t delta = this->_target - current;
+    uint8_t rampup = 0;
+
+    if ( delta != 0 ) {
+        if ( delta > 0 ) {
+            if ( 0 == current ) {
+                // Cold start
+                rampup = DRUM_RAMPUP_MIN;
+            } else {
+                rampup = delta > DRUM_RAMPUP_STEP ? DRUM_RAMPUP_STEP : delta;
+                rampup += current;
+            }
+        } else {
+            // no ramp downs
+            rampup = this->_target;
+        }
+
+        DEBUG(millis());  DEBUG(F(" Drum ramping to "));  DEBUGLN( rampup );
+#ifdef USE_STEPPER_DRUM
+        ControlDrum::set( rampup );
+#else  // USE_STEPPER_DRUM
+        ControlPWM::set( rampup );
+#endif // USE_STEPPER_DRUM
+    }
+
+    this->_tickTimer.reset();
+}

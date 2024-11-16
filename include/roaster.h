@@ -44,6 +44,9 @@
 
 #endif  // USE_STEPPER_DRUM
 
+#define DRUM_RAMPUP_MIN     40
+#define DRUM_RAMPUP_STEP    15
+#define DRUM_RAMPUP_DT_MS   300
 
 // PWM frequencies Hz
 #define PWM_FREQ_COOL       60
