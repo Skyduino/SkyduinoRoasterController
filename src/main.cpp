@@ -125,3 +125,20 @@ void loop() {
 
   state.stats.loopEnd();
 }
+
+extern "C" {
+void HardFault_Handler(void) {
+    LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_3);        // Turn on the status led
+    uint32_t *stack_pointer = (uint32_t *)__get_MSP(); // Get Main Stack Pointer
+    [[maybe_unused]] uint32_t fault_address = stack_pointer[6];         // Program Counter at fault
+    [[maybe_unused]] uint32_t r0 = stack_pointer[0];   // Register R0
+    [[maybe_unused]] uint32_t r1 = stack_pointer[1];   // Register R1
+    [[maybe_unused]] uint32_t r2 = stack_pointer[2];   // Register R2
+    [[maybe_unused]] uint32_t r3 = stack_pointer[3];   // Register R3
+    [[maybe_unused]] uint32_t r12 = stack_pointer[4];  // Register R12
+    [[maybe_unused]] uint32_t lr = stack_pointer[5];   // Link Register (return address)
+    [[maybe_unused]] uint32_t psr = stack_pointer[7];  // Program Status Register
+    while (1) {
+    }
+}
+}
