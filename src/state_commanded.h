@@ -118,10 +118,10 @@ class ControlDrumRampup: public ControlPWM
 {
     public:
         ControlDrumRampup( t_Settings *settings );
+        void set( uint8_t value );
         bool loopTick();
     
     protected:
-        void _setAction( uint8_t value );
         void _rampUp();
 
     private:
