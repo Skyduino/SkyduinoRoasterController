@@ -2,6 +2,9 @@
 #include <CRC.h>
 #include <EEPROM.h>
 #include <logging.h>
+#ifndef __DEBUG__
+#include <IWatchdog.h>
+#endif
 
 #include "eeprom_settings.h"
 
@@ -101,6 +104,9 @@ void EepromSettings::incSafetyCounter() {
 void EepromSettings::loadDefaults() {
     // load the defaults
     DEBUG(micros()); DEBUGLN(F(" Loading NVM Settings defaults"));
+#ifndef __DEBUG__
+    IWatchdog.reload();
+#endif
     memcpy_P(&settings, this->defaultSettings, sizeof(t_Settings));
     this->save();
     this->timer.reset();
@@ -112,8 +118,14 @@ void EepromSettings::loadDefaults() {
 void EepromSettings::save() {
     DEBUG(micros()); DEBUGLN(F(" Saving NVM Settings"));
     this->settings.crc16 = calcCRC16((uint8_t *) &settings, offsetof(t_Settings, crc16));
+#ifndef __DEBUG__
+    IWatchdog.reload();
+#endif
     EEPROM.put(EEPROM_SETTINGS_ADDR, this->settings);
     isDirty = false;
+#ifndef __DEBUG__
+    IWatchdog.reload();
+#endif
 }
 
 
