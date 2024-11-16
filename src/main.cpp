@@ -3,6 +3,7 @@
 #ifndef __DEBUG__
 #include <IWatchdog.h>
 #endif
+#include <status-led.h>
 
 #include "roaster.h"
 #include "eeprom_settings.h"
@@ -64,6 +65,8 @@ SafetyMonitor safeMon = SafetyMonitor(
 SkywalkerRemoteComm skwRemoteComm = SkywalkerRemoteComm( &state );
 
 void setup() {
+  StatusLed.begin();
+  StatusLed.turnOn();
   Serial.begin(115200);
   Serial.setTimeout(100);
   Serial.println(F(VERSION));
@@ -102,6 +105,7 @@ void setup() {
 void loop() {
   // for loop timing statistics
   state.stats.loopStart();
+  StatusLed.turnOff();
 
 #ifndef __DEBUG__
   IWatchdog.reload();

@@ -5,6 +5,7 @@
 #ifndef __DEBUG__
 #include <IWatchdog.h>
 #endif
+#include <status-led.h>
 
 #include "eeprom_settings.h"
 
@@ -121,7 +122,9 @@ void EepromSettings::save() {
 #ifndef __DEBUG__
     IWatchdog.reload();
 #endif
+    StatusLed.turnOn();
     EEPROM.put(EEPROM_SETTINGS_ADDR, this->settings);
+    StatusLed.turnOff();
     isDirty = false;
 #ifndef __DEBUG__
     IWatchdog.reload();
