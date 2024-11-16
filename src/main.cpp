@@ -1,5 +1,8 @@
 #include <Arduino.h>
 #include <filterRC.h>
+#ifndef __DEBUG__
+#include <IWatchdog.h>
+#endif
 
 #include "roaster.h"
 #include "eeprom_settings.h"
@@ -71,6 +74,7 @@ void setup() {
   } else if ( __HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST) ) {
       nvmSettings.settings.counters.watchdogResets++;
       nvmSettings.markDirty();
+      Serial.println(F("Watchdog timer triggered, what's going on"));
   } else if ( __HAL_RCC_GET_FLAG(RCC_FLAG_SFTRST) ) {
       nvmSettings.settings.counters.softResets++;
       nvmSettings.markDirty();
@@ -80,6 +84,10 @@ void setup() {
   safeMon.begin();
   skwRemoteComm.begin();
 
+#ifndef __DEBUG__
+  IWatchdog.begin( WATCHDOG_TIMEOUT_MS * 1000 );
+#endif
+
   while ( !(state.begin()) ) {
     Serial.println(F("Failed to initialize"));
     delay(100);
@@ -87,11 +95,17 @@ void setup() {
 
   setupCommandHandlers();
 
+
+
 }
 
 void loop() {
   // for loop timing statistics
   state.stats.loopStart();
+
+#ifndef __DEBUG__
+  IWatchdog.reload();
+#endif
 
   // Check Serial Communication
   commandsLoopTick();
@@ -100,6 +114,9 @@ void loop() {
 
   safeMon.loopTick();
 
+#ifndef __DEBUG__
+  IWatchdog.reload();
+#endif
   skwRemoteComm.loopTick();
 
   state.stats.loopEnd();
