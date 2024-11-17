@@ -120,6 +120,7 @@ void EepromSettings::save() {
     DEBUG(micros()); DEBUGLN(F(" Saving NVM Settings"));
     this->settings.crc16 = calcCRC16((uint8_t *) &settings, offsetof(t_Settings, crc16));
 #ifndef __DEBUG__
+    IWatchdog.set( 30*1000*1000 );
     IWatchdog.reload();
 #endif
     StatusLed.turnOn();
@@ -127,6 +128,7 @@ void EepromSettings::save() {
     StatusLed.turnOff();
     isDirty = false;
 #ifndef __DEBUG__
+    IWatchdog.set( WATCHDOG_TIMEOUT_MS * 1000 );
     IWatchdog.reload();
 #endif
 }
