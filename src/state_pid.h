@@ -8,7 +8,7 @@
 #include "state_commanded.h"
 
 
-using t_Cbk_getLogicalChanTempC = std::function< float( uint8_t ) >;
+using t_Cbk_getChanTempC = std::function< float( uint8_t ) >;
 
 class PID_Control {
     public:
@@ -34,7 +34,7 @@ class PID_Control {
         float getSetPoint() { return this->setp; };
         void updateTuning( float kP, float kI, float kD );
         bool updateProfileNTuning( uint8_t profile, float kP, float kI, float kD );
-        void addGetLogicalChantTempC( t_Cbk_getLogicalChanTempC cbk) { getLogicalChanTempC = cbk; };
+        void addCallbackGetChantTempC( t_Cbk_getChanTempC cbk) { getChanTempC = cbk; };
         bool selectFanProfile( uint8_t profileNum );
         FanMode getFanMode() { return this->_fanMode; }
         bool setFanTempGapC( float gap );
@@ -47,7 +47,7 @@ class PID_Control {
         EepromSettings      *_nvm;
         ControlHeat         *_heat;
         ControlPWM          *_vent;
-        t_Cbk_getLogicalChanTempC getLogicalChanTempC = NULL;
+        t_Cbk_getChanTempC  getChanTempC = NULL;
         HardwareTimer       *_timer;
         State               _state = State::needsInit;
         FanMode             _fanMode = FanMode::manual;
