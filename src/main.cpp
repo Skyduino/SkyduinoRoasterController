@@ -14,40 +14,39 @@
 #include "skywalker_remote_comms.h"
 
 // pidProfiles: kP, kI, kD, pmode, dmode, iAwMode, chan, fanSetpointError, ConservProfileSwitchingThresholdC, CycleTimeMS
-#define DEFAULT_PID_PROFILE {PID_KP, PID_KI, PID_KD, PID_PMODE, PID_DMODE, PID_AWMODE, PID_CHAN, PID_FAN_ERR_C, PID_CONSERV_ERR, PID_CYCLE_TIME_MS}
+#define DEFAULT_PID_PROFILE {.kP=PID_KP, .kI=PID_KI, .kD=PID_KD, \
+                             .pMode=PID_PMODE, .dMode=PID_DMODE, \
+                             .iAwMode=PID_AWMODE }
 
 // NVM container & default settings
 PROGMEM const static t_Settings nvmSettingsStorage = {
 #ifdef USE_STEPPER_DRUM
-    STEPPER_STEPS_PER_REV, // stepsPerRevolution;
-    STEPPER_MAX_RPM, // Max RPM for stepper drum driver
+    .stepsPerRevolution = STEPPER_STEPS_PER_REV, // stepsPerRevolution;
+    .stepsMaxRpm = STEPPER_MAX_RPM, // Max RPM for stepper drum driver
 #endif  // USE_STEPPER_DRUM
-    MAX_SAFE_TEMP_C,
-    PWM_FREQ_COOL,
-    PWM_FREQ_DRUM,
-    PWM_FREQ_EXHAUST,
-    PWM_FREQ_HEAT,
-    PWM_FREQ_LED,
+    .maxSafeTempC = MAX_SAFE_TEMP_C,
+    .pwmCoolHz    = PWM_FREQ_COOL,
+    .pwmDrumHz    = PWM_FREQ_DRUM,
+    .pwmExhaustHz = PWM_FREQ_EXHAUST,
+    .pwmSSRHz     = PWM_FREQ_HEAT,
     // Counters
-    {
-        0, // power on resets
-        0, // Watchdog resets
-        0, // Software resets
-        0  // safetyTriggers
+    .counters = {
+        .powerOnResets  = 0, // power on resets
+        .watchdogResets = 0, // Watchdog resets
+        .softResets     = 0, // Software resets
+        .safetyTriggers = 0  // safetyTriggers
     },
-    0, // pidCurrentProfile
-    0, // pidConservProfile
-    2, // pidFanProfile
-    // pidProfiles: kP, kI, kD, pmode, dmode, iAwMode, chan, fanSetpointError, CycleTimeMS
-    {
-        DEFAULT_PID_PROFILE,
-        DEFAULT_PID_PROFILE,
-        DEFAULT_PID_PROFILE,
-        DEFAULT_PID_PROFILE,
-        DEFAULT_PID_PROFILE
+    .pid = {
+        .fanSPErrorC  = PID_FAN_ERR_C,
+        .cnsPrfErrorC = PID_CONSERV_ERR,
+        .cycleTimeMS  = PID_CYCLE_TIME_MS,
+        .chan         = PID_CHAN,
+        .tuneNormal   = DEFAULT_PID_PROFILE,
+        .tuneConserv  = DEFAULT_PID_PROFILE,
+        .tuneFan      = DEFAULT_PID_PROFILE
     },
-    EEPROM_SETTINGS_MAGIC, // EEPROM MAGIC number
-    0 // CRC
+    .eepromMagic = EEPROM_SETTINGS_MAGIC, // EEPROM MAGIC number
+    .crc16       = 0 // CRC
 };
 
 
