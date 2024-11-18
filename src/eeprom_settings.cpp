@@ -64,26 +64,41 @@ void EepromSettings::print() {
     Serial.print(F("NVM PWM frequency SSR Hz: "));
     Serial.println(this->settings.pwmSSRHz);
     Serial.println(F("[NVM PID]"));
-    Serial.print(F("NVM Current PID profile # "));
-    Serial.println(this->settings.pidCurrentProfile);
-    Serial.print(F("NVM Conservative PID profile # "));
-    Serial.println(this->settings.pidConservProfile);
-    Serial.print(F("NVM FAN PID profile # "));
-    Serial.println(this->settings.pidFanProfile);
 
-    const char pidTmplt[] PROGMEM = "NVM PID profile #%d kP=%f, kI=%f, kD=%f, P-mode=%d, D-mode=%d, I-Aw-mode=%d, Chan=%d; Fan PID gap=%f, Conserv. Prof. Gap=%f, Cycle Time=%lu(ms)";
+    const char pidHDR[] PROGMEM   = "Conserv. Prof. Gap C=%f, Fan PID gap C=%f, Chan=%d, Cycle Time=%u(ms)";
+    const char pidTmplt[] PROGMEM = " profile: kP=%f, kI=%f, kD=%f, P-mode=%d, D-mode=%d, I-Aw-mode=%d";
     char buf[sizeof(pidTmplt) * 2];
-    t_NvmPIDSettings *prf;
 
-    for (uint8_t i=0; i < PID_NUM_PROFILES; i++) {
+    t_NvmPIDSettings *pid = &(settings.pid);
+    snprintf_P(buf, sizeof(buf)-1, pidHDR,
+        pid->cnsPrfErrorC,
+        pid->fanSPErrorC,
+        pid->chan,
+        pid->cycleTimeMS
+    );
+    Serial.println( buf );
+
+    struct {
+        const __FlashStringHelper *name;
+        t_PidTune                 *tune;
+    } pidTunes[] = {
+        { F(" Normal"), &(pid->tuneNormal) },
+        { F(" Conservative"), &(pid->tuneConserv) },
+        { F(" Fan"), &(pid->tuneFan) },
+        { NULL, NULL }
+    };
+
+    for ( uint8_t i = 0; NULL != pidTunes[i].name; i++ ) {
         buf[sizeof(buf)-1] = 0;
-        prf = &(settings.pidProfiles[ i ]);
-        snprintf_P(buf, sizeof(buf)-1, pidTmplt, i,
-            prf->kP, prf->kI, prf->kD,
-            (uint8_t) prf->pMode,
-            (uint8_t) prf->dMode,
-            (uint8_t) prf->iAwMode,
-            prf->chan, prf->fanSPErrorC, prf->cnsPrfErrorC, prf->cycleTimeMS);
+        Serial.print( pidTunes[i].name );
+        snprintf_P(buf, sizeof(buf)-1, pidTmplt,
+            pidTunes[i].tune->kP,
+            pidTunes[i].tune->kI,
+            pidTunes[i].tune->kD,
+            (uint8_t) pidTunes[i].tune->pMode,
+            (uint8_t) pidTunes[i].tune->dMode,
+            (uint8_t) pidTunes[i].tune->iAwMode
+        );
         Serial.println(buf);
     }
     Serial.println(F("---"));
