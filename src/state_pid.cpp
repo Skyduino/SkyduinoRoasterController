@@ -107,7 +107,7 @@ float PID_Control::getTempReadingC() {
         ERRORLN(F("No callback for getChanTempC"));
         return NAN;
     }
-    return this->getChanTempC( _NVM_PIDPROFCURRENT.chan );
+    return this->getChanTempC( _NVM_PIDPROFCURRENT.chan - 1 );
 }
 
 
