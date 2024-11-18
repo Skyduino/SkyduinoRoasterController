@@ -260,7 +260,7 @@ bool PID_Control::updateChan(uint8_t chan) {
 bool PID_Control::updateCycleTimeMs(uint32_t ctMS) {
     if ( ctMS < 100 ) return false;
 
-    _NVM_PIDPROFCURRENT.cycleTimeMS = ctMS;
+    _NVM_PID.cycleTimeMS = ctMS;
     this->_syncPidSettings();
 
     return true;
