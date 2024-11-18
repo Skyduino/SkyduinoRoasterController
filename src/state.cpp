@@ -27,9 +27,9 @@ bool State::begin()
     isSuccess &= commanded.begin();
     isSuccess &= reported.begin();
     isSuccess &= pid.begin();
-    pid.addGetLogicalChantTempC(
+    pid.addCallbackGetChantTempC(
         std::bind(
-            &Reported::getLogicalChanTemp,
+            &Reported::getChanTemp,
             &reported,
             std::placeholders::_1
         )

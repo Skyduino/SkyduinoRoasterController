@@ -103,11 +103,11 @@ bool PID_Control::setConservProfile(uint8_t profileNum, float setpointGapC) {
  * @return temperature C
  */
 float PID_Control::getTempReadingC() {
-    if ( NULL == getLogicalChanTempC ) {
-        ERRORLN(F("No callback for getLogicalChanTempC"));
+    if ( NULL == getChanTempC ) {
+        ERRORLN(F("No callback for getChanTempC"));
         return NAN;
     }
-    return this->getLogicalChanTempC( _NVM_PIDPROFCURRENT.chan );
+    return this->getChanTempC( _NVM_PIDPROFCURRENT.chan - 1 );
 }
 
 
