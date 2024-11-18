@@ -234,7 +234,9 @@ bool PID_Control::updateAWMode(uint8_t mode)
         return false;
     }
     DEBUG(micros()); DEBUG(F(" Setting I anti-windup: ")); DEBUGLN( mode );
-    _NVM_PIDPROFCURRENT.iAwMode = (QuickPID::iAwMode) mode;
+    _NVM_PIDPROFNORMAL.iAwMode = (QuickPID::iAwMode) mode;
+    _NVM_PIDPROFCONSERV.iAwMode = (QuickPID::iAwMode) mode;
+    _NVM_PIDPROFFAN.iAwMode = (QuickPID::iAwMode) mode;
     this->_syncPidSettings();
 
     return true;
@@ -276,7 +278,9 @@ bool PID_Control::updateDMode(uint8_t mode) {
         DEBUGLN(F("Wrong D-mode"));
         return false;
     }
-    _NVM_PIDPROFCURRENT.dMode = (QuickPID::dMode) mode;
+    _NVM_PIDPROFNORMAL.dMode = (QuickPID::dMode) mode;
+    _NVM_PIDPROFCONSERV.dMode = (QuickPID::dMode) mode;
+    _NVM_PIDPROFFAN.dMode = (QuickPID::dMode) mode;
     this->_syncPidSettings();
 
     return true;
@@ -293,7 +297,9 @@ bool PID_Control::updatePMode(uint8_t mode) {
         DEBUGLN(F("Wrong P-mode"));
         return false;
     }
-    _NVM_PIDPROFCURRENT.pMode = (QuickPID::pMode) mode;
+    _NVM_PIDPROFNORMAL.pMode = (QuickPID::pMode) mode;
+    _NVM_PIDPROFCONSERV.pMode = (QuickPID::pMode) mode;
+    _NVM_PIDPROFFAN.pMode = (QuickPID::pMode) mode;
     this->_syncPidSettings();
 
     return true;
