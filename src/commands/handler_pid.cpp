@@ -118,7 +118,7 @@ void cmndPid::_handleConsrvPrfl(CmndParser *pars) {
 
     uint32_t profile = atoi( pars->paramStr(2) );
     float f = atof( pars->paramStr(3) );
-    float setpointGapC = state->cfg.isMetric ? f : CONVERT_F_TO_C( f );
+    float setpointGapC = state->cfg.isMetric ? f :  f * 5.0 / 9.0 ;
 
     if ( this->state->pid.setConservProfile( profile, setpointGapC ) ) {
         Serial.print(F("# PID conservative profile = ")); Serial.print( profile );
