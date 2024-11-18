@@ -155,20 +155,6 @@ void cmndPid::_handleDMode(CmndParser *pars) {
 
 
 /**
- * @brief Handle PID;FANPRF;p command, where p is the pid profile index to
- *        use for FAN control
- */
-void cmndPid::_handleFanPrfl(CmndParser *pars) {
-    if ( 3 != pars->nTokens() ) return;
-
-    uint32_t profile = atoi( pars->paramStr(2) );
-    if ( this->state->pid.selectFanProfile( profile ) ) {
-        Serial.print(F("# Fan PID profile = ")); Serial.println( profile );
-    }
-}
-
-
-/**
  * @brief Handle PID;FANMODE;m command, where m is the Fan mode:
  *        0 -- Fan is controlled manually
  *        1 -- Fan is controlled automatically by PID on the

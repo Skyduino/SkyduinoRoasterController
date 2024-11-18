@@ -335,22 +335,6 @@ bool PID_Control::updateProfileNTuning(uint8_t profile, float kP, float kI, floa
 
 
 /**
- * @brief select FAN PID profile
- */
-bool PID_Control::selectFanProfile(uint8_t profileNum) {
-    if ( profileNum >= PID_NUM_PROFILES ) {
-        WARN(F("Profile ")); WARN(profileNum); WARNLN(F(" is not valid"));
-        return false;
-    }
-
-    this->_nvm->settings.pidFanProfile = profileNum;
-    this->_syncPidSettings();
-
-    return true;
-}
-
-
-/**
  * @brief Set Fan Temperature gap -- the error between the temperature and
  *        PID setpoint, when to turn on the FAN PID, if in auto fan mode
  * @param gap -- temperature offset = setpoint + gap
