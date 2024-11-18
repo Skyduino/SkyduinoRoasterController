@@ -107,7 +107,7 @@ float PID_Control::getTempReadingC() {
         ERRORLN(F("No callback for getChanTempC"));
         return NAN;
     }
-    return this->getChanTempC( _NVM_PIDPROFCURRENT.chan - 1 );
+    return this->getChanTempC( _NVM_PID.chan - 1 );
 }
 
 
@@ -250,7 +250,7 @@ bool PID_Control::updateChan(uint8_t chan) {
         WARNLN(F("Wrong channel"));
         return false;
     }
-    _NVM_PIDPROFCURRENT.chan = chan;
+    _NVM_PID.chan = chan;
 
     return true;
 }
