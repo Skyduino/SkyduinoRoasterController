@@ -2,10 +2,10 @@
 
 #include "state_pid.h"
 
-#define _NVM_GETPIDPROF(x) (this->_nvm->settings.pidProfiles[ x ])
-#define _NVM_PIDPROFCURRENT _NVM_GETPIDPROF( this->_nvm->settings.pidCurrentProfile )
-#define _NVM_PIDPROFCONSERV _NVM_GETPIDPROF( this->_nvm->settings.pidConservProfile )
-#define _NVM_PIDPROFFAN     _NVM_GETPIDPROF( this->_nvm->settings.pidFanProfile )
+#define _NVM_PID            this->_nvm->settings.pid
+#define _NVM_PIDPROFNORMAL  this->_nvm->settings.pid.tuneNormal
+#define _NVM_PIDPROFCONSERV this->_nvm->settings.pid.tuneConserv
+#define _NVM_PIDPROFFAN     this->_nvm->settings.pid.tuneFan
 
 
 PID_Control::PID_Control(EepromSettings *nvm, ControlHeat *heat, ControlPWM *vent):
@@ -358,7 +358,7 @@ bool PID_Control::selectFanProfile(uint8_t profileNum) {
 bool PID_Control::setFanTempGapC(float gap) {
     if ( abs( gap ) > PID_FAN_ERR_C_MAX ) return false;
 
-    _NVM_PIDPROFFAN.fanSPErrorC = gap;
+    _NVM_PID.fanSPErrorC = gap;
     return true;
 }
 
@@ -403,7 +403,7 @@ void PID_Control::_compute() {
 
         // fan pid calc
         if ( FanMode::automatic == this->getFanMode() ) {
-            bool threshold = ( input >= setp + _NVM_PIDPROFFAN.fanSPErrorC );
+            bool threshold = ( input >= setp + _NVM_PID.fanSPErrorC );
             if ( threshold ^ (this->_isFanPidActive) ) {
                 // Transitioning from active -> idle or vice versa
                 if ( threshold ) {
@@ -433,14 +433,13 @@ void PID_Control::_compute() {
  * @brief Set PID settings to match the current NVM PID profile
  */
 void PID_Control::_syncPidSettings() {
-    const t_NvmPIDSettings *profile = &_NVM_PIDPROFCURRENT;
     this->_pid.SetTunings(
-        profile->kP,
-        profile->kI,
-        profile->kD,
-        profile->pMode,
-        profile->dMode,
-        profile->iAwMode
+        _NVM_PIDPROFNORMAL.kP,
+        _NVM_PIDPROFNORMAL.kI,
+        _NVM_PIDPROFNORMAL.kD,
+        _NVM_PIDPROFNORMAL.pMode,
+        _NVM_PIDPROFNORMAL.dMode,
+        _NVM_PIDPROFNORMAL.iAwMode
     );
     this->_isConservTuning = false;
     this->_pidFan.SetTunings(
@@ -452,7 +451,7 @@ void PID_Control::_syncPidSettings() {
         _NVM_PIDPROFFAN.iAwMode
     );
 
-    uint32_t ctus = 1000 * profile->cycleTimeMS;
+    uint32_t ctus = 1000 * _NVM_PID.cycleTimeMS;
     this->_pid.SetSampleTimeUs(ctus);
     if ( this->_timer ) this->_timer->setOverflow(ctus, MICROSEC_FORMAT);
 }
@@ -463,7 +462,7 @@ void PID_Control::_syncPidSettings() {
  */
 void PID_Control::_switchProfilesIfNeeded() {
     float gap = abs( this->setp - this->input );
-    if ( gap < _NVM_PIDPROFCURRENT.cnsPrfErrorC ) {
+    if ( gap < _NVM_PID.cnsPrfErrorC ) {
         // Use Conserv tuning profile
         if ( !(this->_isConservTuning) ) {
             _pid.SetTunings(
@@ -481,12 +480,12 @@ void PID_Control::_switchProfilesIfNeeded() {
         // Use regular tuning profile
         if ( this->_isConservTuning ) {
             _pid.SetTunings(
-                _NVM_PIDPROFCURRENT.kP,
-                _NVM_PIDPROFCURRENT.kI,
-                _NVM_PIDPROFCURRENT.kD,
-                _NVM_PIDPROFCURRENT.pMode,
-                _NVM_PIDPROFCURRENT.dMode,
-                _NVM_PIDPROFCURRENT.iAwMode
+                _NVM_PIDPROFNORMAL.kP,
+                _NVM_PIDPROFNORMAL.kI,
+                _NVM_PIDPROFNORMAL.kD,
+                _NVM_PIDPROFNORMAL.pMode,
+                _NVM_PIDPROFNORMAL.dMode,
+                _NVM_PIDPROFNORMAL.iAwMode
             );
             this->_isConservTuning = false;
             DEBUG(millis()); DEBUGLN(F(" Using regular tuning"));
