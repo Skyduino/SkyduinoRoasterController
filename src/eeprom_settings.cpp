@@ -104,7 +104,6 @@ void EepromSettings::incSafetyCounter() {
  */
 void EepromSettings::loadDefaults() {
     // load the defaults
-    DEBUG(micros()); DEBUGLN(F(" Loading NVM Settings defaults"));
 #ifndef __DEBUG__
     IWatchdog.reload();
 #endif
@@ -117,7 +116,6 @@ void EepromSettings::loadDefaults() {
  * @brief save the eeprom container
  */
 void EepromSettings::save() {
-    DEBUG(micros()); DEBUGLN(F(" Saving NVM Settings"));
     this->settings.crc16 = calcCRC16((uint8_t *) &settings, offsetof(t_Settings, crc16));
 #ifndef __DEBUG__
     IWatchdog.set( 30*1000*1000 );
