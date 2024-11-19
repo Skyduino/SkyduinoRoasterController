@@ -7,7 +7,7 @@
 #define SUBCMD_AWMODE "AWMODE"
 #define SUBCMD_CHAN   "CHAN"
 #define SUBCMD_CHGPRF "CHGPRF"
-#define SUBCMD_CNSPRF "CNSPRF"
+#define SUBCMD_CNSGAP "CNSGAP"
 #define SUBCMD_CT     "CT"
 #define SUBCMD_DMODE  "DMODE"
 #define SUBCMD_FANPRF "FANPRF"
@@ -40,7 +40,7 @@ void cmndPid::_doCommand(CmndParser *pars) {
         { SUBCMD_FANGAP, &cmndPid::_handleFanGapC },
         { SUBCMD_AWMODE, &cmndPid::_handleAwMode },
         { SUBCMD_CHGPRF, &cmndPid::_handleChngPrfl },
-        { SUBCMD_CNSPRF, &cmndPid::_handleConsrvPrfl },
+        { SUBCMD_CNSGAP, &cmndPid::_handleConsrvGap },
         { SUBCMD_FANPRF, &cmndPid::_handleFanPrfl },
         { SUBCMD_DMODE, &cmndPid::_handleDMode },
         { SUBCMD_PMODE, &cmndPid::_handlePMode },
@@ -94,35 +94,17 @@ void cmndPid::_handleChan(CmndParser *pars) {
 
 
 /**
- * @brief Handle PID;CHGPRF;p command to activate/change a new PID profile
- *        all subsequent changes to the PID settings will be applied to this
- *        profile
+ * @brief Handle PID;CNSGAP;f.fff command to designate a conservative tuning profile
+ *        switching threshold, where f.fff is the setpoint error threshold
  */
-void cmndPid::_handleChngPrfl(CmndParser *pars) {
+void cmndPid::_handleConsrvGap(CmndParser *pars) {
     if ( 3 != pars->nTokens() ) return;
 
-    uint32_t profile = atoi( pars->paramStr(2) );
-    if ( this->state->pid.activateProfile( profile ) ) {
-        Serial.print(F("# PID profile = ")); Serial.println( profile );
-    }
-}
-
-
-/**
- * @brief Handle PID;CNSPRF;p;f.fff command to designate a conservative tuning profile
- *        where p is the profile number and f.fff is the setpoint error threshold
- *        for switching in current temperature unit of measurement
- */
-void cmndPid::_handleConsrvPrfl(CmndParser *pars) {
-    if ( 4 != pars->nTokens() ) return;
-
-    uint32_t profile = atoi( pars->paramStr(2) );
-    float f = atof( pars->paramStr(3) );
+    float f = atof( pars->paramStr(2) );
     float setpointGapC = state->cfg.isMetric ? f :  f * 5.0 / 9.0 ;
 
-    if ( this->state->pid.setConservProfile( profile, setpointGapC ) ) {
-        Serial.print(F("# PID conservative profile = ")); Serial.print( profile );
-        Serial.print(F(" threshold = ")); Serial.println( f );
+    if ( this->state->pid.setConservProfileGapC( setpointGapC ) ) {
+        Serial.print(F("# PID conservative profile threshold = ")); Serial.println( f );
     }
 }
 

@@ -14,9 +14,9 @@
 #include "skywalker_remote_comms.h"
 
 // pidProfiles: kP, kI, kD, pmode, dmode, iAwMode, chan, fanSetpointError, ConservProfileSwitchingThresholdC, CycleTimeMS
-#define DEFAULT_PID_PROFILE {.kP=PID_KP, .kI=PID_KI, .kD=PID_KD, \
-                             .pMode=PID_PMODE, .dMode=PID_DMODE, \
-                             .iAwMode=PID_AWMODE }
+#define DEFAULT_PID_PROFILE { .pMode=PID_PMODE, .dMode=PID_DMODE, \
+                              .iAwMode=PID_AWMODE, \
+                              .kP=PID_KP, .kI=PID_KI, .kD=PID_KD }
 
 // NVM container & default settings
 PROGMEM const static t_Settings nvmSettingsStorage = {

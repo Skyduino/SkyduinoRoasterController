@@ -17,8 +17,7 @@ class PID_Control {
         PID_Control(EepromSettings *nvm, ControlHeat *heat, ControlPWM *vent);
         void abort();
         bool begin();
-        bool activateProfile( uint8_t profileNum, bool isConservative=false );
-        bool setConservProfile( uint8_t profileNum, float setpointGapC );
+        bool setConservProfileGapC( float setpointGapC );
         State getState() { return this->_state; };
         float getTempReadingC();
         bool isOn();
@@ -35,7 +34,6 @@ class PID_Control {
         void updateTuning( float kP, float kI, float kD );
         bool updateProfileNTuning( uint8_t profile, float kP, float kI, float kD );
         void addCallbackGetChantTempC( t_Cbk_getChanTempC cbk) { getChanTempC = cbk; };
-        bool selectFanProfile( uint8_t profileNum );
         FanMode getFanMode() { return this->_fanMode; }
         bool setFanTempGapC( float gap );
         void setFanMode( uint8_t mode ) { this->_fanMode = (FanMode) mode; }

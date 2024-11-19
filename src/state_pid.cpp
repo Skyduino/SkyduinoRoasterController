@@ -83,18 +83,13 @@ bool PID_Control::activateProfile(uint8_t profileNum, bool isConservative) {
 
 
 /**
- * @brief Designate a selected profile as a conservative profile and sets the setpoint
- *        error threshold gap for switching to the conservative profile
- * @param profileNum (uint8_t) -- profile index
+ * @brief set the setpoint error threshold gap for switching to the
+ *        conservative profile
  * @param setpointGapC (float) -- threshold in C for the setpoint gap
  */
-bool PID_Control::setConservProfile(uint8_t profileNum, float setpointGapC) {
-    if ( this->activateProfile( profileNum, true )) {
-        _NVM_PIDPROFCURRENT.cnsPrfErrorC = setpointGapC;
-        return true;
-    }
-
-    return false;
+bool PID_Control::setConservProfileGapC(float setpointGapC) {
+    _NVM_PID.cnsPrfErrorC = setpointGapC;
+    return true;
 }
 
 
