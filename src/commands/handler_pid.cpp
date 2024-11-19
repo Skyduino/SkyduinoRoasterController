@@ -18,7 +18,6 @@
 #define SUBCMD_PMODE  "PMODE"
 #define SUBCMD_SV     "SV"
 #define SUBCMD_T      "T"
-#define SUBCMD_TUNEX  "TUNE"
 #define SUBCMD_TPOM   "T_POM"
 
 
@@ -42,7 +41,6 @@ void cmndPid::_doCommand(CmndParser *pars) {
         { SUBCMD_FANPRF, &cmndPid::_handleFanPrfl },
         { SUBCMD_DMODE, &cmndPid::_handleDMode },
         { SUBCMD_PMODE, &cmndPid::_handlePMode },
-        { SUBCMD_TUNEX, &cmndPid::_handleTuneX },
         { SUBCMD_CHAN, &cmndPid::_handleChan },
         { SUBCMD_PLOT, &cmndPid::_handlePlot },
         { SUBCMD_TPOM, &cmndPid::_handleTPOM },
@@ -233,34 +231,6 @@ void cmndPid::_handleSV(CmndParser *pars) {
  */
 void cmndPid::_handleT(CmndParser *pars) {
     this->__handlePidTune( pars, QuickPID::pMode::pOnError );
-}
-
-
-/**
- * @brief Handle PID;TUNEx;ppp;iii;ddd command to change PID tuning parameter
- *        for the PID profile #X
- */
-void cmndPid::_handleTuneX(CmndParser *pars) {
-    if ( 5 != pars->nTokens() ) return;
-    // the Subcommand is TUNEx
-    if ( 5 != strnlen(pars->paramStr(1), MAX_TOKEN_LEN) ) return;
-    // the last symbol should be a digit
-    if ( pars->paramStr(1)[4] < '0' || pars->paramStr(1)[4] > '9' ) return;
-
-    uint32_t profile = atoi(pars->paramStr(1)+4);
-    float kP = atof( pars->paramStr(2) );
-    float kI = atof( pars->paramStr(3) );
-    float kD = atof( pars->paramStr(4) );
-    if ( this->state->pid.updateProfileNTuning( profile, kP, kI, kD ) ) {
-        Serial.print(F("# PID Tunings profile #"));
-        Serial.print(profile);
-        Serial.print(F(" set:  Kp = "));
-        Serial.print( kP );
-        Serial.print(F(",  Ki = "));
-        Serial.print( kI );
-        Serial.print(F(",  Kd = "));
-        Serial.println( kD );
-    }
 }
 
 
