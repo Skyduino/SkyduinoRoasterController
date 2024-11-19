@@ -15,7 +15,6 @@ class cmndPid : public Command {
         void _handleConsrvGap( CmndParser *pars );
         void _handleCT( CmndParser *pars );
         void _handleDMode( CmndParser *pars );
-        void _handleFanPrfl( CmndParser *pars );
         void _handleFanMode( CmndParser *pars );
         void _handleFanGapC( CmndParser *pars );
         void _handleOff( CmndParser *pars );

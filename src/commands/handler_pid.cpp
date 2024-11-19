@@ -9,7 +9,6 @@
 #define SUBCMD_CNSGAP "CNSGAP"
 #define SUBCMD_CT     "CT"
 #define SUBCMD_DMODE  "DMODE"
-#define SUBCMD_FANPRF "FANPRF"
 #define SUBCMD_FANMOD "FANMODE"
 #define SUBCMD_FANGAP "FANGAPC"
 #define SUBCMD_OFF    "OFF"
@@ -19,6 +18,9 @@
 #define SUBCMD_SV     "SV"
 #define SUBCMD_T      "T"
 #define SUBCMD_TPOM   "T_POM"
+#define SUBCMD_TFAN   "T_FAN"
+#define SUBCMD_TCONS  "T_CONS"
+
 
 
 typedef struct {
@@ -38,7 +40,6 @@ void cmndPid::_doCommand(CmndParser *pars) {
         { SUBCMD_FANGAP, &cmndPid::_handleFanGapC },
         { SUBCMD_AWMODE, &cmndPid::_handleAwMode },
         { SUBCMD_CNSGAP, &cmndPid::_handleConsrvGap },
-        { SUBCMD_FANPRF, &cmndPid::_handleFanPrfl },
         { SUBCMD_DMODE, &cmndPid::_handleDMode },
         { SUBCMD_PMODE, &cmndPid::_handlePMode },
         { SUBCMD_CHAN, &cmndPid::_handleChan },
@@ -244,20 +245,30 @@ void cmndPid::_handleTPOM(CmndParser *pars) {
 
 
 /**
- * @brief Common helper to handle PID tuning commands T & T_POM
+ * @brief Common helper to handle PID tuning commands T, T_POM, FAN and Conservative
  */
 void cmndPid::__handlePidTune(CmndParser *pars, QuickPID::pMode pMode) {
     if ( 5 != pars->nTokens() ) return;
+    PID_Control::Profile profile;
+
+    if ( 0 == strcmp( pars->paramStr(1), SUBCMD_TCONS ) ) {
+        profile = PID_Control::Profile::conservative;
+    } else if ( 0 == strcmp( pars->paramStr(1), SUBCMD_TFAN ) ) {
+        profile = PID_Control::Profile::fan;
+    } else {
+        profile = PID_Control::Profile::normal;
+    }
 
     float kP = atof( pars->paramStr(2) );
     float kI = atof( pars->paramStr(3) );
     float kD = atof( pars->paramStr(4) );
-    this->state->pid.updateTuning( kP, kI, kD );
-    this->state->pid.updatePMode( (uint8_t) pMode );
+    this->state->pid.updateProfileTuning( profile, kP, kI, kD, pMode );
     Serial.print(F("# PID Tunings set.  Kp = "));
     Serial.print( kP );
     Serial.print(F(",  Ki = "));
     Serial.print( kI );
     Serial.print(F(",  Kd = "));
-    Serial.println( kD );
+    Serial.print( kD );
+    Serial.print(F(",  pMode = "));
+    Serial.println( (uint8_t) pMode );
 }
