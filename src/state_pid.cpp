@@ -56,33 +56,6 @@ bool PID_Control::begin() {
 
 
 /**
- * @brief change and make current a new PID profile
- * @param profileNum -- index of the PID profile to activate
- * @param isConservative -- false (default) if this is a regular tuning
- *        profile. true -- if this is a conservative tunine profile
- * @return true -- if a correct profile was selected
- */
-bool PID_Control::activateProfile(uint8_t profileNum, bool isConservative) {
-    if ( profileNum >= PID_NUM_PROFILES ) {
-        WARN(F("Profile ")); WARN(profileNum); WARNLN(F(" is not valid"));
-        return false;
-    }
-    if ( isConservative ) {
-        this->_nvm->settings.pidConservProfile = profileNum;
-    } else {
-        // check if we're using conservative profiles, if not, update both
-        if ( _nvm->settings.pidConservProfile
-             == _nvm->settings.pidCurrentProfile )
-                this->_nvm->settings.pidConservProfile = profileNum;
-        this->_nvm->settings.pidCurrentProfile = profileNum;
-    }
-    this->_syncPidSettings();
-
-    return true;
-}
-
-
-/**
  * @brief set the setpoint error threshold gap for switching to the
  *        conservative profile
  * @param setpointGapC (float) -- threshold in C for the setpoint gap
@@ -308,14 +281,6 @@ bool PID_Control::updatePMode(uint8_t mode) {
  */
 void PID_Control::updateSetPointC(float setPointC) {
     this->setp = setPointC;
-}
-
-
-/**
- * @brief update PID tuning parameters for the current profile
- */
-void PID_Control::updateTuning(float kP, float kI, float kD) {
-    this->updateProfileNTuning( _nvm->settings.pidCurrentProfile, kP, kI, kD);
 }
 
 

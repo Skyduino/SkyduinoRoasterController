@@ -111,7 +111,6 @@ The following symbols are used for the `Separator` value:
 | OT2 | OT2;pp | OT2;50 | where `pp` is the % duty cycle for the exhause air fan |
 | PID | PID;AWMODE;m | PID;AWMODE;1 | Configures PID I-term anti-windup mode, where m=0 for AW on Condition, m=1 AW Clamp and m=2 to turn off the antiwindup mode. Note: this changes the iAwMode for the current PID profile |
 | PID | PID;CHAN;c | PID;CHAN;2 | Select the Logical Channel to use for PID input. This selects the channel for the current PID profile and the actual physical channel depends on the `CHAN;xxxx` command |
-| PID | PID;CHGPRF;x | PID;CHGPRF;2 | changes the active profile to `x`. There's a limit of the number of profiles, check the `STAT` command. The selected profile becomes the current profile, and the results of the `PID;T;p.ppp,i.iii,d.ddd` or `PID;T_POM;p.ppp;i.iii;d.ddd` commands are applied to the newly selected profile |
 | PID | PID;CNSGAP;t.ttt | PID;CNSPRF;8.0 | Switch to a "conservative" profile, when the setpoint is within the 8.0°C treshold |
 | PID | PID;CT;ssss | PID;CT;1000 | Set PID cycle time to `ssss` ms, e.g. `PID;CT;1000` sets the PID cycle time to 1000ms = 1s. The change is applied to the "current" profile and only profile selected with the `PID;CHGPRF;x` governs the PID cycle time. Conservative Profile and FAN PID profiles do not affect the cycle time |
 | PID | PID;DMODE;d | PID;DMODE;1 | Sets the D-Mode for the PID controller, where d=0 for D on Error, d=1 for D on measurement |

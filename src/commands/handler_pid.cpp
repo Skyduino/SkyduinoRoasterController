@@ -6,7 +6,6 @@
 #define CMD_PID "PID"
 #define SUBCMD_AWMODE "AWMODE"
 #define SUBCMD_CHAN   "CHAN"
-#define SUBCMD_CHGPRF "CHGPRF"
 #define SUBCMD_CNSGAP "CNSGAP"
 #define SUBCMD_CT     "CT"
 #define SUBCMD_DMODE  "DMODE"
@@ -39,7 +38,6 @@ void cmndPid::_doCommand(CmndParser *pars) {
         { SUBCMD_FANMOD, &cmndPid::_handleFanMode },
         { SUBCMD_FANGAP, &cmndPid::_handleFanGapC },
         { SUBCMD_AWMODE, &cmndPid::_handleAwMode },
-        { SUBCMD_CHGPRF, &cmndPid::_handleChngPrfl },
         { SUBCMD_CNSGAP, &cmndPid::_handleConsrvGap },
         { SUBCMD_FANPRF, &cmndPid::_handleFanPrfl },
         { SUBCMD_DMODE, &cmndPid::_handleDMode },
