@@ -14,6 +14,7 @@ class PID_Control {
     public:
         enum class State: uint8_t { needsInit, off, on, autotune, aborted };
         enum class FanMode: uint8_t { manual, automatic };
+        enum class Profile: uint8_t { normal, conservative, fan };
         PID_Control(EepromSettings *nvm, ControlHeat *heat, ControlPWM *vent);
         void abort();
         bool begin();
@@ -31,7 +32,7 @@ class PID_Control {
         bool updatePMode( uint8_t mode );
         void updateSetPointC( float setPointC );
         float getSetPoint() { return this->setp; };
-        bool updateProfileNTuning( uint8_t profile, float kP, float kI, float kD );
+        bool updateProfileTuning( Profile profile, float kP, float kI, float kD, QuickPID::pMode pmode = QuickPID::pMode::pOnError );
         void addCallbackGetChantTempC( t_Cbk_getChanTempC cbk) { getChanTempC = cbk; };
         FanMode getFanMode() { return this->_fanMode; }
         bool setFanTempGapC( float gap );

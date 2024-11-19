@@ -286,14 +286,29 @@ void PID_Control::updateSetPointC(float setPointC) {
 
 /**
  * @brief update PID tuning parameters for the Nth profile
- * @param profile -- profile number to update
+ * @param profile -- profile type to update
+ * @param kP
+ * @param kI
+ * @param kD
+ * @param pmode
  */
-bool PID_Control::updateProfileNTuning(uint8_t profile, float kP, float kI, float kD) {
-    if ( profile > PID_NUM_PROFILES ) return false;
+bool PID_Control::updateProfileTuning(PID_Control::Profile profile, float kP, float kI, float kD, QuickPID::pMode pmode) {
+    t_PidTune *tune;
 
-    _NVM_GETPIDPROF(profile).kP = kP;
-    _NVM_GETPIDPROF(profile).kI = kI;
-    _NVM_GETPIDPROF(profile).kD = kD;
+    if ( PID_Control::Profile::normal == profile ) {
+        tune = &(_NVM_PIDPROFNORMAL);
+    } else if ( PID_Control::Profile::conservative == profile ) {
+        tune = &(_NVM_PIDPROFCONSERV);
+    } else if ( PID_Control::Profile::fan == profile ) {
+        tune = &(_NVM_PIDPROFFAN);
+    } else {
+        return false;
+    }
+
+    tune->kP = kP;
+    tune->kI = kI;
+    tune->kD = kD;
+    tune->pMode = pmode;
     this->_syncPidSettings();
 
     return true;
