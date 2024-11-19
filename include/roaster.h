@@ -73,8 +73,6 @@
 #define PID_DMODE           QuickPID::dMode::dOnMeas
 #define PID_AWMODE          QuickPID::iAwMode::iAwCondition
 #define PID_NUM_PROFILES    5
-// GAP/Error when to switch to a conservative profile
-#define PID_CONSERV_ERR     8
 
 #ifndef WATCHDOG_TIMEOUT_MS
 #define WATCHDOG_TIMEOUT_MS 3000U

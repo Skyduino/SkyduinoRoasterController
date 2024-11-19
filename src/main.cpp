@@ -38,7 +38,7 @@ PROGMEM const static t_Settings nvmSettingsStorage = {
     },
     .pid = {
         .fanSPErrorC  = PID_FAN_ERR_C,
-        .cnsPrfErrorC = PID_CONSERV_ERR,
+        .cnsPrfErrorC = 0.0f, // Conservative Error of 0.0 disables it
         .cycleTimeMS  = PID_CYCLE_TIME_MS,
         .chan         = PID_CHAN,
         .tuneNormal   = DEFAULT_PID_PROFILE,

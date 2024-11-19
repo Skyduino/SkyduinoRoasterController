@@ -427,7 +427,8 @@ void PID_Control::_syncPidSettings() {
  */
 void PID_Control::_switchProfilesIfNeeded() {
     float gap = abs( this->setp - this->input );
-    if ( gap < _NVM_PID.cnsPrfErrorC ) {
+    if ( _NVM_PID.cnsPrfErrorC > 0.0f
+         && gap < _NVM_PID.cnsPrfErrorC ) {
         // Use Conserv tuning profile
         if ( !(this->_isConservTuning) ) {
             _pid.SetTunings(
