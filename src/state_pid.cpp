@@ -2,10 +2,10 @@
 
 #include "state_pid.h"
 
-#define _NVM_GETPIDPROF(x) (this->_nvm->settings.pidProfiles[ x ])
-#define _NVM_PIDPROFCURRENT _NVM_GETPIDPROF( this->_nvm->settings.pidCurrentProfile )
-#define _NVM_PIDPROFCONSERV _NVM_GETPIDPROF( this->_nvm->settings.pidConservProfile )
-#define _NVM_PIDPROFFAN     _NVM_GETPIDPROF( this->_nvm->settings.pidFanProfile )
+#define _NVM_PID            this->_nvm->settings.pid
+#define _NVM_PIDPROFNORMAL  this->_nvm->settings.pid.tuneNormal
+#define _NVM_PIDPROFCONSERV this->_nvm->settings.pid.tuneConserv
+#define _NVM_PIDPROFFAN     this->_nvm->settings.pid.tuneFan
 
 
 PID_Control::PID_Control(EepromSettings *nvm, ControlHeat *heat, ControlPWM *vent):
@@ -56,45 +56,13 @@ bool PID_Control::begin() {
 
 
 /**
- * @brief change and make current a new PID profile
- * @param profileNum -- index of the PID profile to activate
- * @param isConservative -- false (default) if this is a regular tuning
- *        profile. true -- if this is a conservative tunine profile
- * @return true -- if a correct profile was selected
- */
-bool PID_Control::activateProfile(uint8_t profileNum, bool isConservative) {
-    if ( profileNum >= PID_NUM_PROFILES ) {
-        WARN(F("Profile ")); WARN(profileNum); WARNLN(F(" is not valid"));
-        return false;
-    }
-    if ( isConservative ) {
-        this->_nvm->settings.pidConservProfile = profileNum;
-    } else {
-        // check if we're using conservative profiles, if not, update both
-        if ( _nvm->settings.pidConservProfile
-             == _nvm->settings.pidCurrentProfile )
-                this->_nvm->settings.pidConservProfile = profileNum;
-        this->_nvm->settings.pidCurrentProfile = profileNum;
-    }
-    this->_syncPidSettings();
-
-    return true;
-}
-
-
-/**
- * @brief Designate a selected profile as a conservative profile and sets the setpoint
- *        error threshold gap for switching to the conservative profile
- * @param profileNum (uint8_t) -- profile index
+ * @brief set the setpoint error threshold gap for switching to the
+ *        conservative profile
  * @param setpointGapC (float) -- threshold in C for the setpoint gap
  */
-bool PID_Control::setConservProfile(uint8_t profileNum, float setpointGapC) {
-    if ( this->activateProfile( profileNum, true )) {
-        _NVM_PIDPROFCURRENT.cnsPrfErrorC = setpointGapC;
-        return true;
-    }
-
-    return false;
+bool PID_Control::setConservProfileGapC(float setpointGapC) {
+    _NVM_PID.cnsPrfErrorC = setpointGapC;
+    return true;
 }
 
 
@@ -107,7 +75,7 @@ float PID_Control::getTempReadingC() {
         ERRORLN(F("No callback for getChanTempC"));
         return NAN;
     }
-    return this->getChanTempC( _NVM_PIDPROFCURRENT.chan - 1 );
+    return this->getChanTempC( _NVM_PID.chan - 1 );
 }
 
 
@@ -234,7 +202,9 @@ bool PID_Control::updateAWMode(uint8_t mode)
         return false;
     }
     DEBUG(micros()); DEBUG(F(" Setting I anti-windup: ")); DEBUGLN( mode );
-    _NVM_PIDPROFCURRENT.iAwMode = (QuickPID::iAwMode) mode;
+    _NVM_PIDPROFNORMAL.iAwMode = (QuickPID::iAwMode) mode;
+    _NVM_PIDPROFCONSERV.iAwMode = (QuickPID::iAwMode) mode;
+    _NVM_PIDPROFFAN.iAwMode = (QuickPID::iAwMode) mode;
     this->_syncPidSettings();
 
     return true;
@@ -248,7 +218,7 @@ bool PID_Control::updateChan(uint8_t chan) {
         WARNLN(F("Wrong channel"));
         return false;
     }
-    _NVM_PIDPROFCURRENT.chan = chan;
+    _NVM_PID.chan = chan;
 
     return true;
 }
@@ -260,7 +230,7 @@ bool PID_Control::updateChan(uint8_t chan) {
 bool PID_Control::updateCycleTimeMs(uint32_t ctMS) {
     if ( ctMS < 100 ) return false;
 
-    _NVM_PIDPROFCURRENT.cycleTimeMS = ctMS;
+    _NVM_PID.cycleTimeMS = ctMS;
     this->_syncPidSettings();
 
     return true;
@@ -276,7 +246,9 @@ bool PID_Control::updateDMode(uint8_t mode) {
         DEBUGLN(F("Wrong D-mode"));
         return false;
     }
-    _NVM_PIDPROFCURRENT.dMode = (QuickPID::dMode) mode;
+    _NVM_PIDPROFNORMAL.dMode = (QuickPID::dMode) mode;
+    _NVM_PIDPROFCONSERV.dMode = (QuickPID::dMode) mode;
+    _NVM_PIDPROFFAN.dMode = (QuickPID::dMode) mode;
     this->_syncPidSettings();
 
     return true;
@@ -293,7 +265,9 @@ bool PID_Control::updatePMode(uint8_t mode) {
         DEBUGLN(F("Wrong P-mode"));
         return false;
     }
-    _NVM_PIDPROFCURRENT.pMode = (QuickPID::pMode) mode;
+    _NVM_PIDPROFNORMAL.pMode = (QuickPID::pMode) mode;
+    _NVM_PIDPROFCONSERV.pMode = (QuickPID::pMode) mode;
+    _NVM_PIDPROFFAN.pMode = (QuickPID::pMode) mode;
     this->_syncPidSettings();
 
     return true;
@@ -311,39 +285,30 @@ void PID_Control::updateSetPointC(float setPointC) {
 
 
 /**
- * @brief update PID tuning parameters for the current profile
- */
-void PID_Control::updateTuning(float kP, float kI, float kD) {
-    this->updateProfileNTuning( _nvm->settings.pidCurrentProfile, kP, kI, kD);
-}
-
-
-/**
  * @brief update PID tuning parameters for the Nth profile
- * @param profile -- profile number to update
+ * @param profile -- profile type to update
+ * @param kP
+ * @param kI
+ * @param kD
+ * @param pmode
  */
-bool PID_Control::updateProfileNTuning(uint8_t profile, float kP, float kI, float kD) {
-    if ( profile > PID_NUM_PROFILES ) return false;
+bool PID_Control::updateProfileTuning(PID_Control::Profile profile, float kP, float kI, float kD, QuickPID::pMode pmode) {
+    t_PidTune *tune;
 
-    _NVM_GETPIDPROF(profile).kP = kP;
-    _NVM_GETPIDPROF(profile).kI = kI;
-    _NVM_GETPIDPROF(profile).kD = kD;
-    this->_syncPidSettings();
-
-    return true;
-}
-
-
-/**
- * @brief select FAN PID profile
- */
-bool PID_Control::selectFanProfile(uint8_t profileNum) {
-    if ( profileNum >= PID_NUM_PROFILES ) {
-        WARN(F("Profile ")); WARN(profileNum); WARNLN(F(" is not valid"));
+    if ( PID_Control::Profile::normal == profile ) {
+        tune = &(_NVM_PIDPROFNORMAL);
+    } else if ( PID_Control::Profile::conservative == profile ) {
+        tune = &(_NVM_PIDPROFCONSERV);
+    } else if ( PID_Control::Profile::fan == profile ) {
+        tune = &(_NVM_PIDPROFFAN);
+    } else {
         return false;
     }
 
-    this->_nvm->settings.pidFanProfile = profileNum;
+    tune->kP = kP;
+    tune->kI = kI;
+    tune->kD = kD;
+    tune->pMode = pmode;
     this->_syncPidSettings();
 
     return true;
@@ -358,7 +323,7 @@ bool PID_Control::selectFanProfile(uint8_t profileNum) {
 bool PID_Control::setFanTempGapC(float gap) {
     if ( abs( gap ) > PID_FAN_ERR_C_MAX ) return false;
 
-    _NVM_PIDPROFFAN.fanSPErrorC = gap;
+    _NVM_PID.fanSPErrorC = gap;
     return true;
 }
 
@@ -403,7 +368,7 @@ void PID_Control::_compute() {
 
         // fan pid calc
         if ( FanMode::automatic == this->getFanMode() ) {
-            bool threshold = ( input >= setp + _NVM_PIDPROFFAN.fanSPErrorC );
+            bool threshold = ( input >= setp + _NVM_PID.fanSPErrorC );
             if ( threshold ^ (this->_isFanPidActive) ) {
                 // Transitioning from active -> idle or vice versa
                 if ( threshold ) {
@@ -433,14 +398,13 @@ void PID_Control::_compute() {
  * @brief Set PID settings to match the current NVM PID profile
  */
 void PID_Control::_syncPidSettings() {
-    const t_NvmPIDSettings *profile = &_NVM_PIDPROFCURRENT;
     this->_pid.SetTunings(
-        profile->kP,
-        profile->kI,
-        profile->kD,
-        profile->pMode,
-        profile->dMode,
-        profile->iAwMode
+        _NVM_PIDPROFNORMAL.kP,
+        _NVM_PIDPROFNORMAL.kI,
+        _NVM_PIDPROFNORMAL.kD,
+        _NVM_PIDPROFNORMAL.pMode,
+        _NVM_PIDPROFNORMAL.dMode,
+        _NVM_PIDPROFNORMAL.iAwMode
     );
     this->_isConservTuning = false;
     this->_pidFan.SetTunings(
@@ -452,7 +416,7 @@ void PID_Control::_syncPidSettings() {
         _NVM_PIDPROFFAN.iAwMode
     );
 
-    uint32_t ctus = 1000 * profile->cycleTimeMS;
+    uint32_t ctus = 1000 * _NVM_PID.cycleTimeMS;
     this->_pid.SetSampleTimeUs(ctus);
     if ( this->_timer ) this->_timer->setOverflow(ctus, MICROSEC_FORMAT);
 }
@@ -463,7 +427,8 @@ void PID_Control::_syncPidSettings() {
  */
 void PID_Control::_switchProfilesIfNeeded() {
     float gap = abs( this->setp - this->input );
-    if ( gap < _NVM_PIDPROFCURRENT.cnsPrfErrorC ) {
+    if ( _NVM_PID.cnsPrfErrorC > 0.0f
+         && gap < _NVM_PID.cnsPrfErrorC ) {
         // Use Conserv tuning profile
         if ( !(this->_isConservTuning) ) {
             _pid.SetTunings(
@@ -481,12 +446,12 @@ void PID_Control::_switchProfilesIfNeeded() {
         // Use regular tuning profile
         if ( this->_isConservTuning ) {
             _pid.SetTunings(
-                _NVM_PIDPROFCURRENT.kP,
-                _NVM_PIDPROFCURRENT.kI,
-                _NVM_PIDPROFCURRENT.kD,
-                _NVM_PIDPROFCURRENT.pMode,
-                _NVM_PIDPROFCURRENT.dMode,
-                _NVM_PIDPROFCURRENT.iAwMode
+                _NVM_PIDPROFNORMAL.kP,
+                _NVM_PIDPROFNORMAL.kI,
+                _NVM_PIDPROFNORMAL.kD,
+                _NVM_PIDPROFNORMAL.pMode,
+                _NVM_PIDPROFNORMAL.dMode,
+                _NVM_PIDPROFNORMAL.iAwMode
             );
             this->_isConservTuning = false;
             DEBUG(millis()); DEBUGLN(F(" Using regular tuning"));

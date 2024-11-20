@@ -111,31 +111,91 @@ The following symbols are used for the `Separator` value:
 | OT2 | OT2;pp | OT2;50 | where `pp` is the % duty cycle for the exhause air fan |
 | PID | PID;AWMODE;m | PID;AWMODE;1 | Configures PID I-term anti-windup mode, where m=0 for AW on Condition, m=1 AW Clamp and m=2 to turn off the antiwindup mode. Note: this changes the iAwMode for the current PID profile |
 | PID | PID;CHAN;c | PID;CHAN;2 | Select the Logical Channel to use for PID input. This selects the channel for the current PID profile and the actual physical channel depends on the `CHAN;xxxx` command |
-| PID | PID;CHGPRF;x | PID;CHGPRF;2 | changes the active profile to `x`. There's a limit of the number of profiles, check the `STAT` command. The selected profile becomes the current profile, and the results of the `PID;T;p.ppp,i.iii,d.ddd` or `PID;T_POM;p.ppp;i.iii;d.ddd` commands are applied to the newly selected profile |
-| PID | PID;CNSPRF;x;t.ttt | PID;CNSPRF;1;8.0 | Designates profile x as a "conservative" profile, a PID profile which is used when the setpoint is within the 8.0°C treshold |
+| PID | PID;CNSGAP;t.ttt | PID;CNSPRF;8.0 | Switch to a "conservative" profile, when the setpoint is within the 8.0°C treshold. Set to 0 (default) to disable the conservative profile |
 | PID | PID;CT;ssss | PID;CT;1000 | Set PID cycle time to `ssss` ms, e.g. `PID;CT;1000` sets the PID cycle time to 1000ms = 1s. The change is applied to the "current" profile and only profile selected with the `PID;CHGPRF;x` governs the PID cycle time. Conservative Profile and FAN PID profiles do not affect the cycle time |
 | PID | PID;DMODE;d | PID;DMODE;1 | Sets the D-Mode for the PID controller, where d=0 for D on Error, d=1 for D on measurement |
 | PID | PID;FANGAPC;[-+]t.ttt | PID;FANGAPC;-10 | Set the temperature gap when to turn on FAN PID, if using auto FAN mode. If the temperature is above PID Setpoint + GAP, then turn on FAN PID. Default value -10.0C. The value is in C |
-| PID | PID;FANPRF;p | PID;FANPRF;3 | Select PID profile for the FAN, if automatic FAN control is enabled when the PID controller is active |
 | PID | PID;FANMODE;m | PID;FANMODE;1 | Selects FAN mode when the PID controller is active: m=0 for the manual fan control, m=1 for the automatic FAN control. *NOTE:* With the FAN mode set to "automatic", the PID controller governs only the highest range of the FAN, the lowest setting is controlled by the Artisan. For example if the Artisan calls for 20% of the Exhaust fan, but PID controller overshot the temperature, then it may call for the exhaust fan to be anywhere between the 20% and 100% |
 | PID | PID;ON | PID;ON | Turns on the PID controller |
 | PID | PID;OFF | PID;OFF | Turns off the PID controller |
 | PID | PID;PMODE;p | PID;PMODE;0 | Selects the P-term mode, where p=0 for P on Error, p=1 for P on measurement, p=2 for P on both error and measurement. The settings is applied to the current profile |
 | PID | PID;PLOT;x | PID;PLOT;1 | Turns on extra PID logging (for tunning). x=0 to disable logging, x=1 to enable PID logging |
 | PID | PID;SV;ttt | PID;SV;300 | Set the PID set point, in the current units of the temperature measurement. If `UNIT;F` was issued, then the SV is in Fahrenheit |
-| PID | PID;T;p.ppp;i.iii;d.ddd | PID;T;4.50;0.55;10.55 | Change the current PID profile tunings, where p.ppp is the proportional coefficient kP, i.iii is the integral coefficient kI and d.ddd is the derivative coefficient kD |
-| PID | PID;TUNEx;p.ppp;i.iii;d.ddd | PID;TUNE3;4.50;0.55;10.55 | Change the PID profile #x tunings, where p.ppp is the proportional coefficient kP, i.iii is the integral coefficient kI and d.ddd is the derivative coefficient kD |
-| PID | PID;T_POM;p.ppp;i.iii;d.ddd | PID;T_POM;4.50;0.55;10.55 | Change the current PID profile tunings, where p.ppp is the proportional coefficient kP, i.iii is the integral coefficient kI and d.ddd is the derivative coefficient kD and uses P-on-Measurement mode |
+| PID | PID;T;p.ppp;i.iii;d.ddd | PID;T;4.50;0.55;10.55 | Update the current PID profile tunings, where p.ppp is the proportional coefficient kP, i.iii is the integral coefficient kI and d.ddd is the derivative coefficient kD |
+| PID | PID;T_CONS;p.ppp;i.iii;d.ddd | PID;T_CONS;4.50;0.55;10.55 | Update the Conservative PID profile tunings, where p.ppp is the proportional coefficient kP, i.iii is the integral coefficient kI and d.ddd is the derivative coefficient kD |
+| PID | PID;T_FAN;p.ppp;i.iii;d.ddd | PID;T_FAN;4.50;0.55;10.55 | Update the FAN PID profile tunings, where p.ppp is the proportional coefficient kP, i.iii is the integral coefficient kI and d.ddd is the derivative coefficient kD |
+| PID | PID;T_POM;p.ppp;i.iii;d.ddd | PID;T_POM;4.50;0.55;10.55 | Update the current PID profile tunings, where p.ppp is the proportional coefficient kP, i.iii is the integral coefficient kI and d.ddd is the derivative coefficient kD and uses P-on-Measurement mode |
 | PWM | PWM;{CTL};{FREQ_HZ} | PWM;SSR;2 | Set PWM frequency for `{CTL}`, where `{CTL}` is: <br>`DRUM` -- Drum driver PWM frequency <br>`EXHAUST` -- Exhaust fan PWM frequency <br>`SSR` -- SSR PWM frequency. <br>The new PWM frequency is applied upon next reboot
 | READ | READ | READ | Requests current temperature readings on all active channels. Response from the device is the ambient temperature followed by a comma separated list of temperatures in current active units in logical channel order: ambient,chan1,chan2,chan3,chan4, followed up by Heater cyty cycle (0 - 100%) and Exhaust Fan duty cycle |
 | RESET | RESET | RESET | Generate the RESET challenge. Software resets the board. The command prompts you a challenge and works similarly to the DFU command |
-| STAT | STAT | STAT | This is an undocumented command. It should print the internal statistics, but currently does not work as expected |
+| STAT | STAT | STAT | This is an undocumented command. It should print the internal statistics, but currently does not work as expected. It also prints current NVM settings
+and counters |
 | STPR | STPR;{NUM} | STPR;1000 | Set the steps per revolutio to {NUM}. This command is only supported for the "Stepper" firmware. |
 | MAXTEMP | MAXTEMP;{NUM} | MAXTEMP;250 | Set the safety temperature threshold in °C The new threshold is activated upon next reboot: Power Off and USB-C disconnect |
 | MXRPM | MXRPM;{NUM} | MXRPM;60 | Set the maximum number of RPMs for drum at 100% speed. Min 10, Max: 120. This command is only supported for the "Stepper" firmware. |
 | NVM | NVM;SAVE | NVM;SAVE | Save settings in NVRAM. Some settings (mostly PID settings) need to be explicitly saved after being updated through serial console |
 | UNIT | UNIT;U | UNIT;C<br>UNIT;F | Change the temperature unit of measurement to C or F |
 | VERSION | VERSION | VERSION | Print the controller firmware version |
+
+
+# PID
+
+The firmware supports a regular TC4 PID controller (running on the controller) with some enhancements.
+For example, if you wish, you can have a separate "conservative" profile, switching kP, kI & kD controller
+gains to more conservative values, when the temperature is close to the setpoint. 
+Additionally, the exhaust fan can be controlled by a separate PID, which is activated when the temperature
+overshoots the setpoint. The exhaust fan still can be controlled manually, and tha manually set value, becomes
+PID's minimum limit, i.e. setting the exhaust fan to 25, the fan will be at 25 all the time when the
+temperature is at or below the setpoint. However, if the temperature overshoots, then the PID kicks in and
+may keep the fan between 25-100 while the temperature exceeds the setpoint.
+
+## Quick config
+If you want to enable the conservative profile, then use your favorite "serial monitor" to configure
+the controller gains. The current configuration can be printed with `stat` command. You'll see something
+like
+
+```
+[NVM PID]
+Conserv. Prof. Gap C=5.555555, Fan PID gap C=-10.000000, Chan=1, Cycle Time=1000(ms)
+ Normal profile: kP=15.000000, kI=0.010000, kD=25.000000, P-mode=0, D-mode=1, I-Aw-mode=0
+ Conservative profile: kP=3.000000, kI=4.000000, kD=5.000000, P-mode=0, D-mode=1, I-Aw-mode=0
+ Fan profile: kP=2.000000, kI=3.000000, kD=4.000000, P-mode=0, D-mode=1, I-Aw-mode=0
+```
+
+Where, the "Conservative Profile Gap in C" controls when to use the conservative gains. In other words,
+when the "temperature" is within the Setpoint +- GAP, then use the conservative profile. This value is
+configured with `PID;CNSGAP;tt.t` where GAP is the temperature gap in current units of measurement. Run
+`UNIT;C` to switch to C if needed. Set the GAP to "0.00" to disable the conservative profile completely.
+
+The "Fan PID gap C", indicates when the FAN PID becomes active. This settings set the threshold,
+when the FAN PID is activated: Temperature >= Setpoint + "FAN Gap". With `Fan GAP == -10.0` the PID
+is activated when the temperature is 10C below the setpoint. 
+This just controls when the PID is activated, there's still a "master switch" to enable this feature,
+by running the `PID;FANMODE;1` or disable by `PID;FANMODE;0`. You can put these two commands on "buttons",
+to control this feature during the roast.
+
+And the most important, is the "Chan" parameter, which indicates what "physical" temperature channel
+to be used by the PID. There are two physical channels:
+| Channel | Description |
+| --- | --- |
+| 1 | The thermocouple probe |
+| 2 | The NTC probe (the one the original roaster comes with) |
+
+Pick the correct channel with `PID;CHAN;c` command.
+
+Then, pick your controller gains for each profile with:
+
+| Profile | Command | Description |
+| --- | --- | --- |
+| _Normal_ | PID;T;p.ppp;i.iii;d.ddd | Set once, as these are adjusted by the Artisan when the PID is enabled/configured |
+| _Conservative_ PID | PID;T_CONS;p.ppp;i.iii;d.ddd | Sets the controller gains for conservative profile (if used) |
+| _FAN_ PID | PID;T_FAN;p.ppp;i.iii;d.ddd | Sets the controller gains for the FAN pid |
+
+Verify the settings with the `STAT` command, maybe run a test roast (don't forget to close the serial terminal, as usually Artistan does not like multiple applications accessing the serial port)
+and if you are happy with the results, then save the settings in the eeprom with `NVV;SAVE` command.
+
+If you want, you may adjust the SSR PWM frequency. The default is **1Hz** and if you feel that is too
+low, then feel free to up it to **2Hz** Let me know which one works better for you.  
 
 
 # Internals

@@ -6,11 +6,9 @@
 #define CMD_PID "PID"
 #define SUBCMD_AWMODE "AWMODE"
 #define SUBCMD_CHAN   "CHAN"
-#define SUBCMD_CHGPRF "CHGPRF"
-#define SUBCMD_CNSPRF "CNSPRF"
+#define SUBCMD_CNSGAP "CNSGAP"
 #define SUBCMD_CT     "CT"
 #define SUBCMD_DMODE  "DMODE"
-#define SUBCMD_FANPRF "FANPRF"
 #define SUBCMD_FANMOD "FANMODE"
 #define SUBCMD_FANGAP "FANGAPC"
 #define SUBCMD_OFF    "OFF"
@@ -19,8 +17,10 @@
 #define SUBCMD_PMODE  "PMODE"
 #define SUBCMD_SV     "SV"
 #define SUBCMD_T      "T"
-#define SUBCMD_TUNEX  "TUNE"
 #define SUBCMD_TPOM   "T_POM"
+#define SUBCMD_TFAN   "T_FAN"
+#define SUBCMD_TCONS  "T_CONS"
+
 
 
 typedef struct {
@@ -39,12 +39,9 @@ void cmndPid::_doCommand(CmndParser *pars) {
         { SUBCMD_FANMOD, &cmndPid::_handleFanMode },
         { SUBCMD_FANGAP, &cmndPid::_handleFanGapC },
         { SUBCMD_AWMODE, &cmndPid::_handleAwMode },
-        { SUBCMD_CHGPRF, &cmndPid::_handleChngPrfl },
-        { SUBCMD_CNSPRF, &cmndPid::_handleConsrvPrfl },
-        { SUBCMD_FANPRF, &cmndPid::_handleFanPrfl },
+        { SUBCMD_CNSGAP, &cmndPid::_handleConsrvGap },
         { SUBCMD_DMODE, &cmndPid::_handleDMode },
         { SUBCMD_PMODE, &cmndPid::_handlePMode },
-        { SUBCMD_TUNEX, &cmndPid::_handleTuneX },
         { SUBCMD_CHAN, &cmndPid::_handleChan },
         { SUBCMD_PLOT, &cmndPid::_handlePlot },
         { SUBCMD_TPOM, &cmndPid::_handleTPOM },
@@ -94,35 +91,17 @@ void cmndPid::_handleChan(CmndParser *pars) {
 
 
 /**
- * @brief Handle PID;CHGPRF;p command to activate/change a new PID profile
- *        all subsequent changes to the PID settings will be applied to this
- *        profile
+ * @brief Handle PID;CNSGAP;f.fff command to designate a conservative tuning profile
+ *        switching threshold, where f.fff is the setpoint error threshold
  */
-void cmndPid::_handleChngPrfl(CmndParser *pars) {
+void cmndPid::_handleConsrvGap(CmndParser *pars) {
     if ( 3 != pars->nTokens() ) return;
 
-    uint32_t profile = atoi( pars->paramStr(2) );
-    if ( this->state->pid.activateProfile( profile ) ) {
-        Serial.print(F("# PID profile = ")); Serial.println( profile );
-    }
-}
-
-
-/**
- * @brief Handle PID;CNSPRF;p;f.fff command to designate a conservative tuning profile
- *        where p is the profile number and f.fff is the setpoint error threshold
- *        for switching in current temperature unit of measurement
- */
-void cmndPid::_handleConsrvPrfl(CmndParser *pars) {
-    if ( 4 != pars->nTokens() ) return;
-
-    uint32_t profile = atoi( pars->paramStr(2) );
-    float f = atof( pars->paramStr(3) );
+    float f = atof( pars->paramStr(2) );
     float setpointGapC = state->cfg.isMetric ? f :  f * 5.0 / 9.0 ;
 
-    if ( this->state->pid.setConservProfile( profile, setpointGapC ) ) {
-        Serial.print(F("# PID conservative profile = ")); Serial.print( profile );
-        Serial.print(F(" threshold = ")); Serial.println( f );
+    if ( this->state->pid.setConservProfileGapC( setpointGapC ) ) {
+        Serial.print(F("# PID conservative profile threshold = ")); Serial.println( f );
     }
 }
 
@@ -150,20 +129,6 @@ void cmndPid::_handleDMode(CmndParser *pars) {
     uint32_t mode = atoi( pars->paramStr(2) );
     if ( this->state->pid.updateDMode( mode ) ) {
         Serial.print(F("# PID D-Mode = ")); Serial.println( mode );
-    }
-}
-
-
-/**
- * @brief Handle PID;FANPRF;p command, where p is the pid profile index to
- *        use for FAN control
- */
-void cmndPid::_handleFanPrfl(CmndParser *pars) {
-    if ( 3 != pars->nTokens() ) return;
-
-    uint32_t profile = atoi( pars->paramStr(2) );
-    if ( this->state->pid.selectFanProfile( profile ) ) {
-        Serial.print(F("# Fan PID profile = ")); Serial.println( profile );
     }
 }
 
@@ -271,34 +236,6 @@ void cmndPid::_handleT(CmndParser *pars) {
 
 
 /**
- * @brief Handle PID;TUNEx;ppp;iii;ddd command to change PID tuning parameter
- *        for the PID profile #X
- */
-void cmndPid::_handleTuneX(CmndParser *pars) {
-    if ( 5 != pars->nTokens() ) return;
-    // the Subcommand is TUNEx
-    if ( 5 != strnlen(pars->paramStr(1), MAX_TOKEN_LEN) ) return;
-    // the last symbol should be a digit
-    if ( pars->paramStr(1)[4] < '0' || pars->paramStr(1)[4] > '9' ) return;
-
-    uint32_t profile = atoi(pars->paramStr(1)+4);
-    float kP = atof( pars->paramStr(2) );
-    float kI = atof( pars->paramStr(3) );
-    float kD = atof( pars->paramStr(4) );
-    if ( this->state->pid.updateProfileNTuning( profile, kP, kI, kD ) ) {
-        Serial.print(F("# PID Tunings profile #"));
-        Serial.print(profile);
-        Serial.print(F(" set:  Kp = "));
-        Serial.print( kP );
-        Serial.print(F(",  Ki = "));
-        Serial.print( kI );
-        Serial.print(F(",  Kd = "));
-        Serial.println( kD );
-    }
-}
-
-
-/**
  * @brief Handle PID;T_POM;ppp;iii;ddd command to change PID tuning parameters
  *        for P on Measurement
  */
@@ -308,20 +245,30 @@ void cmndPid::_handleTPOM(CmndParser *pars) {
 
 
 /**
- * @brief Common helper to handle PID tuning commands T & T_POM
+ * @brief Common helper to handle PID tuning commands T, T_POM, FAN and Conservative
  */
 void cmndPid::__handlePidTune(CmndParser *pars, QuickPID::pMode pMode) {
     if ( 5 != pars->nTokens() ) return;
+    PID_Control::Profile profile;
+
+    if ( 0 == strcmp( pars->paramStr(1), SUBCMD_TCONS ) ) {
+        profile = PID_Control::Profile::conservative;
+    } else if ( 0 == strcmp( pars->paramStr(1), SUBCMD_TFAN ) ) {
+        profile = PID_Control::Profile::fan;
+    } else {
+        profile = PID_Control::Profile::normal;
+    }
 
     float kP = atof( pars->paramStr(2) );
     float kI = atof( pars->paramStr(3) );
     float kD = atof( pars->paramStr(4) );
-    this->state->pid.updateTuning( kP, kI, kD );
-    this->state->pid.updatePMode( (uint8_t) pMode );
+    this->state->pid.updateProfileTuning( profile, kP, kI, kD, pMode );
     Serial.print(F("# PID Tunings set.  Kp = "));
     Serial.print( kP );
     Serial.print(F(",  Ki = "));
     Serial.print( kI );
     Serial.print(F(",  Kd = "));
-    Serial.println( kD );
+    Serial.print( kD );
+    Serial.print(F(",  pMode = "));
+    Serial.println( (uint8_t) pMode );
 }

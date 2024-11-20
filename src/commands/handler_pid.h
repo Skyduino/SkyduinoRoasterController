@@ -12,11 +12,9 @@ class cmndPid : public Command {
         void _doCommand( CmndParser *pars );
         void _handleAwMode( CmndParser *pars );
         void _handleChan( CmndParser *pars );
-        void _handleChngPrfl( CmndParser *pars );
-        void _handleConsrvPrfl( CmndParser *pars );
+        void _handleConsrvGap( CmndParser *pars );
         void _handleCT( CmndParser *pars );
         void _handleDMode( CmndParser *pars );
-        void _handleFanPrfl( CmndParser *pars );
         void _handleFanMode( CmndParser *pars );
         void _handleFanGapC( CmndParser *pars );
         void _handleOff( CmndParser *pars );
@@ -25,7 +23,6 @@ class cmndPid : public Command {
         void _handlePlot( CmndParser *pars );
         void _handleSV( CmndParser *pars );
         void _handleT( CmndParser *pars );
-        void _handleTuneX( CmndParser *pars );
         void _handleTPOM( CmndParser *pars );
         void __handlePidTune( CmndParser *pars, QuickPID::pMode pMode );
 };

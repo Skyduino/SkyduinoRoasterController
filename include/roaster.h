@@ -63,7 +63,7 @@
 // PID definitions
 #define PID_KP              8.00f
 #define PID_KI              0.01f
-#define PID_KD              0.25f
+#define PID_KD              25.0f
 #define PID_CHAN            2
 // Gap when to activate FAN PID. Threshold = PID SetPoint + PID_FAN_ERR_C
 #define PID_FAN_ERR_C       -10.0f
@@ -73,8 +73,6 @@
 #define PID_DMODE           QuickPID::dMode::dOnMeas
 #define PID_AWMODE          QuickPID::iAwMode::iAwCondition
 #define PID_NUM_PROFILES    5
-// GAP/Error when to switch to a conservative profile
-#define PID_CONSERV_ERR     8
 
 #ifndef WATCHDOG_TIMEOUT_MS
 #define WATCHDOG_TIMEOUT_MS 3000U
