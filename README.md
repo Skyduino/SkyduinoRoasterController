@@ -110,7 +110,7 @@ The following symbols are used for the `Separator` value:
 | OT1 | OT1;pp | OT1;50 | where `pp` is the % duty cycle for the heater |
 | OT2 | OT2;pp | OT2;50 | where `pp` is the % duty cycle for the exhause air fan |
 | PID | PID;AWMODE;m | PID;AWMODE;1 | Configures PID I-term anti-windup mode, where m=0 for AW on Condition, m=1 AW Clamp and m=2 to turn off the antiwindup mode. Note: this changes the iAwMode for the current PID profile |
-| PID | PID;CHAN;c | PID;CHAN;2 | Select the Logical Channel to use for PID input. This selects the channel for the current PID profile and the actual physical channel depends on the `CHAN;xxxx` command |
+| PID | PID;CHAN;c | PID;CHAN;2 | Select the Phusical Temperature Channel to use for PID input. Channel #1 -- Thermocouple probe, Channel #2 -- NTC Temperature probe |
 | PID | PID;CNSGAP;t.ttt | PID;CNSPRF;8.0 | Switch to a "conservative" profile, when the setpoint is within the 8.0°C treshold. Set to 0 (default) to disable the conservative profile |
 | PID | PID;CT;ssss | PID;CT;1000 | Set PID cycle time to `ssss` ms, e.g. `PID;CT;1000` sets the PID cycle time to 1000ms = 1s. The change is applied to the "current" profile and only profile selected with the `PID;CHGPRF;x` governs the PID cycle time. Conservative Profile and FAN PID profiles do not affect the cycle time |
 | PID | PID;DMODE;d | PID;DMODE;1 | Sets the D-Mode for the PID controller, where d=0 for D on Error, d=1 for D on measurement |
@@ -202,7 +202,7 @@ low, then feel free to up it to **2Hz** Let me know which one works better for y
 ## Temperature channels
 Firmware support TC4 `CHAN` command which allows remapping of the logical to physical channels. Artisan expects **ET** on the logical channel #1 and **BT** on the logical channel #2. On the controller, the physical channel #1 is the Thermocouple Probe and physical channel #2 for the NTC resistive temperature probe.
 Thus, `CHAN;2100` configures roaster to use the thermocouple for the **BT** and NTC for the **ET** (just to log the other probe?).
-Alternatively, you could use `CHAN;1200` command to use NTC for **BT** and the thermocouple for **ET**. Or, if you don't use the thermoucouple at all, use `CHAN;1000` to disable ET & thermocouple completely.
+Alternatively, you could use `CHAN;1200` command to use NTC for **BT** and the thermocouple for **ET**. Or, if you don't use the thermoucouple at all, use `CHAN;0200` to disable ET & thermocouple completely, leaving only NTC for BT.
 
 ## Safety
 The firmware monitors both physical channels for the max temperature, defined as `MAX_SAFE_TEMP_C` macro in [platformio.ini](https://github.com/Skyduino/SkyduinoRoasterController/blob/4a706247c2a8c93f3a51e89be9654132c200d2fa/platformio.ini#L20)
