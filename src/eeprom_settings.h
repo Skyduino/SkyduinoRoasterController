@@ -64,11 +64,13 @@ class EepromSettings {
         void loadDefaults();
         void loadDefaults(bool saveImmediatly);
         void save();
+        bool skipWatchdog() { return _skipWdg; }
 
     private:
         TimerMS          timer = TimerMS(EEPROM_SAVE_TIME_MS); 
         bool             isDirty = false;
         const t_Settings *defaultSettings;
+        bool             _skipWdg = false;
 };
 
 #endif  // __SW_EEPROM_SETTINGS_H
