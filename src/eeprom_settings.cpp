@@ -19,7 +19,7 @@ EepromSettings::EepromSettings(const t_Settings *eeprom): defaultSettings(eeprom
     uint16_t crc = calcCRC16((uint8_t *) &settings, offsetof(t_Settings, crc16));
     if ( (settings.crc16 != crc) || (settings.eepromMagic != EEPROM_SETTINGS_MAGIC) )
     {
-        this->loadDefaults();
+        this->loadDefaults( false );
     }
 }
 
@@ -119,13 +119,28 @@ void EepromSettings::incSafetyCounter() {
  */
 void EepromSettings::loadDefaults() {
     // load the defaults
+    this->loadDefaults( true );
+}
+
+
+/**
+ * @brief Reset settings to default
+ * @param saveImmediatly -- indicates whether to save to memory immediatly or
+ *        after the "markDirty" timeout
+ */
+void EepromSettings::loadDefaults(bool saveImmediatly) {
+    // load the defaults
 #ifndef __DEBUG__
     IWatchdog.reload();
 #endif
     memcpy_P(&settings, this->defaultSettings, sizeof(t_Settings));
-    this->save();
-    this->timer.reset();
+    this->markDirty();
+    if ( saveImmediatly ) {
+        this->save();
+        this->timer.reset();
+    }
 }
+
 
 /**
  * @brief save the eeprom container

@@ -62,6 +62,7 @@ class EepromSettings {
         void print();
         void incSafetyCounter();
         void loadDefaults();
+        void loadDefaults(bool saveImmediatly);
         void save();
 
     private:
