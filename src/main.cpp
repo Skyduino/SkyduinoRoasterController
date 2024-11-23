@@ -87,7 +87,9 @@ void setup() {
   skwRemoteComm.begin();
 
 #ifndef __DEBUG__
-  IWatchdog.begin( WATCHDOG_TIMEOUT_MS * 1000 );
+  if ( !(nvmSettings.skipWatchdog()) ) {
+    IWatchdog.begin( WATCHDOG_TIMEOUT_MS * 1000 );
+  }
 #endif
 
   while ( !(state.begin()) ) {

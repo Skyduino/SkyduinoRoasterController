@@ -19,7 +19,8 @@ EepromSettings::EepromSettings(const t_Settings *eeprom): defaultSettings(eeprom
     uint16_t crc = calcCRC16((uint8_t *) &settings, offsetof(t_Settings, crc16));
     if ( (settings.crc16 != crc) || (settings.eepromMagic != EEPROM_SETTINGS_MAGIC) )
     {
-        this->loadDefaults();
+        this->_skipWdg = true;
+        this->loadDefaults( false );
     }
 }
 
@@ -119,13 +120,28 @@ void EepromSettings::incSafetyCounter() {
  */
 void EepromSettings::loadDefaults() {
     // load the defaults
+    this->loadDefaults( true );
+}
+
+
+/**
+ * @brief Reset settings to default
+ * @param saveImmediatly -- indicates whether to save to memory immediatly or
+ *        after the "markDirty" timeout
+ */
+void EepromSettings::loadDefaults(bool saveImmediatly) {
+    // load the defaults
 #ifndef __DEBUG__
     IWatchdog.reload();
 #endif
     memcpy_P(&settings, this->defaultSettings, sizeof(t_Settings));
-    this->save();
-    this->timer.reset();
+    this->markDirty();
+    if ( saveImmediatly ) {
+        this->save();
+        this->timer.reset();
+    }
 }
+
 
 /**
  * @brief save the eeprom container
@@ -133,13 +149,17 @@ void EepromSettings::loadDefaults() {
 void EepromSettings::save() {
     this->settings.crc16 = calcCRC16((uint8_t *) &settings, offsetof(t_Settings, crc16));
 #ifndef __DEBUG__
-    IWatchdog.set( 30*1000*1000 );
+    if ( !skipWatchdog() ) IWatchdog.set( 30*1000*1000 );
     IWatchdog.reload();
 #endif
     StatusLed.turnOn();
     EEPROM.put(EEPROM_SETTINGS_ADDR, this->settings);
     StatusLed.turnOff();
     isDirty = false;
+    if ( this->skipWatchdog() ) {
+        // this was from a cold eeprom init, so reset it, even if users not gonna like it
+        NVIC_SystemReset();
+    }
 #ifndef __DEBUG__
     IWatchdog.set( WATCHDOG_TIMEOUT_MS * 1000 );
     IWatchdog.reload();

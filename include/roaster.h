@@ -56,7 +56,7 @@
 #define PWM_FREQ_LED        120
 
 #define EEPROM_SETTINGS_MAGIC 0xbeefbeef
-#define EEPROM_SAVE_TIME_MS   10000
+#define EEPROM_SAVE_TIME_MS   7000
 #define EEPROM_SETTINGS_ADDR  0
 
 
