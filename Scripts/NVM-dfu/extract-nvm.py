@@ -6,8 +6,8 @@ import subprocess
 
 OBJDUMP = '/home/lex/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-objdump'
 
-def get_rostart_and_nvm_blob(args: dict) -> tuple[int, int, int]:
-    """Get .rodata section start, nvm blob address, and nvm blob size."""
+def get_symbol_addr(args: dict, symbol_name="nvmSettingsStorage") -> tuple[int, int, int]:
+    """Get .rodata section start, symbol address, and symbol size."""
     r = subprocess.run(
         [OBJDUMP, '-t', '-j', '.rodata', args.firmware],
         capture_output=True,
@@ -24,26 +24,44 @@ def get_rostart_and_nvm_blob(args: dict) -> tuple[int, int, int]:
 #08011bb8 l     O .rodata        00000004 CSWTCH.99
 #08012428 l     O .rodata        00000064 _ZL18nvmSettingsStorage
 #080133b4 l     O .rodata        00000014 fpi.1
-    RODATA_RE = re.compile(
-        r'''^([\da-fA-F]{8})
-        \s\w\s+\w\s+
+    SYM_RE = re.compile(
+        r'''^
+        ([\da-fA-F]{8})  # Addr
+        \s+[lgw]\s+\w\s+
         .rodata
         \s
-        00000000
+        ([\da-fA-F]{8})  # Length
         \s
-        .rodata$
+        ([\.\d\w])+        # symbol name
+        $
 ''',
         re.MULTILINE | re.X
     )
+    FIND_SYM_RE = re.compile(f'^[_\d\w]{symbol_name}', re.X)
 
-    rostart = nvm_start = nvm_size = None
-    m = RODATA_RE.match(r.stdout)
-    if m:
-        rostart = int(m[1])
-    else:
-        raise RuntimeError(f"Couldn't find .rodata in {r.stdout}")
+
+    rostart = sym_addr = sym_size = None
+    for line in r.stdout.splitlines():
+        line = line.rstrip()
+        print(f'Checking line: "{line}"')
+        if (m := SYM_RE.match(line)):
+            addr, length, symbol = m[1], m[2], m[3]
+            if symbol == '.rodata':
+                rostart = int(addr)
+            elif FIND_SYM_RE.match(line):
+                sym_addr = int(addr)
+                sym_size = int(length)
+                break
     
-    print(rostart)
+    if None in (rostart, sym_addr, sym_size):
+        raise RuntimeError(f"Couldn't find .rodata in {r.stdout}")
+
+    return rostart, sym_addr, sym_size
+    
+
+def get_rostart_and_nvm_blob(args):
+        rostart, symaddr, size = get_symbol_addr(args, symbol_name="nvmSettingsStorage")
+        print(f"RO Start: {rostart}, nvm blob is at {sym_addr} and is {sym_size} bytes long\r\n")
 
 
 def main(args):
