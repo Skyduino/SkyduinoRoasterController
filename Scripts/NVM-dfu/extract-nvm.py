@@ -29,28 +29,27 @@ def get_symbol_addr(args: dict, symbol_name="nvmSettingsStorage") -> tuple[int, 
         ([\da-fA-F]{8})  # Addr
         \s+[lgw]\s+\w\s+
         .rodata
-        \s
+        \s+
         ([\da-fA-F]{8})  # Length
-        \s
-        ([\.\d\w])+        # symbol name
+        \s+
+        ([\.\w\d]+)        # symbol name
         $
 ''',
         re.MULTILINE | re.X
     )
-    FIND_SYM_RE = re.compile(f'^[_\d\w]{symbol_name}', re.X)
+    FIND_SYM_RE = re.compile(f'^[_\d\w]+{symbol_name}$', re.X)
 
 
     rostart = sym_addr = sym_size = None
     for line in r.stdout.splitlines():
         line = line.rstrip()
-        print(f'Checking line: "{line}"')
         if (m := SYM_RE.match(line)):
             addr, length, symbol = m[1], m[2], m[3]
             if symbol == '.rodata':
-                rostart = int(addr)
-            elif FIND_SYM_RE.match(line):
-                sym_addr = int(addr)
-                sym_size = int(length)
+                rostart = int(addr, 16)
+            elif FIND_SYM_RE.match(symbol):
+                sym_addr = int(addr, 16)
+                sym_size = int(length, 16)
                 break
     
     if None in (rostart, sym_addr, sym_size):
@@ -61,7 +60,7 @@ def get_symbol_addr(args: dict, symbol_name="nvmSettingsStorage") -> tuple[int, 
 
 def get_rostart_and_nvm_blob(args):
         rostart, symaddr, size = get_symbol_addr(args, symbol_name="nvmSettingsStorage")
-        print(f"RO Start: {rostart}, nvm blob is at {sym_addr} and is {sym_size} bytes long\r\n")
+        print(f"RO Start: {rostart}, nvm blob is at {symaddr} and is {size} bytes long\r\n")
 
 
 def main(args):
