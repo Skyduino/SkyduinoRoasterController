@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 
 import argparse
+import logging
 import re
 import subprocess
+import tempfile
+
+LOGGER = logging.getLogger(__name__)
 
 OBJDUMP = '/home/lex/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-objdump'
+OBJCOPY = '/home/lex/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-objcopy'
 
 def get_symbol_addr(args: dict, symbol_name="nvmSettingsStorage") -> tuple[int, int, int]:
     """Get .rodata section start, symbol address, and symbol size."""
@@ -37,7 +42,7 @@ def get_symbol_addr(args: dict, symbol_name="nvmSettingsStorage") -> tuple[int, 
 ''',
         re.MULTILINE | re.X
     )
-    FIND_SYM_RE = re.compile(f'^[_\d\w]+{symbol_name}$', re.X)
+    FIND_SYM_RE = re.compile(f'^([_\d\w]+{symbol_name})$', re.X)
 
 
     rostart = sym_addr = sym_size = None
@@ -47,9 +52,11 @@ def get_symbol_addr(args: dict, symbol_name="nvmSettingsStorage") -> tuple[int, 
             addr, length, symbol = m[1], m[2], m[3]
             if symbol == '.rodata':
                 rostart = int(addr, 16)
-            elif FIND_SYM_RE.match(symbol):
+                LOGGER.debug("found rostart at 0x%x", rostart)
+            elif m := FIND_SYM_RE.match(symbol):
                 sym_addr = int(addr, 16)
                 sym_size = int(length, 16)
+                LOGGER.debug("found '%s' symbol at 0x%x, %d bytes long", symbol, sym_addr, sym_size)
                 break
     
     if None in (rostart, sym_addr, sym_size):
@@ -58,13 +65,39 @@ def get_symbol_addr(args: dict, symbol_name="nvmSettingsStorage") -> tuple[int, 
     return rostart, sym_addr, sym_size
     
 
-def get_rostart_and_nvm_blob(args):
-        rostart, symaddr, size = get_symbol_addr(args, symbol_name="nvmSettingsStorage")
-        print(f"RO Start: {rostart}, nvm blob is at {symaddr} and is {size} bytes long\r\n")
+def get_nvm_blob(args) -> bytes:
+    """Get NVM Blob.
+
+    Find nvmSettingsStorage symbol in the .rodata segment, export the segment
+    as a binary file, and read just the symbol blob.
+    """
+    rostart, symaddr, size = get_symbol_addr(args, symbol_name="nvmSettingsStorage")
+    fp, tmpfile = tempfile.mkstemp(prefix="frm-rodata", suffix=".bin")
+
+    # export .rodata segment
+    r = subprocess.run(
+        [OBJCOPY, '-O', 'binary', '-j', '.rodata', args.firmware, tmpfile],
+        capture_output=True,
+        text=True,
+    )
+    if r.returncode != 0:
+        raise RuntimeError(f"arm-none-eabi-objcopy was not successful: {r.stderr}")
+    
+    # read the nvmSettingsStorage symbol
+    with open(tmpfile, "rb") as fp:
+        seek = symaddr - rostart
+        LOGGER.debug("Seeking %s to 0x%x", tmpfile, seek)
+        fp.seek(seek)
+        nvm_blob = fp.read(size)
+    return nvm_blob
+
 
 
 def main(args):
-    get_rostart_and_nvm_blob(args)
+    nvm = get_nvm_blob(args)
+    with open("/tmp/nvm-blob.bin", "wb+") as fp:
+        fp.write(nvm)
+    LOGGER.info("wrote nvm blob")
 
 
 if __name__ == "__main__":
