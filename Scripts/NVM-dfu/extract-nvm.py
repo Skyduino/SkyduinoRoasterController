@@ -95,9 +95,12 @@ def get_nvm_blob(args) -> bytes:
 
 def main(args):
     nvm = get_nvm_blob(args)
-    with open("/tmp/nvm-blob.bin", "wb+") as fp:
-        fp.write(nvm)
-    LOGGER.info("wrote nvm blob")
+    try:
+        with open(args.output_nvm_blob, "wb+") as fp:
+            fp.write(nvm)
+    except IOError as e:
+        LOGGER.error("Couldn't opent %s for writing: %s", args.output_nvm_blob, e)
+        raise e
 
 
 if __name__ == "__main__":
@@ -107,18 +110,21 @@ if __name__ == "__main__":
     )
     
     parser.add_argument(
-        "-f",
-        "--firmware",
-        type=str,
-        required=True,
-        help="Specify firmware ELF",
-    )
-    parser.add_argument(
         "--nvm-address",
         type=int,
         required=False,
         help="Specify where NVM blob is stored in flash memory",
         default=0x080FE000
+    )
+    parser.add_argument(
+        "firmware",
+        type=str,
+        help="Specify firmware ELF",
+    )
+    parser.add_argument(
+        "output_nvm_blob",
+        type=str,
+        help="Output binary blob for the NVM content",
     )
 
     args = parser.parse_args()
