@@ -39,10 +39,10 @@
 #define PIN_STEPPER_EN   PB7
 #endif  // PIN_STEPPER_EN
 
+#endif  // USE_STEPPER_DRUM
+
 #define STEPPER_STEPS_PER_REV 1600
 #define STEPPER_MAX_RPM       60
-
-#endif  // USE_STEPPER_DRUM
 
 #define DRUM_RAMPUP_MIN     40
 #define DRUM_RAMPUP_STEP    15

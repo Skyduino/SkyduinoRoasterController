@@ -34,10 +34,8 @@ typedef struct {
 
 
 typedef struct {
-#ifdef USE_STEPPER_DRUM
     uint16_t   stepsPerRevolution;
     uint8_t    stepsMaxRpm;
-#endif  // USE_STEPPER_DRUM
 
     int16_t    maxSafeTempC;
     uint16_t   pwmCoolHz;
