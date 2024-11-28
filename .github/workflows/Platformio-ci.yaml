@@ -33,7 +33,7 @@ jobs:
       - id: build_skyduino
         uses: ./.github/actions/build-firmware
         with:
-            pio_env: skyduino-dfu
+            pio_env: skyduino
             firmware_name: Firmware
 
       - id: build_skyduino_stepper
