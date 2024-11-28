@@ -4,12 +4,13 @@ import argparse
 import logging
 import re
 import subprocess
+import os
 import tempfile
 
 LOGGER = logging.getLogger(__name__)
 
-OBJDUMP = '/home/lex/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-objdump'
-OBJCOPY = '/home/lex/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-objcopy'
+OBJDUMP = f'{os.environ["HOME"]}/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-objdump'
+OBJCOPY = f'{os.environ["HOME"]}/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-objcopy'
 
 def get_symbol_addr(args: dict, symbol_name="nvmSettingsStorage") -> tuple[int, int, int]:
     """Get .rodata section start, symbol address, and symbol size."""
