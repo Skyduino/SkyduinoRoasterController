@@ -20,10 +20,8 @@
 
 // NVM container & default settings
 PROGMEM const static t_Settings nvmSettingsStorage = {
-#ifdef USE_STEPPER_DRUM
     .stepsPerRevolution = STEPPER_STEPS_PER_REV, // stepsPerRevolution;
     .stepsMaxRpm = STEPPER_MAX_RPM, // Max RPM for stepper drum driver
-#endif  // USE_STEPPER_DRUM
     .maxSafeTempC = MAX_SAFE_TEMP_C,
     .pwmCoolHz    = PWM_FREQ_COOL,
     .pwmDrumHz    = PWM_FREQ_DRUM,
