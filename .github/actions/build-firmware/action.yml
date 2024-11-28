@@ -75,10 +75,13 @@ runs:
         # Extract NVM blob
         Scripts//NVM-dfu/extract-nvm.py "${{ env.FIRMWARE_ELF }}" "${{ env.NVM_BLOB_BIN }}"
 
-        # Create a simple DFU
-        dfuse-pack.sh -b ${{ inputs.firmware_addr }}:${{ env.FIRMWARE_BIN }}  "${{ env.FIRMWARE_DFU }}"
-        dfuse-pack.sh -b ${{ inputs.firmware_addr }}:${{ env.FIRMWARE_BIN }} -b ${{ inputs.nvm_addr }}:${{ env.NVM_BLOB_BIN }}  "${{ env.FIRMWAE_FACTORY_DFU }}"
+    - name: Firmware only DFU
+      shell: bash
+      run: ${{ github.action_path }}/dfuse-pack.sh -b ${{ inputs.firmware_addr }}:${{ env.FIRMWARE_BIN }} "${{ env.FIRMWARE_DFU }}"
 
+    - name: Firmware with NVM (defaults) DFU
+      shell: bash
+      run: ${{ github.action_path }}/dfuse-pack.sh -b ${{ inputs.firmware_addr }}:${{ env.FIRMWARE_BIN }} -b ${{ inputs.nvm_addr }}:${{ env.NVM_BLOB_BIN }} "${{ env.FIRMWARE_FACTORY_DFU }}"
 
     - name: upload artifacts
       id: upload_artifact
