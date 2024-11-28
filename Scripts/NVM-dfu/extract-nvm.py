@@ -2,9 +2,9 @@
 
 import argparse
 import logging
+import os
 import re
 import subprocess
-import os
 import tempfile
 
 LOGGER = logging.getLogger(__name__)
@@ -12,26 +12,29 @@ LOGGER = logging.getLogger(__name__)
 OBJDUMP = f'{os.environ["HOME"]}/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-objdump'
 OBJCOPY = f'{os.environ["HOME"]}/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-objcopy'
 
-def get_symbol_addr(args: dict, symbol_name="nvmSettingsStorage") -> tuple[int, int, int]:
+
+def get_symbol_addr(
+    args: dict, symbol_name="nvmSettingsStorage"
+) -> tuple[int, int, int]:
     """Get .rodata section start, symbol address, and symbol size."""
     r = subprocess.run(
-        [OBJDUMP, '-t', '-j', '.rodata', args.firmware],
+        [OBJDUMP, "-t", "-j", ".rodata", args.firmware],
         capture_output=True,
         text=True,
     )
     if r.returncode != 0:
         raise RuntimeError(f"arm-none-eabi-objdump was not successful: {r.stderr}")
-    
-#SYMBOL TABLE:
-#08011300 l    d  .rodata        00000000 .rodata
-#08011bc8 l     O .rodata        00000006 CSWTCH.94
-#08011bc0 l     O .rodata        00000008 CSWTCH.95
-#08011bbc l     O .rodata        00000004 CSWTCH.97
-#08011bb8 l     O .rodata        00000004 CSWTCH.99
-#08012428 l     O .rodata        00000064 _ZL18nvmSettingsStorage
-#080133b4 l     O .rodata        00000014 fpi.1
+
+    # SYMBOL TABLE:
+    # 08011300 l    d  .rodata        00000000 .rodata
+    # 08011bc8 l     O .rodata        00000006 CSWTCH.94
+    # 08011bc0 l     O .rodata        00000008 CSWTCH.95
+    # 08011bbc l     O .rodata        00000004 CSWTCH.97
+    # 08011bb8 l     O .rodata        00000004 CSWTCH.99
+    # 08012428 l     O .rodata        00000064 _ZL18nvmSettingsStorage
+    # 080133b4 l     O .rodata        00000014 fpi.1
     SYM_RE = re.compile(
-        r'''^
+        r"""^
         ([\da-fA-F]{8})  # Addr
         \s+[lgw]\s+\w\s+
         .rodata
@@ -40,31 +43,35 @@ def get_symbol_addr(args: dict, symbol_name="nvmSettingsStorage") -> tuple[int, 
         \s+
         ([\.\w\d]+)        # symbol name
         $
-''',
-        re.MULTILINE | re.X
+""",
+        re.MULTILINE | re.X,
     )
-    FIND_SYM_RE = re.compile(f'^([_\d\w]+{symbol_name})$', re.X)
-
+    FIND_SYM_RE = re.compile(f"^([_\d\w]+{symbol_name})$", re.X)
 
     rostart = sym_addr = sym_size = None
     for line in r.stdout.splitlines():
         line = line.rstrip()
-        if (m := SYM_RE.match(line)):
+        if m := SYM_RE.match(line):
             addr, length, symbol = m[1], m[2], m[3]
-            if symbol == '.rodata':
+            if symbol == ".rodata":
                 rostart = int(addr, 16)
                 LOGGER.debug("found rostart at 0x%x", rostart)
             elif m := FIND_SYM_RE.match(symbol):
                 sym_addr = int(addr, 16)
                 sym_size = int(length, 16)
-                LOGGER.debug("found '%s' symbol at 0x%x, %d bytes long", symbol, sym_addr, sym_size)
+                LOGGER.debug(
+                    "found '%s' symbol at 0x%x, %d bytes long",
+                    symbol,
+                    sym_addr,
+                    sym_size,
+                )
                 break
-    
+
     if None in (rostart, sym_addr, sym_size):
         raise RuntimeError(f"Couldn't find .rodata in {r.stdout}")
 
     return rostart, sym_addr, sym_size
-    
+
 
 def get_nvm_blob(args) -> bytes:
     """Get NVM Blob.
@@ -77,13 +84,13 @@ def get_nvm_blob(args) -> bytes:
 
     # export .rodata segment
     r = subprocess.run(
-        [OBJCOPY, '-O', 'binary', '-j', '.rodata', args.firmware, tmpfile],
+        [OBJCOPY, "-O", "binary", "-j", ".rodata", args.firmware, tmpfile],
         capture_output=True,
         text=True,
     )
     if r.returncode != 0:
         raise RuntimeError(f"arm-none-eabi-objcopy was not successful: {r.stderr}")
-    
+
     # read the nvmSettingsStorage symbol
     with open(tmpfile, "rb") as fp:
         seek = symaddr - rostart
@@ -91,7 +98,6 @@ def get_nvm_blob(args) -> bytes:
         fp.seek(seek)
         nvm_blob = fp.read(size)
     return nvm_blob
-
 
 
 def main(args):
@@ -106,16 +112,16 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        prog = "extract-nvm.py",
-        description = "Extract NVM blob and create a DFU file from it"
+        prog="extract-nvm.py",
+        description="Extract NVM blob and create a DFU file from it",
     )
-    
+
     parser.add_argument(
         "--nvm-address",
         type=int,
         required=False,
         help="Specify where NVM blob is stored in flash memory",
-        default=0x080FE000
+        default=0x080FE000,
     )
     parser.add_argument(
         "firmware",
