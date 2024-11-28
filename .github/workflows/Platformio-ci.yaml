@@ -31,13 +31,13 @@ jobs:
         run: pio pkg install
 
       - id: build_skyduino
-        uses: .github/actions/build-firmware
+        uses: ./.github/actions/build-firmware
         with:
             pio_env: skyduino-dfu
             firmware_name: Firmware
 
       - id: build_skyduino_stepper
-        uses: .github/actions/build-firmware
+        uses: ./.github/actions/build-firmware
         with:
             pio_env: skyduino-stepper
             firmware_name: Firmware Stepper
