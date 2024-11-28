@@ -1,0 +1,95 @@
+name: "Build Firmware"
+description: "Build a specific PIO environment and create a dfu file"
+
+inputs:
+    pio_env:
+        description: PIO Environment name to build
+        required: true
+
+    firmware_name:
+        description: Firmware/Artifact name
+        required: true
+
+    firmware_addr:
+        description: Firmware address for DFU file
+        required: false
+        default: "0x8000000"
+
+    nvm_addr:
+        description: Address where to flash the NVM blob (for DFU file)
+        required: false
+        default: "0x80fe000"
+
+outputs:
+  artifact_id:
+    description: Uploaded Artifact ID
+    value: ${{ steps.upload_artifacts.outputs.artifact_id }}
+  artifact_url:
+    description: Uploaded artifact URL
+    value: ${{ steps.upload_artifacts.outputs.artifact_url }}
+
+runs:
+  using: composite
+  steps:
+    - id: setTextVars
+      shell: bash
+      name: Set Environment variables
+      run: |
+        # Commit DATE is going to be the build date
+        COMMIT_DATE=$(git show --no-patch --format=%cs)
+        echo "COMMIT_DATE=${COMMIT_DATE}" >> "$GITHUB_ENV"
+        #
+        # HASH for versioning
+        COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-10)
+        echo "COMMIT_HASH=${COMMIT_HASH}" >> "$GITHUB_ENV"
+        #
+        # ?TAG
+        echo "GIT_TAG=$(git tag --points-at HEAD)" >> "$GITHUB_ENV"
+        #
+        # Firmware .bin and .elf names
+        echo "FIRMWARE_BIN=.pio/build/${{ inputs.pio_env }}/firmware.bin" >> "$GITHUB_ENV"
+        echo "FIRMWARE_ELF=.pio/build/${{ inputs.pio_env }}/firmware.elf" >> "$GITHUB_ENV"
+        echo "FIRMWARE_DFU=.pio/build/${{ inputs.pio_env }}/firmware.dfu" >> "$GITHUB_ENV"
+        echo "FIRMWARE_FACTORY_DFU=.pio/build/${{ inputs.pio_env }}/firmware-nvm-defaults.dfu" >> "$GITHUB_ENV"
+        echo "NVM_BLOB_BIN=.pio/build/nvm-${{ inputs.pio_env }}-blob.bin" >> "$GITHUB_ENV"
+    
+    - name: Replace Version ID
+      id: update_build_versions
+      shell: bash
+      run: |
+        sed -i -E \
+            's/^(\s+\-D\sSKYDUINO_VERSION).+$/\1='\''"${{ env.GIT_TAG }}"'\''/' \
+            platformio.ini
+        # Update commit hash and date
+        sed -i -E \
+            's/^(\s+\-D\sSKYDUINO_COMMIT).+$/\1='\''"${{ env.COMMIT_DATE }} ${{ env.COMMIT_HASH }}"'\''/' \
+            platformio.ini
+
+    - name: Build PlatformIO Project
+      shell: bash
+      run: pio run -e ${{ inputs.pio_env }}
+
+    - name: Build dfu
+      shell: bash
+      run: |
+        # Extract NVM blob
+        Scripts//NVM-dfu/extract-nvm.py "${{ env.FIRMWARE_ELF }}" "${{ env.NVM_BLOB_BIN }}"
+
+    - name: Firmware only DFU
+      shell: bash
+      run: ${{ github.action_path }}/dfuse-pack.sh -b ${{ inputs.firmware_addr }}:${{ env.FIRMWARE_BIN }} "${{ env.FIRMWARE_DFU }}"
+
+    - name: Firmware with NVM (defaults) DFU
+      shell: bash
+      run: ${{ github.action_path }}/dfuse-pack.sh -b ${{ inputs.firmware_addr }}:${{ env.FIRMWARE_BIN }} -b ${{ inputs.nvm_addr }}:${{ env.NVM_BLOB_BIN }} "${{ env.FIRMWARE_FACTORY_DFU }}"
+
+    - name: upload artifacts
+      id: upload_artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.firmware_name }}
+        path: |
+          ${{ env.FIRMWARE_BIN }}
+          ${{ env.FIRMWARE_ELF }}
+          ${{ env.FIRMWARE_FACTORY_DFU }}
+          ${{ env.FIRMWARE_DFU }}
