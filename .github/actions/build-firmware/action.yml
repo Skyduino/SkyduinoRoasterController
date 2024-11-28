@@ -28,14 +28,6 @@ outputs:
     description: Uploaded artifact URL
     value: ${{ steps.upload_artifacts.outputs.artifact_url }}
 
-env:
-  firmware_bin: .pio/build/${{ inputs.pio_env }}/firmware.bin
-  firmware_elf: .pio/build/${{ inputs.pio_env }}/firmware.elf
-  firmware_dfu: .pio/build/${{ inputs.pio_env }}/firmware.dfu
-  firmware_factory_dfu: .pio/build/${{ inputs.pio_env }}/firmware-nvm-defaults.dfu
-  nvm_blob_bin: .pio/build/nvm-${{ inputs.pio_env }}-blob.bin
-
-
 runs:
   using: composite
   steps:
@@ -43,13 +35,23 @@ runs:
       shell: bash
       name: Set Environment variables
       run: |
+        # Commit DATE is going to be the build date
         COMMIT_DATE=$(git show --no-patch --format=%cs)
         echo "COMMIT_DATE=${COMMIT_DATE}" >> "$GITHUB_ENV"
         #
+        # HASH for versioning
         COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-10)
         echo "COMMIT_HASH=${COMMIT_HASH}" >> "$GITHUB_ENV"
+        #
         # ?TAG
         echo "GIT_TAG=$(git tag --points-at HEAD)" >> "$GITHUB_ENV"
+        #
+        # Firmware .bin and .elf names
+        echo "FIRMWARE_BIN=.pio/build/${{ inputs.pio_env }}/firmware.bin" >> "$GITHUB_ENV"
+        echo "FIRMWARE_ELF=.pio/build/${{ inputs.pio_env }}/firmware.elf" >> "$GITHUB_ENV"
+        echo "FIRMWARE_DFU=.pio/build/${{ inputs.pio_env }}/firmware.dfu" >> "$GITHUB_ENV"
+        echo "FIRMWARE_FACTORY_DFU=.pio/build/${{ inputs.pio_env }}/firmware-nvm-defaults.dfu" >> "$GITHUB_ENV"
+        echo "NVM_BLOB_BIN=.pio/build/nvm-${{ inputs.pio_env }}-blob.bin" >> "$GITHUB_ENV"
     
     - name: Replace Version ID
       id: update_build_versions
@@ -64,16 +66,18 @@ runs:
             platformio.ini
 
     - name: Build PlatformIO Project
+      shell: bash
       run: pio run -e ${{ inputs.pio_env }}
 
     - name: Build dfu
+      shell: bash
       run: |
         # Extract NVM blob
-        Scripts//NVM-dfu/extract-nvm.py "${{ env.firmware_elf }}" "${{ env.nvm_blob_bin }}"
+        Scripts//NVM-dfu/extract-nvm.py "${{ env.FIRMWARE_ELF }}" "${{ env.NVM_BLOB_BIN }}"
 
         # Create a simple DFU
-        dfuse-pack -b ${{ inputs.firmware_addr }}:${{ env.firmware_bin }}  "${{ env.firmware_dfu }}"
-        dfuse-pack -b ${{ inputs.firmware_addr }}:${{ env.firmware_bin }} -b ${{ inputs.nvm_addr }}:${{ env.nvm_blob }}  "${{ env.firmware_factory_dfu }}"
+        dfuse-pack -b ${{ inputs.firmware_addr }}:${{ env.FIRMWARE_BIN }}  "${{ env.FIRMWARE_DFU }}"
+        dfuse-pack -b ${{ inputs.firmware_addr }}:${{ env.FIRMWARE_BIN }} -b ${{ inputs.nvm_addr }}:${{ env.NVM_BLOB_BIN }}  "${{ env.FIRMWAE_FACTORY_DFU }}"
 
 
     - name: upload artifacts
@@ -82,7 +86,7 @@ runs:
       with:
         name: ${{ inputs.firmware_name }}
         path: |
-          ${{ env.firmware_bin }}
-          ${{ env.firmware_elf }}
-          ${{ env.firmware_factory_dfu }}
-          ${{ env.firmware_dfu }}
+          ${{ env.FIRMWARE_BIN }}
+          ${{ env.FIRMWARE_ELF }}
+          ${{ env.FIRMWARE_FACTORY_DFU }}
+          ${{ env.FIRMWARE_DFU }}
