@@ -59,7 +59,7 @@ On Windows:
 2. Download [Zadig][zadig] USB driver installer for Windows
 3. Enter the DFU mode on the board
 4. Install `WinUSB` driver for `STM32 BOOTLOADER` using [Zadig][zadig]
-5. Flash the firmware: `dfu-util -a 0 -s 0x8000000 -D .\firmware.bin`
+5. Flash the firmware: `dfu-util -a 0 -s 0x8000000 -D .\firmware.bin` or with `dfu-util -a 0 -D .\firmware.dfu` If you install the firmware for the very first time, or if you want to factory reset the settings stored in non-volatile memory, then you can flash the `dfu-util -a 0 -D .\firmware-nvm-defaults.dfu`
 
 There is also [online dfu-util](https://devanlai.github.io/webdfu/dfu-util/) Which works only on Chrome, but this was not tested yet. Can anyone test and let me know?
 
