@@ -134,7 +134,7 @@ and counters |
 | MAXTEMP | MAXTEMP;{NUM} | MAXTEMP;250 | Set the safety temperature threshold in °C The new threshold is activated upon next reboot: Power Off and USB-C disconnect |
 | MXRPM | MXRPM;{NUM} | MXRPM;60 | Set the maximum number of RPMs for drum at 100% speed. Min 10, Max: 120. This command is only supported for the "Stepper" firmware. |
 | NVM | NVM;SAVE | NVM;SAVE | Save settings in NVRAM. Some settings (mostly PID settings) need to be explicitly saved after being updated through serial console |
-| UNIT | UNIT;U | UNIT;C<br>UNIT;F | Change the temperature unit of measurement to C or F |
+| UNITS | UNITS;U | UNITS;C<br>UNITS;F | Change the temperature unit of measurement to C or F |
 | VERSION | VERSION | VERSION | Print the controller firmware version |
 
 
