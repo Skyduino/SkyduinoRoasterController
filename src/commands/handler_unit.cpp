@@ -2,7 +2,7 @@
 
 #include "handler_unit.h"
 
-#define CMD_UNIT "UNIT"
+#define CMD_UNIT "UNITS"
 
 
 // ----------------------------
