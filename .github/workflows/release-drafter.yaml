@@ -3,7 +3,7 @@ name: "Draft Release notes"
 # Controls when the action will run.
 on:
   push:
-    branches: [dev, master]
+    branches: [dev, main]
   pull_request:
     types: [opened, reopened, synchronize]
 
